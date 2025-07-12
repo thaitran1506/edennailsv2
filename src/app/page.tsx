@@ -2,14 +2,16 @@
 
 // import { useState } from 'react';
 import ServiceCard from '../components/ServiceCard';
-import ContactForm from '../components/ContactForm';
+import AppointmentScheduler from '../components/AppointmentScheduler';
 import MobileNav from '../components/MobileNav';
 
-interface FormData {
+interface AppointmentData {
   name: string;
   email: string;
   phone: string;
   service: string;
+  date: string;
+  time: string;
   message: string;
 }
 
@@ -21,9 +23,26 @@ export default function Home() {
     }
   };
 
-  const handleFormSubmit = (data: FormData) => {
-    // This is now handled by the ContactForm component itself
-    console.log('Form submitted with data:', data);
+  const handleAppointmentSubmit = async (data: AppointmentData) => {
+    try {
+      const response = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to book appointment');
+      }
+      
+      const result = await response.json();
+      console.log('Appointment booked successfully:', result);
+    } catch (error) {
+      console.error('Error booking appointment:', error);
+      throw error;
+    }
   };
 
   const services = [
@@ -309,8 +328,7 @@ export default function Home() {
             </div>
             
             <div className="bg-gradient-to-br from-gray-50 to-white rounded-3xl p-10 shadow-soft">
-              <h3 className="text-3xl font-bold text-gray-900 mb-8">Book Your Appointment</h3>
-              <ContactForm onSubmit={handleFormSubmit} />
+              <AppointmentScheduler onSubmit={handleAppointmentSubmit} />
             </div>
           </div>
         </div>
