@@ -234,7 +234,7 @@ export async function POST(req: NextRequest) {
     };
     
     // Send to Google Sheets
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbymLLbLaEL5P44HTBN4EXATe4AiKjfAja2VG2XoNyoIgHu9pI-8B8PZ88BTbyFtu104/exec';
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
     
     try {
       const sheetsResponse = await fetch(scriptUrl, {
