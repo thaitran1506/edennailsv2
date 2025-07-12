@@ -50,7 +50,7 @@ export default function Home() {
       title: "Classic Manicure",
       price: "$35",
       description: "Professional nail shaping, cuticle care, and premium polish application for a flawless finish.",
-      duration: "45 min",
+      duration: "60 min",
       icon: "💅"
     },
     {
@@ -64,28 +64,28 @@ export default function Home() {
       title: "Luxury Pedicure",
       price: "$55",
       description: "Complete foot care including exfoliation, massage, and premium polish with extended relaxation.",
-      duration: "75 min",
+      duration: "60 min",
       icon: "🌸"
     },
     {
       title: "Gel Pedicure",
       price: "$65",
       description: "Long-lasting gel pedicure with extended wear and beautiful finish for sandal season.",
-      duration: "90 min",
+      duration: "60 min",
       icon: "🌺"
     },
     {
       title: "Nail Art Design",
       price: "$25+",
       description: "Custom nail art and intricate designs to express your unique style and personality.",
-      duration: "30+ min",
+      duration: "60 min",
       icon: "🎨"
     },
     {
       title: "Nail Extensions",
       price: "$85",
       description: "Professional acrylic or gel extensions for length, strength, and stunning nail transformations.",
-      duration: "120 min",
+      duration: "60 min",
       icon: "💎"
     }
   ];

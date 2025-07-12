@@ -180,22 +180,57 @@ export async function POST(req: NextRequest) {
     // Reserve the time slot
     bookTimeSlot(body.date, body.time);
     
+    // Format appointment date and time for better readability
+    const appointmentDate = new Date(body.date);
+    const formattedDate = appointmentDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    // Convert 24-hour time to 12-hour format
+    const [hours, minutes] = body.time.split(':').map(Number);
+    const appointmentTime = new Date();
+    appointmentTime.setHours(hours, minutes, 0, 0);
+    const formattedTime = appointmentTime.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+    
     // Prepare appointment data for Google Sheets
     const appointmentData = {
-      type: 'appointment',
-      name: body.name,
-      email: body.email,
-      phone: body.phone,
-      service: body.service,
-      appointmentDate: body.date,
-      appointmentTime: body.time,
-      message: body.message || '',
-      submissionTimestamp: new Date().toISOString(),
-      userAgent: req.headers.get('user-agent'),
-      ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'),
+      // Main appointment info (first columns)
       appointmentId: `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      status: 'pending',
-      clientPlatform: body.clientInfo?.platform || 'unknown'
+      status: 'PENDING',
+      appointmentDate: formattedDate,
+      appointmentTime: formattedTime,
+      service: body.service,
+      duration: '1 hour',
+      
+      // Customer details
+      customerName: body.name,
+      customerEmail: body.email,
+      customerPhone: body.phone,
+      specialRequests: body.message || 'None',
+      
+      // System data
+      bookingSubmittedAt: new Date().toLocaleString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }),
+      clientPlatform: body.clientInfo?.platform || 'unknown',
+      
+      // Raw data for processing
+      rawDate: body.date,
+      rawTime: body.time,
+      type: 'appointment'
     };
     
     // Send to Google Sheets
@@ -324,8 +359,8 @@ export async function GET(req: NextRequest) {
     const startTime = openHour * 60 + openMinute;
     const endTime = closeHour * 60 + closeMinute;
     
-    // Generate 30-minute slots
-    for (let time = startTime; time < endTime; time += 30) {
+    // Generate 1-hour slots
+    for (let time = startTime; time < endTime; time += 60) {
       const hour = Math.floor(time / 60);
       const minute = time % 60;
       const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;

@@ -50,12 +50,12 @@ export default function AppointmentScheduler({ onSubmit }: AppointmentSchedulerP
   };
 
   const services = [
-    { id: 'classic-manicure', name: 'Classic Manicure', price: 35, duration: 45 },
+    { id: 'classic-manicure', name: 'Classic Manicure', price: 35, duration: 60 },
     { id: 'gel-manicure', name: 'Gel Manicure', price: 45, duration: 60 },
-    { id: 'luxury-pedicure', name: 'Luxury Pedicure', price: 55, duration: 75 },
-    { id: 'gel-pedicure', name: 'Gel Pedicure', price: 65, duration: 90 },
-    { id: 'nail-art', name: 'Nail Art Design', price: 25, duration: 30 },
-    { id: 'nail-extensions', name: 'Nail Extensions', price: 85, duration: 120 }
+    { id: 'luxury-pedicure', name: 'Luxury Pedicure', price: 55, duration: 60 },
+    { id: 'gel-pedicure', name: 'Gel Pedicure', price: 65, duration: 60 },
+    { id: 'nail-art', name: 'Nail Art Design', price: 25, duration: 60 },
+    { id: 'nail-extensions', name: 'Nail Extensions', price: 85, duration: 60 }
   ];
 
   // Generate calendar dates (next 30 days)
@@ -104,8 +104,8 @@ export default function AppointmentScheduler({ onSubmit }: AppointmentSchedulerP
     const startTime = openHour * 60 + openMinute;
     const endTime = closeHour * 60 + closeMinute;
     
-    // Generate 30-minute slots
-    for (let time = startTime; time < endTime; time += 30) {
+    // Generate 1-hour slots
+    for (let time = startTime; time < endTime; time += 60) {
       const hour = Math.floor(time / 60);
       const minute = time % 60;
       const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
@@ -314,7 +314,7 @@ export default function AppointmentScheduler({ onSubmit }: AppointmentSchedulerP
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-semibold text-gray-800">{service.name}</h3>
-                    <p className="text-sm text-gray-600">{service.duration} minutes</p>
+                    <p className="text-sm text-gray-600">60 minutes</p>
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-purple-600">${service.price}</p>
@@ -352,7 +352,7 @@ export default function AppointmentScheduler({ onSubmit }: AppointmentSchedulerP
           {selectedService && (
             <div className="bg-purple-50 p-4 rounded-lg">
               <p className="text-purple-800">
-                <strong>{selectedService.name}</strong> - ${selectedService.price} ({selectedService.duration} min)
+                <strong>{selectedService.name}</strong> - ${selectedService.price} (60 min)
               </p>
             </div>
           )}
@@ -444,7 +444,7 @@ export default function AppointmentScheduler({ onSubmit }: AppointmentSchedulerP
                 day: 'numeric' 
               })}</p>
               <p><strong>Time:</strong> {selectedTime}</p>
-              <p><strong>Duration:</strong> {selectedService?.duration} minutes</p>
+              <p><strong>Duration:</strong> 60 minutes</p>
               <p><strong>Price:</strong> ${selectedService?.price}</p>
             </div>
           </div>
