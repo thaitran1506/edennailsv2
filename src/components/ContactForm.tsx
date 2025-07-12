@@ -182,20 +182,33 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('🔵 Client: Form submit handler called');
     e.preventDefault();
     
-    if (validateForm()) {
+    console.log('🔵 Client: Current form data:', formData);
+    console.log('🔵 Client: Current errors:', errors);
+    console.log('🔵 Client: Is submitting:', isSubmitting);
+    
+    const isValid = validateForm();
+    console.log('🔵 Client: Form validation result:', isValid);
+    
+    if (isValid) {
+      console.log('🔵 Client: Starting form submission...');
       setIsSubmitting(true);
       setSubmitStatus('idle');
       
       try {
         // Add a small delay to prevent rapid submissions
+        console.log('🔵 Client: Waiting 1 second...');
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Submit booking through API
+        console.log('🔵 Client: Calling submitBooking...');
         const result = await submitBooking(formData);
+        console.log('🔵 Client: submitBooking result:', result);
         
         if (result.success) {
+          console.log('🔵 Client: Booking was successful!');
           // Save submission to localStorage
           saveSubmission();
           
@@ -218,16 +231,20 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
             formRef.current.reset();
           }
         } else {
+          console.log('🔴 Client: Booking failed:', result.error);
           setSubmitStatus('error');
           // Show specific error message
           setErrors({ name: result.error });
         }
       } catch (error) {
-        console.error('Submission error:', error);
+        console.error('🔴 Client: Submission error:', error);
         setSubmitStatus('error');
       } finally {
+        console.log('🔵 Client: Setting isSubmitting to false');
         setIsSubmitting(false);
       }
+    } else {
+      console.log('🔴 Client: Form validation failed, not submitting');
     }
   };
 
@@ -418,6 +435,13 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
             ? 'opacity-50 cursor-not-allowed' 
             : ''
         }`}
+        onClick={() => {
+          console.log('🔵 Client: Submit button clicked');
+          console.log('🔵 Client: Button disabled?', isSubmitting || submissionCount >= MAX_SUBMISSIONS_PER_HOUR);
+          console.log('🔵 Client: isSubmitting:', isSubmitting);
+          console.log('🔵 Client: submissionCount:', submissionCount);
+          console.log('🔵 Client: MAX_SUBMISSIONS_PER_HOUR:', MAX_SUBMISSIONS_PER_HOUR);
+        }}
       >
         {isSubmitting 
           ? 'Submitting...' 
