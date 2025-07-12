@@ -2,119 +2,93 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === Pastel + Neutral Theme for Eden Nails === */
+/* === Award-Winning Pastel Palette === */
 :root {
-  /* Neutrals */
-  --color-background: #fffaf7;      /* Soft ivory */
-  --color-surface: #fefcfb;         /* Lightest beige */
-  --color-foreground: #3b3b3b;      /* Gentle dark for text */
+  --color-bg: #fff1e6;              /* Soft beige background */
+  --color-surface: #ffffff;         /* On-surface white */
+  --color-text: #3b3b3b;            /* Gentle dark text */
   --color-border: #e2e2e2;
 
-  /* Pastels */
-  --color-pink: #fcd5ce;            /* Soft pastel pink */
-  --color-pink-hover: #f8c3bc;
-  --color-lavender: #e9d5ff;        /* Pastel lavender */
-  --color-lavender-hover: #d8b4fe;
-  --color-mint: #d1fae5;            /* Mint green */
-  --color-mint-hover: #a7f3d0;
-
-  --color-accent: #f9a8d4;          /* Light blush for accents */
-  --color-accent-hover: #f472b6;
-
-  --color-success: #86efac;
-  --color-warning: #fde68a;
-  --color-error: #fca5a5;
+  --color-honeydew: #d6eadf;
+  --color-queen-pink: #eac4d5;
+  --color-pink-hover: #e5b9c6;
+  --color-pale-cerulean: #809bce;
+  --color-cerulean-hover: #6f8ab5;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-background: #1f2937;
-    --color-surface: #374151;
-    --color-foreground: #fdfdfd;
-    --color-border: #4b5563;
+    --color-bg: #1e293b;
+    --color-surface: #2e3a4a;
+    --color-text: #f0f0f0;
+    --color-border: #475569;
 
-    --color-pink: #f8b4c4;
-    --color-pink-hover: #f472b6;
-    --color-lavender: #c4b5fd;
-    --color-lavender-hover: #a78bfa;
-    --color-mint: #6ee7b7;
-    --color-mint-hover: #34d399;
-
-    --color-accent: #f472b6;
-    --color-accent-hover: #ec4899;
+    --color-honeydew: #a7d7bf;
+    --color-queen-pink: #c8a7b4;
+    --color-pale-cerulean: #6f85a4;
   }
 }
 
-/* === Base Styling === */
+/* === Base Styles === */
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* === Utilities Layer === */
+/* === Utility Layer === */
 @layer utilities {
-  .scrollbar {
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-    &::-webkit-scrollbar-track {
-      background: var(--color-surface);
-    }
-    &::-webkit-scrollbar-thumb {
-      background: var(--color-pink);
-      border-radius: 4px;
-    }
-    &::-webkit-scrollbar-thumb:hover {
-      background: var(--color-pink-hover);
-    }
-  }
-
-  .text-gradient-soft {
-    background: linear-gradient(to right, var(--color-lavender), var(--color-pink));
+  .text-gradient-pastel {
+    background: linear-gradient(to right, var(--color-pale-cerulean), var(--color-queen-pink));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .hover-lift {
-    transition: transform 0.3s ease;
+    @apply transition-transform duration-300 ease-in-out;
   }
   .hover-lift:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
   }
 
-  .glass {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+  .scrollbar {
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-track { background: var(--color-surface); }
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-honeydew);
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--color-queen-pink);
+    }
   }
 }
 
-/* === Components Layer === */
+/* === Component Layer === */
 @layer components {
-  .btn-pink {
-    @apply bg-[var(--color-pink)] text-[var(--color-foreground)] font-medium px-6 py-3 rounded-full shadow-md transition hover:bg-[var(--color-pink-hover)];
+  .btn-primary {
+    @apply bg-[var(--color-queen-pink)] text-white font-medium px-5 py-2 rounded-full shadow-sm hover:bg-[var(--color-pink-hover)] transition;
   }
 
-  .btn-lavender {
-    @apply bg-[var(--color-lavender)] text-[var(--color-foreground)] font-medium px-6 py-3 rounded-full shadow-md transition hover:bg-[var(--color-lavender-hover)];
-  }
-
-  .btn-mint {
-    @apply bg-[var(--color-mint)] text-[var(--color-foreground)] font-medium px-6 py-3 rounded-full shadow-md transition hover:bg-[var(--color-mint-hover)];
+  .btn-secondary {
+    @apply bg-[var(--color-honeydew)] text-[var(--color-text)] font-medium px-5 py-2 rounded-full shadow-sm hover:bg-[var(--color-pale-cerulean)] transition;
   }
 
   .card {
-    @apply bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-md hover:shadow-lg transition;
+    @apply bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-6 shadow-md hover:shadow-lg transition;
   }
 
-  .section-light {
-    @apply bg-[var(--color-surface)];
+  .section-hero {
+    @apply bg-[var(--color-honeydew)] py-16;
   }
 
-  .section-footer {
-    @apply bg-gradient-to-tr from-[var(--color-lavender)] to-[var(--color-pink)] text-[var(--color-foreground)];
+  .section-gallery {
+    @apply bg-[var(--color-surface)] py-12;
+  }
+
+  .footer {
+    @apply bg-[var(--color-pale-cerulean)] text-white py-8;
   }
 }
