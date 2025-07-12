@@ -117,12 +117,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
     } else {
       // More flexible phone validation - just check for reasonable length and digits
       const phoneDigits = formData.phone.replace(/[\s\-\(\)\.+]/g, '');
-      console.log('🔵 Phone validation:', {
-        original: formData.phone,
-        cleaned: phoneDigits,
-        length: phoneDigits.length,
-        isDigitsOnly: /^[\d]+$/.test(phoneDigits)
-      });
+
       
       if (phoneDigits.length < 10 || phoneDigits.length > 15 || !/^[\d]+$/.test(phoneDigits)) {
         newErrors.phone = 'Please enter a valid phone number (10-15 digits)';
@@ -139,20 +134,10 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
     }
 
     setErrors(newErrors);
-    const isValid = Object.keys(newErrors).length === 0;
-    
-    if (!isValid) {
-      console.log('🔴 Client: Form validation failed:', newErrors);
-    } else {
-      console.log('🔵 Client: Form validation passed');
-    }
-    
-    return isValid;
+    return Object.keys(newErrors).length === 0;
   };
 
   const submitBooking = async (data: FormData) => {
-    console.log('🔵 Client: Submitting booking with data:', data);
-    
     try {
       const response = await fetch('/api/book', {
         method: 'POST',
@@ -162,53 +147,34 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         body: JSON.stringify(data),
       });
       
-      console.log('🔵 Client: API response status:', response.status);
-      console.log('🔵 Client: API response headers:', Object.fromEntries(response.headers.entries()));
-      
       const result = await response.json();
-      console.log('🔵 Client: API response body:', result);
       
       if (response.ok && result.success) {
-        console.log('🔵 Client: Booking successful');
         return { success: true, message: result.message };
       } else {
-        console.log('🔴 Client: Booking failed with error:', result.error);
         return { success: false, error: result.error || 'Submission failed' };
       }
     } catch (error) {
-      console.error('🔴 Client: Error submitting booking:', error);
+      console.error('Error submitting booking:', error);
       return { success: false, error: 'Network error. Please try again.' };
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('🔵 Client: Form submit handler called');
     e.preventDefault();
     
-    console.log('🔵 Client: Current form data:', formData);
-    console.log('🔵 Client: Current errors:', errors);
-    console.log('🔵 Client: Is submitting:', isSubmitting);
-    
-    const isValid = validateForm();
-    console.log('🔵 Client: Form validation result:', isValid);
-    
-    if (isValid) {
-      console.log('🔵 Client: Starting form submission...');
+    if (validateForm()) {
       setIsSubmitting(true);
       setSubmitStatus('idle');
       
       try {
         // Add a small delay to prevent rapid submissions
-        console.log('🔵 Client: Waiting 1 second...');
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Submit booking through API
-        console.log('🔵 Client: Calling submitBooking...');
         const result = await submitBooking(formData);
-        console.log('🔵 Client: submitBooking result:', result);
         
         if (result.success) {
-          console.log('🔵 Client: Booking was successful!');
           // Save submission to localStorage
           saveSubmission();
           
@@ -231,20 +197,16 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
             formRef.current.reset();
           }
         } else {
-          console.log('🔴 Client: Booking failed:', result.error);
           setSubmitStatus('error');
           // Show specific error message
           setErrors({ name: result.error });
         }
       } catch (error) {
-        console.error('🔴 Client: Submission error:', error);
+        console.error('Submission error:', error);
         setSubmitStatus('error');
       } finally {
-        console.log('🔵 Client: Setting isSubmitting to false');
         setIsSubmitting(false);
       }
-    } else {
-      console.log('🔴 Client: Form validation failed, not submitting');
     }
   };
 
@@ -435,13 +397,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
             ? 'opacity-50 cursor-not-allowed' 
             : ''
         }`}
-        onClick={() => {
-          console.log('🔵 Client: Submit button clicked');
-          console.log('🔵 Client: Button disabled?', isSubmitting || submissionCount >= MAX_SUBMISSIONS_PER_HOUR);
-          console.log('🔵 Client: isSubmitting:', isSubmitting);
-          console.log('🔵 Client: submissionCount:', submissionCount);
-          console.log('🔵 Client: MAX_SUBMISSIONS_PER_HOUR:', MAX_SUBMISSIONS_PER_HOUR);
-        }}
+
       >
         {isSubmitting 
           ? 'Submitting...' 
