@@ -116,9 +116,16 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
       newErrors.phone = 'Phone is required';
     } else {
       // More flexible phone validation - just check for reasonable length and digits
-      const phoneDigits = formData.phone.replace(/[\s\-\(\)\.]/g, '');
-      if (phoneDigits.length < 10 || phoneDigits.length > 15 || !/^\+?[\d]+$/.test(phoneDigits)) {
-        newErrors.phone = 'Please enter a valid phone number';
+      const phoneDigits = formData.phone.replace(/[\s\-\(\)\.+]/g, '');
+      console.log('🔵 Phone validation:', {
+        original: formData.phone,
+        cleaned: phoneDigits,
+        length: phoneDigits.length,
+        isDigitsOnly: /^[\d]+$/.test(phoneDigits)
+      });
+      
+      if (phoneDigits.length < 10 || phoneDigits.length > 15 || !/^[\d]+$/.test(phoneDigits)) {
+        newErrors.phone = 'Please enter a valid phone number (10-15 digits)';
       }
     }
     
