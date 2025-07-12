@@ -470,12 +470,15 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
           disabled={isSubmitting}
         >
           <option value="">Select a service</option>
-          <option value="Classic Manicure">Classic Manicure - $35</option>
-          <option value="Gel Manicure">Gel Manicure - $45</option>
-          <option value="Luxury Pedicure">Luxury Pedicure - $55</option>
-          <option value="Gel Pedicure">Gel Pedicure - $65</option>
-          <option value="Nail Art Design">Nail Art Design - $25+</option>
-          <option value="Nail Extensions">Nail Extensions - $85</option>
+          <option value="Manicure">Manicure - $25</option>
+          <option value="Manicure and Shellac">Manicure and Shellac - $35</option>
+          <option value="Pedicure">Pedicure - $35</option>
+          <option value="Eden Signature Pedicure">Eden Signature Pedicure - $50</option>
+          <option value="Pedicure Special">Pedicure Special - $50</option>
+          <option value="Hot Rock Pedicure">Hot Rock Pedicure - $60</option>
+          <option value="Full Set">Full Set - $55+</option>
+          <option value="Fill">Fill - $45+</option>
+          <option value="Dipping Powder">Dipping Powder - $50+</option>
         </select>
         {errors.service && <p className="text-red-500 text-sm mt-2">{errors.service}</p>}
       </div>

@@ -50,12 +50,15 @@ export default function AppointmentScheduler({ onSubmit }: AppointmentSchedulerP
   };
 
   const services = [
-    { id: 'classic-manicure', name: 'Classic Manicure', price: 35, duration: 60 },
-    { id: 'gel-manicure', name: 'Gel Manicure', price: 45, duration: 60 },
-    { id: 'luxury-pedicure', name: 'Luxury Pedicure', price: 55, duration: 60 },
-    { id: 'gel-pedicure', name: 'Gel Pedicure', price: 65, duration: 60 },
-    { id: 'nail-art', name: 'Nail Art Design', price: 25, duration: 60 },
-    { id: 'nail-extensions', name: 'Nail Extensions', price: 85, duration: 60 }
+    { id: 'manicure', name: 'Manicure', price: 25, duration: 60 },
+    { id: 'manicure-shellac', name: 'Manicure and Shellac', price: 35, duration: 60 },
+    { id: 'pedicure', name: 'Pedicure', price: 35, duration: 60 },
+    { id: 'eden-signature-pedicure', name: 'Eden Signature Pedicure', price: 50, duration: 60 },
+    { id: 'pedicure-special', name: 'Pedicure Special', price: 50, duration: 60 },
+    { id: 'hot-rock-pedicure', name: 'Hot Rock Pedicure', price: 60, duration: 60 },
+    { id: 'full-set', name: 'Full Set', price: 55, duration: 60 },
+    { id: 'fill', name: 'Fill', price: 45, duration: 60 },
+    { id: 'dipping-powder', name: 'Dipping Powder', price: 50, duration: 60 }
   ];
 
   // Generate calendar dates (next 30 days)

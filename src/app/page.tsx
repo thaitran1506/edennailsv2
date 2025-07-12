@@ -47,46 +47,67 @@ export default function Home() {
 
   const services = [
     {
-      title: "Classic Manicure",
-      price: "$35",
+      title: "Manicure",
+      price: "$25",
       description: "Professional nail shaping, cuticle care, and premium polish application for a flawless finish.",
       duration: "60 min",
       icon: "💅"
     },
     {
-      title: "Gel Manicure",
-      price: "$45",
-      description: "Long-lasting gel polish with chip-resistant finish that maintains shine for up to 3 weeks.",
+      title: "Manicure and Shellac",
+      price: "$35",
+      description: "Classic manicure with long-lasting shellac polish for extended wear and brilliant shine.",
       duration: "60 min",
       icon: "✨"
     },
     {
-      title: "Luxury Pedicure",
-      price: "$55",
-      description: "Complete foot care including exfoliation, massage, and premium polish with extended relaxation.",
+      title: "Pedicure",
+      price: "$35",
+      description: "Complete foot care including nail trimming, shaping, cuticle care, and polish application.",
+      duration: "60 min",
+      icon: "🦶"
+    },
+    {
+      title: "Eden Signature Pedicure",
+      price: "$50",
+      description: "Our signature pedicure experience with premium treatments and relaxing foot massage.",
       duration: "60 min",
       icon: "🌸"
     },
     {
-      title: "Gel Pedicure",
-      price: "$65",
-      description: "Long-lasting gel pedicure with extended wear and beautiful finish for sandal season.",
+      title: "Pedicure Special",
+      price: "$50",
+      description: "Special pedicure treatment with enhanced care and premium finishing touches.",
+      duration: "60 min",
+      icon: "⭐"
+    },
+    {
+      title: "Hot Rock Pedicure",
+      price: "$60",
+      description: "Luxurious pedicure with hot stone massage for ultimate relaxation and rejuvenation.",
       duration: "60 min",
       icon: "🌺"
     },
     {
-      title: "Nail Art Design",
-      price: "$25+",
-      description: "Custom nail art and intricate designs to express your unique style and personality.",
-      duration: "60 min",
-      icon: "🎨"
-    },
-    {
-      title: "Nail Extensions",
-      price: "$85",
-      description: "Professional acrylic or gel extensions for length, strength, and stunning nail transformations.",
+      title: "Full Set",
+      price: "$55+",
+      description: "Complete acrylic or gel nail extensions with shaping, design, and professional finish.",
       duration: "60 min",
       icon: "💎"
+    },
+    {
+      title: "Fill",
+      price: "$45+",
+      description: "Maintenance for existing nail extensions with fresh polish and touch-ups.",
+      duration: "60 min",
+      icon: "🔄"
+    },
+    {
+      title: "Dipping Powder",
+      price: "$50+",
+      description: "Durable dipping powder application for long-lasting, chip-resistant nails.",
+      duration: "60 min",
+      icon: "🎨"
     }
   ];
 
