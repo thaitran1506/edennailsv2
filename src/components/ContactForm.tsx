@@ -114,8 +114,12 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
     
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone is required';
-    } else if (!/^[\+]?[1-9][\d]{0,15}$/.test(formData.phone.replace(/[\s\-\(\)]/g, ''))) {
-      newErrors.phone = 'Please enter a valid phone number';
+    } else {
+      // More flexible phone validation - just check for reasonable length and digits
+      const phoneDigits = formData.phone.replace(/[\s\-\(\)\.]/g, '');
+      if (phoneDigits.length < 10 || phoneDigits.length > 15 || !/^\+?[\d]+$/.test(phoneDigits)) {
+        newErrors.phone = 'Please enter a valid phone number';
+      }
     }
     
     if (!formData.service) {
@@ -128,7 +132,15 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const isValid = Object.keys(newErrors).length === 0;
+    
+    if (!isValid) {
+      console.log('🔴 Client: Form validation failed:', newErrors);
+    } else {
+      console.log('🔵 Client: Form validation passed');
+    }
+    
+    return isValid;
   };
 
   const submitBooking = async (data: FormData) => {
