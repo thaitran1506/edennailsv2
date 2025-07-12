@@ -83,100 +83,100 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Name *
+        <label className="block text-sm font-semibold text-gray-700 mb-3">
+          Full Name *
         </label>
         <input
           type="text"
           name="name"
           value={formData.name}
           onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
-            errors.name ? 'border-red-500' : 'border-gray-300'
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+            errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-purple-300'
           }`}
-          placeholder="Your full name"
+          placeholder="Enter your full name"
         />
-        {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+        {errors.name && <p className="text-red-500 text-sm mt-2">{errors.name}</p>}
       </div>
       
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Email *
+        <label className="block text-sm font-semibold text-gray-700 mb-3">
+          Email Address *
         </label>
         <input
           type="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
-            errors.email ? 'border-red-500' : 'border-gray-300'
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+            errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-purple-300'
           }`}
           placeholder="your.email@example.com"
         />
-        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+        {errors.email && <p className="text-red-500 text-sm mt-2">{errors.email}</p>}
       </div>
       
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Phone *
+        <label className="block text-sm font-semibold text-gray-700 mb-3">
+          Phone Number *
         </label>
         <input
           type="tel"
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
-            errors.phone ? 'border-red-500' : 'border-gray-300'
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+            errors.phone ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-purple-300'
           }`}
           placeholder="(555) 123-4567"
         />
-        {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+        {errors.phone && <p className="text-red-500 text-sm mt-2">{errors.phone}</p>}
       </div>
       
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Service *
+        <label className="block text-sm font-semibold text-gray-700 mb-3">
+          Preferred Service *
         </label>
         <select
           name="service"
           value={formData.service}
           onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
-            errors.service ? 'border-red-500' : 'border-gray-300'
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+            errors.service ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-purple-300'
           }`}
         >
           <option value="">Select a service</option>
-          <option value="Classic Manicure">Classic Manicure</option>
-          <option value="Gel Manicure">Gel Manicure</option>
-          <option value="Classic Pedicure">Classic Pedicure</option>
-          <option value="Gel Pedicure">Gel Pedicure</option>
-          <option value="Nail Art Design">Nail Art Design</option>
-          <option value="Nail Extensions">Nail Extensions</option>
+          <option value="Classic Manicure">Classic Manicure - $35</option>
+          <option value="Gel Manicure">Gel Manicure - $45</option>
+          <option value="Luxury Pedicure">Luxury Pedicure - $55</option>
+          <option value="Gel Pedicure">Gel Pedicure - $65</option>
+          <option value="Nail Art Design">Nail Art Design - $25+</option>
+          <option value="Nail Extensions">Nail Extensions - $85</option>
         </select>
-        {errors.service && <p className="text-red-500 text-sm mt-1">{errors.service}</p>}
+        {errors.service && <p className="text-red-500 text-sm mt-2">{errors.service}</p>}
       </div>
       
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Message
+        <label className="block text-sm font-semibold text-gray-700 mb-3">
+          Special Requests
         </label>
         <textarea
           name="message"
           value={formData.message}
           onChange={handleChange}
           rows={4}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-          placeholder="Any special requests or notes..."
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:border-purple-300"
+          placeholder="Any special requests, preferred dates, or additional notes..."
         />
       </div>
       
       <button
         type="submit"
-        className="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition-colors"
+        className="w-full btn-primary text-lg py-4"
       >
-        Book Appointment
+        Book Your Appointment
       </button>
     </form>
   );
