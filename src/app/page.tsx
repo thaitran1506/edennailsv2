@@ -2,7 +2,7 @@
 
 // import { useState } from 'react';
 import ServiceCard from '../components/ServiceCard';
-import AppointmentScheduler from '../components/AppointmentScheduler';
+import SimpleBookingForm from '../components/SimpleBookingForm';
 import MobileNav from '../components/MobileNav';
 
 interface AppointmentData {
@@ -349,7 +349,7 @@ export default function Home() {
             </div>
             
             <div className="bg-gradient-to-br from-gray-50 to-white rounded-3xl p-10 shadow-soft">
-              <AppointmentScheduler onSubmit={handleAppointmentSubmit} />
+              <SimpleBookingForm onSubmit={handleAppointmentSubmit} />
             </div>
           </div>
         </div>
