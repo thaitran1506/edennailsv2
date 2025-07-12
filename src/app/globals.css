@@ -2,36 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+/* === Color Palette for Eden Nails === */
 :root {
-  --color-foreground: #1e1b4b;
-  --color-background: #ffffff;
-  --color-primary: #7f56d9;
-  --color-primary-hover: #6941c6;
-  --color-accent: #f472b6;
-  --color-secondary: #f8fafc;
-  --color-neutral: #475569;
-  --color-neutral-light: #e2e8f0;
-  --color-success: #22c55e;
-  --color-warning: #facc15;
-  --color-error: #ef4444;
+  --color-foreground: #3d3d3d;
+  --color-background: #fff8f7;
+
+  --color-primary: #e29acb;         /* Soft cherry blossom pink */
+  --color-primary-hover: #d179b9;   /* Slightly deeper pink */
+  
+  --color-accent: #ffc6d0;          /* Light blush accent */
+  --color-accent-hover: #fca5b2;
+
+  --color-secondary: #fffdfc;       /* Off-white base */
+  --color-neutral: #94a3b8;         /* Muted slate */
+  --color-neutral-light: #f1f5f9;
+
+  --color-success: #7dd3fc;         /* Soft sky blue */
+  --color-warning: #fde68a;         /* Warm pastel yellow */
+  --color-error: #fda4af;           /* Rosy red */
+
+  --color-highlight: #c4f0d9;       /* Minty spa green */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-foreground: #ffffff;
-    --color-background: #0f172a;
-    --color-primary: #9e77ed;
-    --color-primary-hover: #7f56d9;
-    --color-accent: #fb92c7;
-    --color-secondary: #1e293b;
+    --color-foreground: #fdfdfd;
+    --color-background: #1f2937;
+    --color-primary: #f9a8d4;
+    --color-primary-hover: #ec4899;
+    --color-accent: #fcd3e4;
+    --color-accent-hover: #f9a8d4;
+    --color-secondary: #334155;
     --color-neutral: #cbd5e1;
-    --color-neutral-light: #334155;
-    --color-success: #4ade80;
-    --color-warning: #fde047;
-    --color-error: #f87171;
+    --color-neutral-light: #475569;
+    --color-success: #bae6fd;
+    --color-warning: #fef08a;
+    --color-error: #fecdd3;
+    --color-highlight: #99f6e4;
   }
 }
 
+/* === Base Styling === */
 body {
   color: var(--color-foreground);
   background: var(--color-background);
@@ -39,9 +50,8 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* Utility Layer */
 @layer utilities {
-  .text-gradient-primary {
+  .text-gradient {
     background: linear-gradient(to right, var(--color-primary), var(--color-accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -77,35 +87,38 @@ body {
 
   .glass {
     background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .glass-dark {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
-/* Components Layer */
+/* === Components === */
 @layer components {
   .btn-primary {
-    @apply bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)] text-white font-medium px-6 py-3 rounded-full shadow-md transition hover:from-[var(--color-primary-hover)] hover:to-[var(--color-accent)];
+    @apply bg-[var(--color-primary)] text-white font-medium px-6 py-3 rounded-full shadow-md hover:bg-[var(--color-primary-hover)] transition;
   }
 
   .btn-secondary {
-    @apply bg-white text-[var(--color-primary)] border border-[var(--color-primary)] px-6 py-3 rounded-full font-medium hover:bg-gray-50 transition shadow-sm;
+    @apply bg-white text-[var(--color-primary)] border border-[var(--color-primary)] px-6 py-3 rounded-full font-medium hover:bg-[var(--color-accent-hover)] transition shadow-sm;
   }
 
   .card {
     @apply bg-white border border-[var(--color-neutral-light)] rounded-xl p-6 shadow-md transition hover:shadow-lg;
   }
 
-  .section-light {
-    @apply bg-gradient-to-br from-white to-[var(--color-secondary)];
+  .section-hero {
+    background: linear-gradient(to bottom right, var(--color-accent), var(--color-highlight));
   }
 
-  .section-dark {
-    @apply bg-gradient-to-br from-[var(--color-background)] to-slate-800 text-white;
+  .section-light {
+    @apply bg-[var(--color-secondary)];
+  }
+
+  .section-footer {
+    @apply bg-gradient-to-br from-[var(--color-primary-hover)] to-[var(--color-accent-hover)] text-white;
+  }
+
+  .text-gradient-pink {
+    @apply bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)] bg-clip-text text-transparent;
   }
 }
