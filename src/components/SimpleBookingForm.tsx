@@ -310,7 +310,7 @@ export default function SimpleBookingForm({ onSubmit }: SimpleBookingFormProps) 
             <option value="">Choose a service...</option>
             {services.map((service) => (
               <option key={service.id} value={service.id}>
-                {service.name} - ${service.price} ({service.duration} min)
+                {service.name} - ${service.price}
               </option>
             ))}
           </select>
@@ -319,7 +319,7 @@ export default function SimpleBookingForm({ onSubmit }: SimpleBookingFormProps) 
           {selectedService && (
             <div className="mt-2 p-3 bg-purple-50 rounded-lg">
               <p className="text-sm text-purple-800">
-                <strong>{selectedService.name}</strong> - ${selectedService.price} ({selectedService.duration} minutes)
+                <strong>{selectedService.name}</strong> - ${selectedService.price}
               </p>
             </div>
           )}

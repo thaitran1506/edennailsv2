@@ -18,8 +18,7 @@ export default function ServiceCard({ title, price, description, duration, icon,
         <div className="text-3xl font-bold text-gradient-primary mb-4">{price}</div>
       </div>
       <p className="text-gray-600 mb-6 leading-relaxed">{description}</p>
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-gray-500 font-medium">Duration: {duration}</span>
+      <div className="flex justify-center">
         <button 
           onClick={onBookNow}
           className="btn-primary text-sm px-6 py-2"

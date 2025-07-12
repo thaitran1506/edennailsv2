@@ -317,7 +317,6 @@ export default function AppointmentScheduler({ onSubmit }: AppointmentSchedulerP
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-semibold text-gray-800">{service.name}</h3>
-                    <p className="text-sm text-gray-600">60 minutes</p>
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-purple-600">${service.price}</p>
@@ -447,7 +446,7 @@ export default function AppointmentScheduler({ onSubmit }: AppointmentSchedulerP
                 day: 'numeric' 
               })}</p>
               <p><strong>Time:</strong> {selectedTime}</p>
-              <p><strong>Duration:</strong> 60 minutes</p>
+
               <p><strong>Price:</strong> ${selectedService?.price}</p>
             </div>
           </div>
