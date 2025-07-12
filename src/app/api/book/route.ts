@@ -151,14 +151,21 @@ export async function POST(req: NextRequest) {
       submissionId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     };
     
-    await fetch(scriptUrl, {
+    const sheetsResponse = await fetch(scriptUrl, {
       method: 'POST',
-      mode: 'no-cors',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(submissionData),
     });
+
+    if (!sheetsResponse.ok) {
+      console.error('Failed to forward booking to Google Sheets:', await sheetsResponse.text());
+      return NextResponse.json(
+        { success: false, error: 'Failed to save booking. Please try again later.' },
+        { status: 502 }
+      );
+    }
     
     // Update rate limiting data
     if (clientData) {
