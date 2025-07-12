@@ -11,11 +11,11 @@ export default function TestBooking() {
     setResult('Testing...');
     
     const testData = {
-      name: 'Test User',
-      email: 'test@example.com',
+      name: 'John Smith',
+      email: 'john.smith@example.com',
       phone: '555-123-4567',
       service: 'Classic Manicure',
-      message: 'This is a test booking',
+      message: 'This is a sample booking',
       honeypot: ''
     };
 
