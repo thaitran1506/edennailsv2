@@ -132,6 +132,8 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
   };
 
   const submitBooking = async (data: FormData) => {
+    console.log('🔵 Client: Submitting booking with data:', data);
+    
     try {
       const response = await fetch('/api/book', {
         method: 'POST',
@@ -141,15 +143,21 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         body: JSON.stringify(data),
       });
       
+      console.log('🔵 Client: API response status:', response.status);
+      console.log('🔵 Client: API response headers:', Object.fromEntries(response.headers.entries()));
+      
       const result = await response.json();
+      console.log('🔵 Client: API response body:', result);
       
       if (response.ok && result.success) {
+        console.log('🔵 Client: Booking successful');
         return { success: true, message: result.message };
       } else {
+        console.log('🔴 Client: Booking failed with error:', result.error);
         return { success: false, error: result.error || 'Submission failed' };
       }
     } catch (error) {
-      console.error('Error submitting booking:', error);
+      console.error('🔴 Client: Error submitting booking:', error);
       return { success: false, error: 'Network error. Please try again.' };
     }
   };

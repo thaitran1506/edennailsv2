@@ -74,9 +74,13 @@ function validateSubmission(data: Record<string, unknown>): { isValid: boolean; 
 }
 
 export async function POST(req: NextRequest) {
+  console.log('🔵 Booking API called');
+  
   try {
     const clientId = getClientIdentifier(req);
     const now = Date.now();
+    
+    console.log('🔵 Client ID:', clientId);
     
     // Check rate limiting
     const clientData = submissionStore.get(clientId);
@@ -85,6 +89,7 @@ export async function POST(req: NextRequest) {
       if (now - clientData.lastSubmission < RATE_LIMIT_WINDOW) {
         // Check submission count
         if (clientData.count >= MAX_SUBMISSIONS_PER_HOUR) {
+          console.log('🔴 Rate limit exceeded for client:', clientId);
           return NextResponse.json(
             { 
               success: false, 
@@ -97,6 +102,7 @@ export async function POST(req: NextRequest) {
         
         // Check minimum interval
         if (now - clientData.lastSubmission < MIN_SUBMISSION_INTERVAL) {
+          console.log('🔴 Minimum interval not met for client:', clientId);
           return NextResponse.json(
             { 
               success: false, 
@@ -113,10 +119,12 @@ export async function POST(req: NextRequest) {
     
     // Parse request body
     const body = await req.json();
+    console.log('🔵 Request body received:', JSON.stringify(body, null, 2));
     
     // Validate submission data
     const validation = validateSubmission(body);
     if (!validation.isValid) {
+      console.log('🔴 Validation failed:', validation.errors);
       return NextResponse.json(
         { 
           success: false, 
@@ -131,6 +139,7 @@ export async function POST(req: NextRequest) {
     const duplicateKey = `${body.email}-${body.service}`;
     const duplicateData = submissionStore.get(duplicateKey);
     if (duplicateData && now - duplicateData.lastSubmission < RATE_LIMIT_WINDOW) {
+      console.log('🔴 Duplicate submission detected:', duplicateKey);
       return NextResponse.json(
         { 
           success: false, 
@@ -151,20 +160,62 @@ export async function POST(req: NextRequest) {
       submissionId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     };
     
-    const sheetsResponse = await fetch(scriptUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(submissionData),
-    });
+    console.log('🔵 Sending to Google Sheets:', scriptUrl);
+    console.log('🔵 Submission data:', JSON.stringify(submissionData, null, 2));
+    
+    try {
+      const sheetsResponse = await fetch(scriptUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData),
+      });
 
-    if (!sheetsResponse.ok) {
-      console.error('Failed to forward booking to Google Sheets:', await sheetsResponse.text());
-      return NextResponse.json(
-        { success: false, error: 'Failed to save booking. Please try again later.' },
-        { status: 502 }
-      );
+      console.log('🔵 Google Sheets response status:', sheetsResponse.status);
+      console.log('🔵 Google Sheets response headers:', Object.fromEntries(sheetsResponse.headers.entries()));
+      
+      if (!sheetsResponse.ok) {
+        const errorText = await sheetsResponse.text();
+        console.error('🔴 Google Sheets error response:', errorText);
+        
+        // Try fallback approach with no-cors (like the original)
+        console.log('🔵 Trying fallback approach with no-cors...');
+        await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(submissionData),
+        });
+        console.log('🔵 Fallback request sent (no-cors)');
+      } else {
+        const responseText = await sheetsResponse.text();
+        console.log('🔵 Google Sheets success response:', responseText);
+      }
+    } catch (fetchError) {
+      console.error('🔴 Fetch error to Google Sheets:', fetchError);
+      
+      // Try fallback approach
+      console.log('🔵 Trying fallback approach due to fetch error...');
+      try {
+        await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(submissionData),
+        });
+        console.log('🔵 Fallback request sent successfully');
+      } catch (fallbackError) {
+        console.error('🔴 Fallback also failed:', fallbackError);
+        return NextResponse.json(
+          { success: false, error: 'Failed to save booking. Please try again later.' },
+          { status: 502 }
+        );
+      }
     }
     
     // Update rate limiting data
@@ -178,6 +229,7 @@ export async function POST(req: NextRequest) {
     // Track duplicate prevention
     submissionStore.set(duplicateKey, { count: 1, lastSubmission: now });
     
+    console.log('🔵 Booking processed successfully');
     return NextResponse.json(
       { 
         success: true, 
@@ -188,7 +240,7 @@ export async function POST(req: NextRequest) {
     );
     
   } catch (error) {
-    console.error('Booking API error:', error);
+    console.error('🔴 Booking API error:', error);
     return NextResponse.json(
       { 
         success: false, 
