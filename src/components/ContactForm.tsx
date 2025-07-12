@@ -56,7 +56,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbymLLbLaEL5P44HTBN4EXATe4AiKjfAja2VG2XoNyoIgHu9pI-8B8PZ88BTbyFtu104/exec';
     
     try {
-      const response = await fetch(scriptUrl, {
+      await fetch(scriptUrl, {
         method: 'POST',
         mode: 'no-cors', // Required for Google Apps Script
         headers: {
@@ -130,7 +130,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
           <div className="flex items-center">
             <span className="text-green-600 text-xl mr-2">✓</span>
-            <p className="text-green-800 font-medium">Booking submitted successfully! We'll contact you soon to confirm.</p>
+            <p className="text-green-800 font-medium">Booking submitted successfully! We&apos;ll contact you soon to confirm.</p>
           </div>
         </div>
       )}
