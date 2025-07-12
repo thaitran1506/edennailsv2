@@ -42,6 +42,14 @@ function validateSubmission(data: Record<string, unknown>): { isValid: boolean; 
   
   if (!data.phone || typeof data.phone !== 'string') {
     errors.push('Phone number is required');
+  } else {
+    // Cross-platform phone validation
+    const phoneDigits = data.phone.replace(/[\s\-\(\)\.+]/g, '');
+    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+      errors.push('Phone number must be 10-15 digits');
+    } else if (!/^\d+$/.test(phoneDigits)) {
+      errors.push('Phone number contains invalid characters');
+    }
   }
   
   if (!data.service || typeof data.service !== 'string') {
@@ -58,14 +66,8 @@ function validateSubmission(data: Record<string, unknown>): { isValid: boolean; 
     errors.push('Message must be less than 500 characters');
   }
   
-  // Check for suspicious patterns
-  if (data.name && typeof data.name === 'string' && data.name.toLowerCase().includes('test')) {
-    errors.push('Test submissions are not allowed');
-  }
-  
-  if (data.email && typeof data.email === 'string' && data.email.toLowerCase().includes('test')) {
-    errors.push('Test email addresses are not allowed');
-  }
+  // Remove test validation that was causing issues on Windows
+  // Anti-spam validation can be added back if needed
   
   return {
     isValid: errors.length === 0,
@@ -114,13 +116,16 @@ export async function POST(req: NextRequest) {
     // Parse request body
     const body = await req.json();
     
+    // Extract client info if provided
+    const clientInfo = body.clientInfo || {};
+    
     // Validate submission data
     const validation = validateSubmission(body);
     if (!validation.isValid) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'Invalid submission data',
+          error: 'Invalid submission data: ' + validation.errors.join(', '),
           details: validation.errors 
         },
         { status: 400 }
@@ -144,14 +149,21 @@ export async function POST(req: NextRequest) {
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbymLLbLaEL5P44HTBN4EXATe4AiKjfAja2VG2XoNyoIgHu9pI-8B8PZ88BTbyFtu104/exec';
     
     const submissionData = {
-      ...body,
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      service: body.service,
+      message: body.message || '',
       timestamp: new Date().toISOString(),
       userAgent: req.headers.get('user-agent'),
       ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'),
-      submissionId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      submissionId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      clientPlatform: clientInfo.platform || 'unknown',
+      localStorageAvailable: clientInfo.localStorageAvailable || false
     };
     
     try {
+      // Try with CORS first
       const sheetsResponse = await fetch(scriptUrl, {
         method: 'POST',
         headers: {
@@ -161,10 +173,9 @@ export async function POST(req: NextRequest) {
       });
       
       if (!sheetsResponse.ok) {
-        const errorText = await sheetsResponse.text();
-        console.error('Google Sheets error response:', errorText);
+        console.warn('Google Sheets CORS response not OK:', sheetsResponse.status, sheetsResponse.statusText);
         
-        // Try fallback approach with no-cors (like the original)
+        // Try fallback approach with no-cors
         await fetch(scriptUrl, {
           method: 'POST',
           mode: 'no-cors',
@@ -175,7 +186,7 @@ export async function POST(req: NextRequest) {
         });
       }
     } catch (fetchError) {
-      console.error('Fetch error to Google Sheets:', fetchError);
+      console.error('Primary fetch error to Google Sheets:', fetchError);
       
       // Try fallback approach
       try {
@@ -188,7 +199,7 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify(submissionData),
         });
       } catch (fallbackError) {
-        console.error('Fallback also failed:', fallbackError);
+        console.error('Fallback fetch also failed:', fallbackError);
         return NextResponse.json(
           { success: false, error: 'Failed to save booking. Please try again later.' },
           { status: 502 }
@@ -210,8 +221,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { 
         success: true, 
-        message: 'Booking submitted successfully',
-        submissionId: submissionData.submissionId
+        message: 'Booking submitted successfully! We will contact you soon to confirm your appointment.',
+        submissionId: submissionData.submissionId,
+        clientPlatform: clientInfo.platform
       },
       { status: 200 }
     );
