@@ -22,9 +22,8 @@ export default function Home() {
   };
 
   const handleFormSubmit = (data: FormData) => {
-    // Here you would typically send the data to your backend
-    console.log('Booking submitted:', data);
-    alert('Thank you for your booking! We will contact you soon to confirm your appointment.');
+    // This is now handled by the ContactForm component itself
+    console.log('Form submitted with data:', data);
   };
 
   const services = [
