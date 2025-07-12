@@ -35,6 +35,12 @@ export default function SimpleBookingForm({ onSubmit }: SimpleBookingFormProps) 
   });
 
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [slotsWithAvailability, setSlotsWithAvailability] = useState<Array<{
+    time: string;
+    availableSpots: number;
+    maxCapacity: number;
+  }>>([]);
+  const [maxTechnicians, setMaxTechnicians] = useState(3);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -94,8 +100,13 @@ export default function SimpleBookingForm({ onSubmit }: SimpleBookingFormProps) 
       
       if (data.success) {
         setAvailableSlots(data.availableSlots);
+        setSlotsWithAvailability(data.slotsWithAvailability || []);
+        if (data.maxTechnicians) {
+          setMaxTechnicians(data.maxTechnicians);
+        }
       } else {
         setAvailableSlots([]);
+        setSlotsWithAvailability([]);
       }
     } catch (error) {
       console.error('Error loading time slots:', error);
@@ -362,9 +373,16 @@ export default function SimpleBookingForm({ onSubmit }: SimpleBookingFormProps) 
                   minute: '2-digit',
                   hour12: true
                 });
+                
+                // Find availability info for this slot
+                const slotInfo = slotsWithAvailability.find(s => s.time === slot);
+                const availabilityText = slotInfo 
+                  ? ` (${slotInfo.availableSpots}/${slotInfo.maxCapacity} spots available)`
+                  : '';
+                
                 return (
                   <option key={slot} value={slot}>
-                    {formattedTime}
+                    {formattedTime}{availabilityText}
                   </option>
                 );
               })}
@@ -374,6 +392,12 @@ export default function SimpleBookingForm({ onSubmit }: SimpleBookingFormProps) 
             {formData.date && availableSlots.length === 0 && !isLoadingSlots && (
               <p className="text-amber-600 text-sm mt-1">
                 No available times for this date. Please choose another date.
+              </p>
+            )}
+            
+            {availableSlots.length > 0 && (
+              <p className="text-sm text-gray-600 mt-1">
+                💡 We have {maxTechnicians} nail technicians, so multiple customers can be served at the same time.
               </p>
             )}
           </div>

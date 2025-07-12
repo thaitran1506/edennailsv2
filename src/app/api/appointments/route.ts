@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // In-memory storage for rate limiting and appointment tracking
 const submissionStore = new Map<string, { count: number; lastSubmission: number }>();
-const appointmentStore = new Map<string, { date: string; time: string; bookedAt: number }>();
+const appointmentStore = new Map<string, { appointments: Array<{ appointmentId: string; bookedAt: number }> }>();
 
 // Rate limiting configuration
 const MAX_APPOINTMENTS_PER_DAY = 5;
 const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
+
+// Salon capacity configuration
+const MAX_TECHNICIANS = 3; // Number of nail technicians available
+const MAX_APPOINTMENTS_PER_SLOT = MAX_TECHNICIANS; // One appointment per technician
 
 // Clean up old entries
 setInterval(() => {
@@ -21,8 +25,13 @@ setInterval(() => {
   
   // Clean up old appointment slots (older than 7 days)
   for (const [key, value] of appointmentStore.entries()) {
-    if (now - value.bookedAt > 7 * 24 * 60 * 60 * 1000) {
+    const filteredAppointments = value.appointments.filter(
+      apt => now - apt.bookedAt <= 7 * 24 * 60 * 60 * 1000
+    );
+    if (filteredAppointments.length === 0) {
       appointmentStore.delete(key);
+    } else {
+      value.appointments = filteredAppointments;
     }
   }
 }, 60 * 60 * 1000); // Clean up every hour
@@ -101,16 +110,43 @@ function validateAppointmentData(data: Record<string, unknown>): { isValid: bool
 
 function isTimeSlotAvailable(date: string, time: string): boolean {
   const slotKey = `${date}-${time}`;
-  return !appointmentStore.has(slotKey);
+  const slotData = appointmentStore.get(slotKey);
+  
+  if (!slotData) {
+    return true; // No appointments booked for this slot
+  }
+  
+  return slotData.appointments.length < MAX_APPOINTMENTS_PER_SLOT;
 }
 
-function bookTimeSlot(date: string, time: string): void {
+function getAvailableSpots(date: string, time: string): number {
   const slotKey = `${date}-${time}`;
-  appointmentStore.set(slotKey, {
-    date,
-    time,
-    bookedAt: Date.now()
-  });
+  const slotData = appointmentStore.get(slotKey);
+  
+  if (!slotData) {
+    return MAX_APPOINTMENTS_PER_SLOT;
+  }
+  
+  return MAX_APPOINTMENTS_PER_SLOT - slotData.appointments.length;
+}
+
+function bookTimeSlot(date: string, time: string, appointmentId: string): void {
+  const slotKey = `${date}-${time}`;
+  const existingSlot = appointmentStore.get(slotKey);
+  
+  if (existingSlot) {
+    existingSlot.appointments.push({
+      appointmentId,
+      bookedAt: Date.now()
+    });
+  } else {
+    appointmentStore.set(slotKey, {
+      appointments: [{
+        appointmentId,
+        bookedAt: Date.now()
+      }]
+    });
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -177,8 +213,11 @@ export async function POST(req: NextRequest) {
       );
     }
     
+    // Generate appointment ID first
+    const appointmentId = `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
     // Reserve the time slot
-    bookTimeSlot(body.date, body.time);
+    bookTimeSlot(body.date, body.time, appointmentId);
     
     // Format appointment date and time for better readability
     const appointmentDate = new Date(body.date);
@@ -202,7 +241,7 @@ export async function POST(req: NextRequest) {
     // Prepare appointment data for Google Sheets
     const appointmentData = {
       // Main appointment info (first columns)
-      appointmentId: `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      appointmentId,
       status: 'PENDING',
       appointmentDate: formattedDate,
       appointmentTime: formattedTime,
@@ -359,7 +398,8 @@ export async function GET(req: NextRequest) {
     const startTime = openHour * 60 + openMinute;
     const endTime = closeHour * 60 + closeMinute;
     
-    // Generate 1-hour slots
+    // Generate 1-hour slots with availability info
+    const slotsWithAvailability = [];
     for (let time = startTime; time < endTime; time += 60) {
       const hour = Math.floor(time / 60);
       const minute = time % 60;
@@ -367,6 +407,7 @@ export async function GET(req: NextRequest) {
       
       // Check if slot is available
       const isAvailable = isTimeSlotAvailable(date, timeString);
+      const availableSpots = getAvailableSpots(date, timeString);
       
       // Check if slot is in the past for today
       const now = new Date();
@@ -377,12 +418,19 @@ export async function GET(req: NextRequest) {
       
       if (isAvailable && isNotPast) {
         availableSlots.push(timeString);
+        slotsWithAvailability.push({
+          time: timeString,
+          availableSpots,
+          maxCapacity: MAX_APPOINTMENTS_PER_SLOT
+        });
       }
     }
     
     return NextResponse.json({
       success: true,
       availableSlots,
+      slotsWithAvailability,
+      maxTechnicians: MAX_TECHNICIANS,
       date,
       dayName
     });
