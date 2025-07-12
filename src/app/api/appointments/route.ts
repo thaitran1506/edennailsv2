@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendBothConfirmations, AppointmentDetails } from '@/lib/confirmations';
 
 // In-memory storage for rate limiting and appointment tracking
 const submissionStore = new Map<string, { count: number; lastSubmission: number }>();
@@ -290,32 +289,10 @@ export async function POST(req: NextRequest) {
     // Track duplicate prevention
     submissionStore.set(duplicateKey, { count: 1, lastSubmission: now });
     
-    // Send confirmation messages
-    const confirmationDetails: AppointmentDetails = {
-      customerName: body.name,
-      customerEmail: body.email,
-      customerPhone: body.phone,
-      service: body.service,
-      appointmentDate: formattedDate,
-      appointmentTime: formattedTime,
-      duration: '1 hour',
-      specialRequests: body.message || undefined,
-      appointmentId: appointmentData.appointmentId,
-    };
-    
-    // Send confirmations asynchronously (don't block the response)
-    sendBothConfirmations(confirmationDetails)
-      .then(({ emailSent, smsSent }) => {
-        console.log(`Confirmation status - Email: ${emailSent ? 'sent' : 'failed'}, SMS: ${smsSent ? 'sent' : 'failed'}`);
-      })
-      .catch(error => {
-        console.error('Error sending confirmations:', error);
-      });
-    
     return NextResponse.json(
       { 
         success: true, 
-        message: 'Appointment booked successfully! You will receive confirmation via email and SMS shortly.',
+        message: 'Appointment booked successfully! Your appointment has been saved to our system.',
         appointmentId: appointmentData.appointmentId,
         appointmentDetails: {
           date: body.date,
