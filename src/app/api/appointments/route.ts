@@ -427,8 +427,9 @@ export async function GET(req: NextRequest) {
       
       // Check if slot is at least 30 minutes in the future for today
       const now = new Date();
-      const slotDateTime = new Date(date);
-      slotDateTime.setHours(hour, minute, 0, 0);
+      
+      // Create slot datetime in Pacific Time
+      const slotDateTime = new Date(`${date}T${timeString}:00-07:00`);
       
       // Allow booking if slot is at least 30 minutes from now
       const isNotTooSoon = slotDateTime.getTime() - now.getTime() >= 30 * 60 * 1000;
