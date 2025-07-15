@@ -2,12 +2,11 @@ interface ServiceCardProps {
   title: string;
   price: string;
   description: string;
-  duration: string;
   icon: string;
   onBookNow: () => void;
 }
 
-export default function ServiceCard({ title, price, description, duration, icon, onBookNow }: ServiceCardProps) {
+export default function ServiceCard({ title, price, description, icon, onBookNow }: ServiceCardProps) {
   return (
     <div className="card-hover p-8 group">
       <div className="text-center mb-6">

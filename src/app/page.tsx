@@ -134,6 +134,7 @@ export default function Home() {
       {/* Hero Section */}
       <section id="home" className="pt-20 min-h-screen flex items-center justify-center gradient-bg-hero relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30" style={{backgroundImage: "url('/images/hero-background.jpg')"}}></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white z-10">
           <div className="mb-8">
             <span className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
@@ -157,7 +158,7 @@ export default function Home() {
             <button 
               onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
               className="btn-outline text-lg px-10 py-4"
-            >
+          >
               Explore Services
             </button>
           </div>
@@ -185,7 +186,6 @@ export default function Home() {
                 title={service.title}
                 price={service.price}
                 description={service.description}
-                duration=""
                 icon={service.icon}
                 onBookNow={handleBookNow}
               />
@@ -209,14 +209,22 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }, (_, i) => (
-              <div key={i} className="aspect-square bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center hover:scale-105 transition-transform cursor-pointer group">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <span className="text-3xl">💅</span>
-                  </div>
-                  <p className="text-sm font-medium text-gray-700">Design {i + 1}</p>
-                </div>
+            {[
+              { src: '/images/nail-art-1.jpg', alt: 'Elegant Manicure Design' },
+              { src: '/images/nail-art-2.jpg', alt: 'Professional Nail Art' },
+              { src: '/images/nail-art-3.jpg', alt: 'Luxury Nail Treatment' },
+              { src: '/images/nail-art-4.jpg', alt: 'Creative Nail Design' },
+              { src: '/images/manicure-process.jpg', alt: 'Manicure Service' },
+              { src: '/images/nail-salon-service.jpg', alt: 'Salon Experience' },
+              { src: '/images/pedicure-service.jpg', alt: 'Pedicure Treatment' },
+              { src: '/images/nail-polish-colors.jpg', alt: 'Color Selection' }
+            ].map((image, i) => (
+              <div key={i} className="aspect-square rounded-2xl overflow-hidden hover:scale-105 transition-transform cursor-pointer group shadow-lg">
+                <img 
+                  src={image.src} 
+                  alt={image.alt}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
             ))}
           </div>
@@ -254,8 +262,12 @@ export default function Home() {
             </div>
             <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-3xl p-10">
               <div className="text-center">
-                <div className="w-40 h-40 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl mx-auto mb-8 flex items-center justify-center">
-                  <span className="text-8xl">💅</span>
+                <div className="w-40 h-40 rounded-3xl mx-auto mb-8 overflow-hidden shadow-lg">
+                  <img 
+                    src="/images/manicure-process.jpg" 
+                    alt="Professional Manicure Service"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="text-3xl font-bold text-gray-900 mb-6">Why Choose Eden Nails?</h3>
                 <ul className="text-left space-y-4">
@@ -306,7 +318,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-lg mb-1">Visit Us</h4>
-                    <p className="text-gray-600">123 Luxury Avenue, Downtown<br />City, State 12345</p>
+                    <p className="text-gray-600">7916 SE Division St<br />Portland, OR 97206</p>
                   </div>
                 </div>
                 <div className="flex items-center">
@@ -315,16 +327,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-lg mb-1">Call Us</h4>
-                    <p className="text-gray-600">(555) 123-4567</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-6">
-                    <span className="text-white text-xl">✉️</span>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-lg mb-1">Email Us</h4>
-                    <p className="text-gray-600">info@edennails.com</p>
+                    <p className="text-gray-600">(503) 673-9971</p>
                   </div>
                 </div>
                 <div className="flex items-center">
@@ -333,7 +336,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-lg mb-1">Business Hours</h4>
-                    <p className="text-gray-600">Monday - Saturday: 9AM - 8PM<br />Sunday: 10AM - 6PM</p>
+                    <p className="text-gray-600">Monday - Saturday: 9AM - 7PM<br />Sunday: 10AM - 6PM</p>
                   </div>
                 </div>
               </div>
@@ -370,10 +373,9 @@ export default function Home() {
             <div>
               <h4 className="text-xl font-semibold mb-6 text-white">Contact Info</h4>
               <div className="space-y-3 text-gray-300">
-                <p>📍 123 Luxury Avenue, Downtown</p>
-                <p>📞 (555) 123-4567</p>
-                <p>✉️ info@edennails.com</p>
-                <p>🕒 Mon-Sat: 9AM-8PM</p>
+                <p>📍 7916 SE Division St, Portland, OR 97206</p>
+                <p>📞 (503) 673-9971</p>
+                <p>🕒 Mon-Sat: 9AM-7PM, Sun: 10AM-6PM</p>
               </div>
             </div>
           </div>

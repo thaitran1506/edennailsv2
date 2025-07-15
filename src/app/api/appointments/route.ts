@@ -409,14 +409,15 @@ export async function GET(req: NextRequest) {
       const isAvailable = isTimeSlotAvailable(date, timeString);
       const availableSpots = getAvailableSpots(date, timeString);
       
-      // Check if slot is in the past for today
+      // Check if slot is at least 30 minutes in the future for today
       const now = new Date();
       const slotDateTime = new Date(date);
       slotDateTime.setHours(hour, minute, 0, 0);
       
-      const isNotPast = slotDateTime > now;
+      // Allow booking if slot is at least 30 minutes from now
+      const isNotTooSoon = slotDateTime.getTime() - now.getTime() >= 30 * 60 * 1000;
       
-      if (isAvailable && isNotPast) {
+      if (isAvailable && isNotTooSoon) {
         availableSlots.push(timeString);
         slotsWithAvailability.push({
           time: timeString,
