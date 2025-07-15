@@ -200,17 +200,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if appointment is at least 30 minutes in the future
-    const appointmentDateTime = new Date(`${body.date}T${body.time}`);
+    // Check if appointment is in the future
+    const appointmentDateTime = new Date(`${body.date}T${body.time}:00-07:00`);
     const currentDateTime = new Date();
-    const timeDifference = appointmentDateTime.getTime() - currentDateTime.getTime();
-    const thirtyMinutesInMs = 30 * 60 * 1000;
     
-    if (timeDifference < thirtyMinutesInMs) {
+    if (appointmentDateTime.getTime() <= currentDateTime.getTime()) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'Appointments must be booked at least 30 minutes in advance. Please select a later time.' 
+          error: 'Appointments must be booked for a future time. Please select a later time.' 
         },
         { status: 400 }
       );
@@ -425,16 +423,16 @@ export async function GET(req: NextRequest) {
       const isAvailable = isTimeSlotAvailable(date, timeString);
       const availableSpots = getAvailableSpots(date, timeString);
       
-      // Check if slot is at least 30 minutes in the future for today
+      // Check if slot is in the future (allow next available slot)
       const now = new Date();
       
       // Create slot datetime in Pacific Time
       const slotDateTime = new Date(`${date}T${timeString}:00-07:00`);
       
-      // Allow booking if slot is at least 30 minutes from now
-      const isNotTooSoon = slotDateTime.getTime() - now.getTime() >= 30 * 60 * 1000;
+      // Allow booking if slot is in the future (next available slot)
+      const isInFuture = slotDateTime.getTime() > now.getTime();
       
-      if (isAvailable && isNotTooSoon) {
+      if (isAvailable && isInFuture) {
         availableSlots.push(timeString);
         slotsWithAvailability.push({
           time: timeString,
