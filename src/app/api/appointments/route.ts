@@ -152,18 +152,18 @@ function bookTimeSlot(date: string, time: string, appointmentId: string): void {
 export async function POST(req: NextRequest) {
   try {
     const clientId = getClientIdentifier(req);
-    const now = Date.now();
+    const currentTime = Date.now();
     
     // Check rate limiting
     const clientData = submissionStore.get(clientId);
     if (clientData) {
-      if (now - clientData.lastSubmission < RATE_LIMIT_WINDOW) {
+      if (currentTime - clientData.lastSubmission < RATE_LIMIT_WINDOW) {
         if (clientData.count >= MAX_APPOINTMENTS_PER_DAY) {
           return NextResponse.json(
             { 
               success: false, 
               error: 'Daily appointment limit reached. Please try again tomorrow.',
-              timeUntilReset: Math.ceil((RATE_LIMIT_WINDOW - (now - clientData.lastSubmission)) / (60 * 60 * 1000))
+              timeUntilReset: Math.ceil((RATE_LIMIT_WINDOW - (currentTime - clientData.lastSubmission)) / (60 * 60 * 1000))
             },
             { status: 429 }
           );
@@ -199,11 +199,27 @@ export async function POST(req: NextRequest) {
         { status: 409 }
       );
     }
+
+    // Check if appointment is at least 30 minutes in the future
+    const appointmentDateTime = new Date(`${body.date}T${body.time}`);
+    const currentDateTime = new Date();
+    const timeDifference = appointmentDateTime.getTime() - currentDateTime.getTime();
+    const thirtyMinutesInMs = 30 * 60 * 1000;
+    
+    if (timeDifference < thirtyMinutesInMs) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Appointments must be booked at least 30 minutes in advance. Please select a later time.' 
+        },
+        { status: 400 }
+      );
+    }
     
     // Check for duplicate appointment (same email + date)
     const duplicateKey = `${body.email}-${body.date}`;
     const duplicateData = submissionStore.get(duplicateKey);
-    if (duplicateData && now - duplicateData.lastSubmission < RATE_LIMIT_WINDOW) {
+    if (duplicateData && currentTime - duplicateData.lastSubmission < RATE_LIMIT_WINDOW) {
       return NextResponse.json(
         { 
           success: false, 
@@ -320,13 +336,13 @@ export async function POST(req: NextRequest) {
     // Update rate limiting data
     if (clientData) {
       clientData.count += 1;
-      clientData.lastSubmission = now;
+      clientData.lastSubmission = currentTime;
     } else {
-      submissionStore.set(clientId, { count: 1, lastSubmission: now });
+      submissionStore.set(clientId, { count: 1, lastSubmission: currentTime });
     }
     
     // Track duplicate prevention
-    submissionStore.set(duplicateKey, { count: 1, lastSubmission: now });
+    submissionStore.set(duplicateKey, { count: 1, lastSubmission: currentTime });
     
     return NextResponse.json(
       { 
