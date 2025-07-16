@@ -1,4 +1,6 @@
+/* eslint-disable react/no-unescaped-entities */
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - Eden Nails',
@@ -23,7 +25,7 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">Introduction</h2>
             <p className="text-gray-700 leading-relaxed">
-              Eden Nails ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our services. By using our services, you consent to the data practices described in this policy.
+              Eden Nails (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our services. By using our services, you consent to the data practices described in this policy.
             </p>
           </section>
 
@@ -141,7 +143,8 @@ export default function PrivacyPolicy() {
               You have the following rights regarding your personal information:
             </p>
             <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-              <li><strong>Access:</strong> Request a copy of the personal information we hold about you</li>
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
+              <li><strong>Access:</strong> Request a copy of the personal information we &#39;hold&#39; about you</li>
               <li><strong>Correction:</strong> Request correction of inaccurate or incomplete information</li>
               <li><strong>Deletion:</strong> Request deletion of your personal information</li>
               <li><strong>Opt-out:</strong> Unsubscribe from marketing communications</li>
@@ -166,9 +169,9 @@ export default function PrivacyPolicy() {
             </p>
           </section>
 
-          {/* Children's Privacy */}
+          {/* Children&apos;s Privacy */}
           <section>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Children's Privacy</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Children&apos;s Privacy</h2>
             <p className="text-gray-700 leading-relaxed">
               Our services are not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you believe we have collected information from a child under 13, please contact us immediately.
             </p>
@@ -178,7 +181,7 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">Changes to This Policy</h2>
             <p className="text-gray-700 leading-relaxed">
-              We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on our website and updating the "Last updated" date. Your continued use of our services after changes become effective constitutes acceptance of the updated policy.
+              We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on our website and updating the &quot;Last updated&quot; date. Your continued use of our services after changes become effective constitutes acceptance of the updated policy.
             </p>
           </section>
 
@@ -201,12 +204,12 @@ export default function PrivacyPolicy() {
 
         {/* Back to Home */}
         <div className="text-center mt-8">
-          <a 
+          <Link 
             href="/" 
             className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors duration-300"
           >
-            ← Back to Home
-          </a>
+            &larr; Back to Home
+          </Link>
         </div>
       </div>
     </div>
