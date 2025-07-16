@@ -368,6 +368,7 @@ export default function Home() {
                 <li><a href="#gallery" className="text-gray-300 hover:text-white transition-colors">Gallery</a></li>
                 <li><a href="#about" className="text-gray-300 hover:text-white transition-colors">About</a></li>
                 <li><a href="#contact" className="text-gray-300 hover:text-white transition-colors">Contact</a></li>
+                <li><a href="/privacy-policy" className="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
               </ul>
             </div>
             <div>
