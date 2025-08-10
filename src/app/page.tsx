@@ -115,7 +115,7 @@ export default function Home() {
       
       <section id="booking" className="py-5 bg-white">
         <div className="flex justify-center items-center w-full">
-          <div className="max-w-[512px] w-full px-4">
+          <div className="w-full px-4">
             <BookingForm onSubmit={handleAppointmentSubmit} />
           </div>
         </div>

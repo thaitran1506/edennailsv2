@@ -111,7 +111,7 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header Section */}
       <div className="text-center mb-8">
         <h2 className="text-3xl sm:text-4xl font-bold text-[#181113] mb-4 font-elegant">
