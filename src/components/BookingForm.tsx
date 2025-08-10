@@ -133,7 +133,7 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
             </div>
             <div className="ml-3">
               <p className="text-green-800 font-medium">Appointment booked successfully!</p>
-              <p className="text-green-700 text-sm">We'll confirm your booking shortly.</p>
+              <p className="text-green-700 text-sm">We&apos;ll confirm your booking shortly.</p>
             </div>
           </div>
         </div>
