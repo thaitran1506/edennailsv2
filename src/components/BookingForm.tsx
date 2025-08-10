@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface AppointmentData {
   name: string;
@@ -42,7 +42,7 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
     { title: "Dipping Powder", price: "$50+" }
   ];
 
-  const timeSlots: Array<{ label: string; value: string }> = [
+  const allTimeSlots: Array<{ label: string; value: string }> = [
     { label: '9:00 AM', value: '09:00' },
     { label: '10:00 AM', value: '10:00' },
     { label: '11:00 AM', value: '11:00' },
@@ -73,6 +73,11 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear time selection when date changes
+    if (name === 'date') {
+      setFormData(prev => ({ ...prev, time: '' }));
+    }
     
     if (errors[name as keyof AppointmentData]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
@@ -109,6 +114,29 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
     const today = new Date();
     return today.toISOString().split('T')[0];
   };
+
+  const getAvailableTimeSlots = () => {
+    if (!formData.date) return allTimeSlots;
+
+    const selectedDate = new Date(formData.date);
+    const today = new Date();
+    const now = new Date();
+    
+    // If selected date is today, filter out past times
+    if (selectedDate.toDateString() === today.toDateString()) {
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      
+      return allTimeSlots.filter(slot => {
+        const [hour, minute] = slot.value.split(':').map(Number);
+        return hour > currentHour || (hour === currentHour && minute > currentMinute);
+      });
+    }
+    
+    return allTimeSlots;
+  };
+
+  const availableTimeSlots = getAvailableTimeSlots();
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -289,13 +317,20 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
                   }}
                 >
                   <option value="">Select a time slot</option>
-                  {timeSlots.map((slot) => (
-                    <option key={slot.value} value={slot.value}>
-                      {slot.label}
-                    </option>
-                  ))}
+                  {availableTimeSlots.length > 0 ? (
+                    availableTimeSlots.map((slot) => (
+                      <option key={slot.value} value={slot.value}>
+                        {slot.label}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>No available times for selected date</option>
+                  )}
                 </select>
                 {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
+                {formData.date && availableTimeSlots.length === 0 && (
+                  <p className="text-orange-600 text-sm mt-1">No available time slots for today. Please select a future date.</p>
+                )}
               </div>
             </div>
           </div>
