@@ -75,7 +75,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f4f0f2] px-4 md:px-10 py-3">
+      <header className="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap px-4 md:px-10 py-3">
         <div className="flex items-center gap-2 md:gap-4 text-[#181113]">
           <div className="size-12 md:size-16 relative">
             <Image
