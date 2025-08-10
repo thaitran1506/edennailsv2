@@ -113,7 +113,7 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
           />
           <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
             <div className="text-center text-white">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">Welcome to Eden Nails</h1>
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 font-elegant">Welcome to Eden Nails</h1>
               <p className="text-xl md:text-2xl mb-8">Where luxury meets artistry</p>
               <button
                 onClick={onBookNow}
@@ -131,13 +131,13 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
             <h2 className="text-[#181113] text-[28px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Featured Nail Designs</h2>
             <p className="text-[#181113] text-base font-normal leading-normal px-4 max-w-2xl mx-auto">Discover our latest nail art creations. Each design is crafted with precision and creativity to bring your vision to life.</p>
           </div>
-          
+
           {isLoading && (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#eb477e]"></div>
             </div>
           )}
-          
+
           <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 transition-all duration-700 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
             {featuredImages.map((src, index) => (
               <div
@@ -159,7 +159,7 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
                   loading="lazy"
                   onError={() => handleImageError(index)}
                 />
-                
+
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
                   <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
@@ -168,12 +168,12 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
                     </svg>
                   </div>
                 </div>
-                
+
                 {/* Image Counter */}
                 <div className="absolute top-3 right-3 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   {index + 1} / {featuredImages.length}
                 </div>
-                
+
                 {/* Glow Effect */}
                 <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-[#eb477e] to-[#d63d6e] blur-xl scale-110 -z-10"></div>
               </div>
@@ -184,8 +184,8 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
 
       {/* Lightbox Modal */}
       {selectedImage !== null && (
-        <div 
-          className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center p-4 backdrop-blur-sm" 
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={closeLightbox}
         >
           <div className="relative max-w-5xl max-h-full w-full h-full flex items-center justify-center">
@@ -198,7 +198,7 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            
+
             {/* Previous Button */}
             <button
               onClick={(e) => { e.stopPropagation(); prevImage(); }}
@@ -208,7 +208,7 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            
+
             {/* Next Button */}
             <button
               onClick={(e) => { e.stopPropagation(); nextImage(); }}
@@ -218,7 +218,7 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
-            
+
             {/* Image Container */}
             <div className="relative w-full h-full max-w-4xl max-h-[80vh] flex items-center justify-center">
               {imageLoadError === selectedImage ? (
@@ -240,7 +240,7 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
                 />
               )}
             </div>
-            
+
             {/* Image Counter */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-center bg-black bg-opacity-50 px-4 py-2 rounded-full backdrop-blur-sm">
               <p className="text-lg font-semibold">Image {selectedImage + 1} of {featuredImages.length}</p>
