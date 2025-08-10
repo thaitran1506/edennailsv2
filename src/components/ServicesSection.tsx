@@ -54,7 +54,7 @@ export default function ServicesSection({ onBookNow }: ServicesSectionProps) {
   ];
 
   return (
-    <div className="px-40 flex flex-1 justify-center py-16 bg-white">
+    <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 flex flex-1 justify-center py-16 bg-white">
       <div className="layout-content-container flex flex-col max-w-[1200px] flex-1">
         {/* Header Section */}
         <div className="text-center mb-12">
@@ -65,24 +65,24 @@ export default function ServicesSection({ onBookNow }: ServicesSectionProps) {
         </div>
         
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-12">
           {services.map((service, index) => (
             <div
               key={index}
-              className="bg-white border border-gray-200 rounded-lg p-6 hover:border-[#eb477e] transition-colors duration-200"
+              className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 md:p-6 hover:border-[#eb477e] transition-colors duration-200"
             >
               {/* Service Header */}
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-[#181113]">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4">
+                <h3 className="text-sm sm:text-base md:text-lg font-semibold text-[#181113] mb-1 sm:mb-0">
                   {service.title}
                 </h3>
-                <div className="text-right">
-                  <div className="text-lg font-semibold text-[#eb477e]">{service.price}</div>
+                <div className="text-left sm:text-right">
+                  <div className="text-sm sm:text-base md:text-lg font-semibold text-[#eb477e]">{service.price}</div>
                 </div>
               </div>
 
               {/* Service Description */}
-              <p className="text-[#88636f] text-sm leading-relaxed">
+              <p className="text-[#88636f] text-xs sm:text-sm leading-relaxed">
                 {service.description}
               </p>
             </div>
