@@ -12,6 +12,9 @@ const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
 const MAX_TECHNICIANS = 3; // Number of nail technicians available
 const MAX_APPOINTMENTS_PER_SLOT = MAX_TECHNICIANS; // One appointment per technician
 
+// Read Google Apps Script URL from environment
+const GOOGLE_APPS_SCRIPT_URL = process.env.GOOGLE_APPS_SCRIPT_URL;
+
 // Clean up old entries
 setInterval(() => {
   const now = Date.now();
@@ -57,7 +60,7 @@ function validateAppointmentData(data: Record<string, unknown>): { isValid: bool
   if (!data.phone || typeof data.phone !== 'string') {
     errors.push('Phone number is required');
   } else {
-    const phoneDigits = data.phone.replace(/[\s\-\(\)\.+]/g, '');
+    const phoneDigits = (data.phone as string).replace(/[\s\-\(\)\.+]/g, '');
     if (phoneDigits.length < 10 || phoneDigits.length > 15) {
       errors.push('Phone number must be 10-15 digits');
     } else if (!/^\d+$/.test(phoneDigits)) {
@@ -72,7 +75,7 @@ function validateAppointmentData(data: Record<string, unknown>): { isValid: bool
   if (!data.date || typeof data.date !== 'string') {
     errors.push('Appointment date is required');
   } else {
-    const appointmentDate = new Date(data.date);
+    const appointmentDate = new Date(data.date as string);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
@@ -92,13 +95,13 @@ function validateAppointmentData(data: Record<string, unknown>): { isValid: bool
     errors.push('Appointment time is required');
   } else {
     // Validate time format (HH:MM)
-    if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(data.time)) {
+    if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(data.time as string)) {
       errors.push('Invalid time format');
     }
   }
   
   // Validate message length if provided
-  if (data.message && typeof data.message === 'string' && data.message.length > 500) {
+  if (data.message && typeof data.message === 'string' && (data.message as string).length > 500) {
     errors.push('Message must be less than 500 characters');
   }
   
@@ -200,20 +203,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if appointment is in the future
-    const appointmentDateTime = new Date(`${body.date}T${body.time}:00-07:00`);
-    const currentDateTime = new Date();
-    
-    if (appointmentDateTime.getTime() <= currentDateTime.getTime()) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Appointments must be booked for a future time. Please select a later time.' 
-        },
-        { status: 400 }
-      );
-    }
-    
     // Check for duplicate appointment (same email + date)
     const duplicateKey = `${body.email}-${body.date}`;
     const duplicateData = submissionStore.get(duplicateKey);
@@ -243,7 +232,7 @@ export async function POST(req: NextRequest) {
     });
     
     // Convert 24-hour time to 12-hour format
-    const [hours, minutes] = body.time.split(':').map(Number);
+    const [hours, minutes] = (body.time as string).split(':').map(Number);
     const appointmentTime = new Date();
     appointmentTime.setHours(hours, minutes, 0, 0);
     const formattedTime = appointmentTime.toLocaleTimeString('en-US', {
@@ -266,7 +255,7 @@ export async function POST(req: NextRequest) {
       customerName: body.name,
       customerEmail: body.email,
       customerPhone: body.phone,
-      specialRequests: body.message || 'None',
+      specialRequests: (body as any).message || 'None',
       
       // System data
       bookingSubmittedAt: new Date().toLocaleString('en-US', {
@@ -278,7 +267,7 @@ export async function POST(req: NextRequest) {
         minute: '2-digit',
         hour12: true
       }),
-      clientPlatform: body.clientInfo?.platform || 'unknown',
+      clientPlatform: (body as any).clientInfo?.platform || 'unknown',
       
       // Raw data for processing
       rawDate: body.date,
@@ -286,49 +275,42 @@ export async function POST(req: NextRequest) {
       type: 'appointment'
     };
     
-    // Send to Google Sheets
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
-    
-    try {
-      const sheetsResponse = await fetch(scriptUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(appointmentData),
-      });
-      
-      if (!sheetsResponse.ok) {
-        console.warn('Google Sheets CORS response not OK:', sheetsResponse.status, sheetsResponse.statusText);
-        
-        // Try fallback approach with no-cors
-        await fetch(scriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(appointmentData),
-        });
-      }
-    } catch (fetchError) {
-      console.error('Primary fetch error to Google Sheets:', fetchError);
-      
-      // Try fallback approach
+    // Send to Google Sheets (if configured)
+    if (GOOGLE_APPS_SCRIPT_URL) {
       try {
-        await fetch(scriptUrl, {
+        const sheetsResponse = await fetch(GOOGLE_APPS_SCRIPT_URL, {
           method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(appointmentData),
         });
-      } catch (fallbackError) {
-        console.error('Fallback fetch also failed:', fallbackError);
-        // Don't fail the appointment - we have the data locally
-        console.warn('Appointment booked locally but may not have synced to Google Sheets');
+        
+        if (!sheetsResponse.ok) {
+          console.warn('Google Sheets response not OK:', sheetsResponse.status, sheetsResponse.statusText);
+          // Fallback best-effort (no-cors)
+          await fetch(GOOGLE_APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(appointmentData),
+          });
+        }
+      } catch (fetchError) {
+        console.error('Primary fetch error to Google Sheets:', fetchError);
+        try {
+          // Fallback best-effort (no-cors)
+          await fetch(GOOGLE_APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(appointmentData),
+          });
+        } catch (fallbackError) {
+          console.error('Fallback fetch also failed:', fallbackError);
+          console.warn('Appointment booked locally but may not have synced to Google Sheets');
+        }
       }
+    } else {
+      console.warn('GOOGLE_APPS_SCRIPT_URL is not configured. Skipping Google Sheets sync.');
     }
     
     // Update rate limiting data
@@ -393,9 +375,9 @@ export async function GET(req: NextRequest) {
       friday: { open: '09:00', close: '19:00', closed: false },
       saturday: { open: '08:00', close: '17:00', closed: false },
       sunday: { open: '10:00', close: '16:00', closed: false }
-    };
+    } as const;
     
-    const dayConfig = businessHours[dayName as keyof typeof businessHours];
+    const dayConfig = (businessHours as any)[dayName];
     
     if (dayConfig.closed) {
       return NextResponse.json({
@@ -405,7 +387,7 @@ export async function GET(req: NextRequest) {
       });
     }
     
-    const availableSlots = [];
+    const availableSlots: string[] = [];
     const [openHour, openMinute] = dayConfig.open.split(':').map(Number);
     const [closeHour, closeMinute] = dayConfig.close.split(':').map(Number);
     
@@ -413,7 +395,7 @@ export async function GET(req: NextRequest) {
     const endTime = closeHour * 60 + closeMinute;
     
     // Generate 1-hour slots with availability info
-    const slotsWithAvailability = [];
+    const slotsWithAvailability: Array<{ time: string; availableSpots: number; maxCapacity: number }> = [];
     for (let time = startTime; time < endTime; time += 60) {
       const hour = Math.floor(time / 60);
       const minute = time % 60;
