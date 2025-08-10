@@ -20,9 +20,9 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
   }, []);
 
   return (
-    <div className="relative">
+    <div className="relative px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 flex justify-center">
       {/* Hero Banner */}
-      <div className={`relative h-[300px] sm:h-[350px] md:h-[400px] mb-8 transition-all duration-1000 transform ${
+      <div className={`relative h-[300px] sm:h-[350px] md:h-[400px] mb-8 transition-all duration-1000 transform max-w-4xl w-full rounded-2xl overflow-hidden ${
         isHeroVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
       }`}>
         <Image
