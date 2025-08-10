@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 
 export default function Header() {
@@ -9,13 +9,15 @@ export default function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'gallery', 'services', 'about', 'contact', 'booking'];
+      const sections = ['home', 'services', 'gallery', 'about', 'booking', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
-          const { offsetTop, offsetHeight } = element as HTMLElement;
+          const offsetTop = element.offsetTop;
+          const offsetHeight = element.offsetHeight;
+
           if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
             setActiveSection(section);
             break;
@@ -28,7 +30,6 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -55,7 +56,7 @@ export default function Header() {
     if (section) {
       section.scrollIntoView({ behavior: 'smooth' });
       setActiveSection(sectionId);
-      setIsMobileMenuOpen(false); // Close mobile menu after navigation
+      setIsMobileMenuOpen(false);
     }
   };
 
@@ -64,7 +65,7 @@ export default function Header() {
     if (bookingSection) {
       bookingSection.scrollIntoView({ behavior: 'smooth' });
       setActiveSection('booking');
-      setIsMobileMenuOpen(false); // Close mobile menu after navigation
+      setIsMobileMenuOpen(false);
     }
   };
 
@@ -74,8 +75,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f4f0f2] px-4 md:px-10 py-3 shadow-sm bg-white">
-        {/* Logo Section */}
+      <header className="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f4f0f2] px-4 md:px-10 py-3">
         <div className="flex items-center gap-2 md:gap-4 text-[#181113]">
           <div className="size-12 md:size-16 relative">
             <Image
@@ -90,43 +90,42 @@ export default function Header() {
           <h2 className="text-[#181113] text-xl md:text-2xl font-bold leading-tight tracking-[-0.02em] font-elegant bg-gradient-to-r from-[#eb477e] to-[#d63d6e] bg-clip-text text-transparent drop-shadow-sm">Eden Nails</h2>
         </div>
 
-        {/* Desktop Navigation */}
         <div className="hidden lg:flex flex-1 justify-end gap-8">
           <div className="flex items-center gap-9">
-            <button 
-              onClick={() => handleNavClick('home')} 
+            <button
+              onClick={() => handleNavClick('home')}
               className={`text-sm font-medium leading-normal transition-all duration-200 hover:text-[#eb477e] hover:scale-105 ${
                 activeSection === 'home' ? 'text-[#eb477e] font-semibold' : 'text-[#181113]'
               }`}
             >
               Home
             </button>
-            <button 
-              onClick={() => handleNavClick('gallery')} 
+            <button
+              onClick={() => handleNavClick('gallery')}
               className={`text-sm font-medium leading-normal transition-all duration-200 hover:text-[#eb477e] hover:scale-105 ${
                 activeSection === 'gallery' ? 'text-[#eb477e] font-semibold' : 'text-[#181113]'
               }`}
             >
               Gallery
             </button>
-            <button 
-              onClick={() => handleNavClick('services')} 
+            <button
+              onClick={() => handleNavClick('services')}
               className={`text-sm font-medium leading-normal transition-all duration-200 hover:text-[#eb477e] hover:scale-105 ${
                 activeSection === 'services' ? 'text-[#eb477e] font-semibold' : 'text-[#181113]'
               }`}
             >
               Services
             </button>
-            <button 
-              onClick={() => handleNavClick('about')} 
+            <button
+              onClick={() => handleNavClick('about')}
               className={`text-sm font-medium leading-normal transition-all duration-200 hover:text-[#eb477e] hover:scale-105 ${
                 activeSection === 'about' ? 'text-[#eb477e] font-semibold' : 'text-[#181113]'
               }`}
             >
               About
             </button>
-            <button 
-              onClick={() => handleNavClick('contact')} 
+            <button
+              onClick={() => handleNavClick('contact')}
               className={`text-sm font-medium leading-normal transition-all duration-200 hover:text-[#eb477e] hover:scale-105 ${
                 activeSection === 'contact' ? 'text-[#eb477e] font-semibold' : 'text-[#181113]'
               }`}
@@ -142,7 +141,6 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Mobile Hamburger Button */}
         <button
           onClick={toggleMobileMenu}
           className="lg:hidden hamburger-button flex flex-col justify-center items-center w-8 h-8 space-y-1.5 p-1"
@@ -154,12 +152,10 @@ export default function Header() {
         </button>
       </header>
 
-      {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity duration-300">
           <div className="mobile-menu fixed top-0 right-0 h-full w-80 bg-white shadow-xl transform transition-transform duration-300 ease-in-out">
             <div className="flex flex-col h-full">
-              {/* Mobile Menu Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-[#181113]">Menu</h3>
                 <button
@@ -173,53 +169,52 @@ export default function Header() {
                 </button>
               </div>
 
-              {/* Mobile Navigation Links */}
               <nav className="flex-1 px-6 py-4 space-y-2">
-                <button 
-                  onClick={() => handleNavClick('home')} 
+                <button
+                  onClick={() => handleNavClick('home')}
                   className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 ${
-                    activeSection === 'home' 
-                      ? 'bg-[#eb477e] text-white font-semibold' 
+                    activeSection === 'home'
+                      ? 'bg-[#eb477e] text-white font-semibold'
                       : 'text-[#181113] hover:bg-gray-100'
                   }`}
                 >
                   Home
                 </button>
-                <button 
-                  onClick={() => handleNavClick('gallery')} 
+                <button
+                  onClick={() => handleNavClick('gallery')}
                   className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 ${
-                    activeSection === 'gallery' 
-                      ? 'bg-[#eb477e] text-white font-semibold' 
+                    activeSection === 'gallery'
+                      ? 'bg-[#eb477e] text-white font-semibold'
                       : 'text-[#181113] hover:bg-gray-100'
                   }`}
                 >
                   Gallery
                 </button>
-                <button 
-                  onClick={() => handleNavClick('services')} 
+                <button
+                  onClick={() => handleNavClick('services')}
                   className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 ${
-                    activeSection === 'services' 
-                      ? 'bg-[#eb477e] text-white font-semibold' 
+                    activeSection === 'services'
+                      ? 'bg-[#eb477e] text-white font-semibold'
                       : 'text-[#181113] hover:bg-gray-100'
                   }`}
                 >
                   Services
                 </button>
-                <button 
-                  onClick={() => handleNavClick('about')} 
+                <button
+                  onClick={() => handleNavClick('about')}
                   className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 ${
-                    activeSection === 'about' 
-                      ? 'bg-[#eb477e] text-white font-semibold' 
+                    activeSection === 'about'
+                      ? 'bg-[#eb477e] text-white font-semibold'
                       : 'text-[#181113] hover:bg-gray-100'
                   }`}
                 >
                   About
                 </button>
-                <button 
-                  onClick={() => handleNavClick('contact')} 
+                <button
+                  onClick={() => handleNavClick('contact')}
                   className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 ${
-                    activeSection === 'contact' 
-                      ? 'bg-[#eb477e] text-white font-semibold' 
+                    activeSection === 'contact'
+                      ? 'bg-[#eb477e] text-white font-semibold'
                       : 'text-[#181113] hover:bg-gray-100'
                   }`}
                 >
@@ -227,7 +222,6 @@ export default function Header() {
                 </button>
               </nav>
 
-              {/* Mobile Book Button */}
               <div className="p-6 border-t border-gray-200">
                 <button
                   onClick={handleBookNow}
