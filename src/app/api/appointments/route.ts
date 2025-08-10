@@ -56,7 +56,7 @@ function checkRateLimit(identifier: string): { allowed: boolean; remaining: numb
 export async function POST(req: NextRequest) {
   try {
     // Rate limiting
-    const clientIP = req.ip || req.headers.get('x-forwarded-for') || 'unknown';
+    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
     const rateLimit = checkRateLimit(clientIP);
 
     if (!rateLimit.allowed) {
