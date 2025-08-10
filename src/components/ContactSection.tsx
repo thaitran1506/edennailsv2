@@ -6,13 +6,13 @@ export default function ContactSection() {
           <p className="text-[#181113] tracking-light text-[32px] font-bold leading-tight min-w-72 text-center">Contact Us</p>
         </div>
         <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-          We'd love to hear from you! Whether you have a question about our services, want to book an appointment, or just want to say hello, please don't hesitate to reach out.
+          We&apos;d love to hear from you! Whether you have a question about our services, want to book an appointment, or just want to say hello, please don&apos;t hesitate to reach out.
         </p>
         <h3 className="text-[#181113] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4 text-center">Our Location</h3>
         <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">7916 SE Division St, Portland, OR 97206</p>
         <div className="flex px-4 py-3 justify-center">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2796.248870161219!2d-122.58149592383424!3d45.50428773181659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54957318a2f5a5cf%3A0x8b6e8a0d0f8f8d0a!2s7916%20SE%20Division%20St%2C%20Portland%2C%20OR%2097206!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
+            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=7916+SE+Division+St,+Portland,+OR+97206"
             width="100%"
             height="300"
             style={{ border: 0 }}
@@ -21,7 +21,7 @@ export default function ContactSection() {
             referrerPolicy="no-referrer-when-downgrade"
             className="rounded-lg max-w-2xl"
             title="Eden Nails Location"
-          />
+          ></iframe>
         </div>
         <h3 className="text-[#181113] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4 text-center">Contact Information</h3>
         <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">Phone: (503) 673-9971</p>

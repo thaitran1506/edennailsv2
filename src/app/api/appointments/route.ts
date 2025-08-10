@@ -1,354 +1,207 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// In-memory storage for rate limiting and appointment tracking
-const submissionStore = new Map<string, { count: number; lastSubmission: number }>();
-const appointmentStore = new Map<string, { appointments: Array<{ appointmentId: string; bookedAt: number }> }>();
+// In-memory storage for rate limiting (in production, use Redis or similar)
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 // Rate limiting configuration
-const MAX_APPOINTMENTS_PER_DAY = 5;
-const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 5; // 5 requests per minute
 
-// Salon capacity configuration
-const MAX_TECHNICIANS = 3; // Number of nail technicians available
-const MAX_APPOINTMENTS_PER_SLOT = MAX_TECHNICIANS; // One appointment per technician
+interface AppointmentData {
+  name: string;
+  email: string;
+  phone: string;
+  service: string;
+  date: string;
+  time: string;
+  specialRequest?: string;
+}
 
-// Read Google Apps Script URL from environment
-const GOOGLE_APPS_SCRIPT_URL = process.env.GOOGLE_APPS_SCRIPT_URL;
+// Validation functions
+function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
 
-// Clean up old entries
-setInterval(() => {
+function validatePhone(phone: string): boolean {
+  const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+  return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
+}
+
+function validateDate(date: string): boolean {
+  const selectedDate = new Date(date);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return selectedDate >= today;
+}
+
+function validateTime(time: string): boolean {
+  const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+  return timeRegex.test(time);
+}
+
+// Rate limiting function
+function checkRateLimit(identifier: string): { allowed: boolean; remaining: number } {
   const now = Date.now();
-  
-  // Clean up rate limiting data
-  for (const [key, value] of submissionStore.entries()) {
-    if (now - value.lastSubmission > RATE_LIMIT_WINDOW) {
-      submissionStore.delete(key);
-    }
-  }
-  
-  // Clean up old appointment slots (older than 7 days)
-  for (const [key, value] of appointmentStore.entries()) {
-    const filteredAppointments = value.appointments.filter(
-      apt => now - apt.bookedAt <= 7 * 24 * 60 * 60 * 1000
-    );
-    if (filteredAppointments.length === 0) {
-      appointmentStore.delete(key);
-    } else {
-      value.appointments = filteredAppointments;
-    }
-  }
-}, 60 * 60 * 1000); // Clean up every hour
+  const record = rateLimitStore.get(identifier);
 
-function getClientIdentifier(req: NextRequest): string {
-  const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
-  const userAgent = req.headers.get('user-agent') || '';
-  return `${ip}-${userAgent.substring(0, 50)}`;
-}
-
-function validateAppointmentData(data: Record<string, unknown>): { isValid: boolean; errors: string[] } {
-  const errors: string[] = [];
-  
-  // Validate required fields
-  if (!data.name || typeof data.name !== 'string' || data.name.trim().length < 2) {
-    errors.push('Name must be at least 2 characters');
-  }
-  
-  if (!data.email || typeof data.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.push('Valid email is required');
-  }
-  
-  if (!data.phone || typeof data.phone !== 'string') {
-    errors.push('Phone number is required');
-  } else {
-    const phoneDigits = (data.phone as string).replace(/[\s\-\(\)\.+]/g, '');
-    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
-      errors.push('Phone number must be 10-15 digits');
-    } else if (!/^\d+$/.test(phoneDigits)) {
-      errors.push('Phone number contains invalid characters');
-    }
-  }
-  
-  if (!data.service || typeof data.service !== 'string') {
-    errors.push('Service selection is required');
-  }
-  
-  if (!data.date || typeof data.date !== 'string') {
-    errors.push('Appointment date is required');
-  } else {
-    const appointmentDate = new Date(data.date as string);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    if (appointmentDate < today) {
-      errors.push('Appointment date cannot be in the past');
-    }
-    
-    // Check if date is more than 30 days in the future
-    const maxDate = new Date();
-    maxDate.setDate(maxDate.getDate() + 30);
-    if (appointmentDate > maxDate) {
-      errors.push('Appointment date cannot be more than 30 days in the future');
-    }
-  }
-  
-  if (!data.time || typeof data.time !== 'string') {
-    errors.push('Appointment time is required');
-  } else {
-    // Validate time format (HH:MM)
-    if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(data.time as string)) {
-      errors.push('Invalid time format');
-    }
-  }
-  
-  // Validate message length if provided
-  if (data.message && typeof data.message === 'string' && (data.message as string).length > 500) {
-    errors.push('Message must be less than 500 characters');
-  }
-  
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-}
-
-function isTimeSlotAvailable(date: string, time: string): boolean {
-  const slotKey = `${date}-${time}`;
-  const slotData = appointmentStore.get(slotKey);
-  
-  if (!slotData) {
-    return true; // No appointments booked for this slot
-  }
-  
-  return slotData.appointments.length < MAX_APPOINTMENTS_PER_SLOT;
-}
-
-function getAvailableSpots(date: string, time: string): number {
-  const slotKey = `${date}-${time}`;
-  const slotData = appointmentStore.get(slotKey);
-  
-  if (!slotData) {
-    return MAX_APPOINTMENTS_PER_SLOT;
-  }
-  
-  return MAX_APPOINTMENTS_PER_SLOT - slotData.appointments.length;
-}
-
-function bookTimeSlot(date: string, time: string, appointmentId: string): void {
-  const slotKey = `${date}-${time}`;
-  const existingSlot = appointmentStore.get(slotKey);
-  
-  if (existingSlot) {
-    existingSlot.appointments.push({
-      appointmentId,
-      bookedAt: Date.now()
+  if (!record || now > record.resetTime) {
+    // Reset or create new record
+    rateLimitStore.set(identifier, {
+      count: 1,
+      resetTime: now + RATE_LIMIT_WINDOW
     });
-  } else {
-    appointmentStore.set(slotKey, {
-      appointments: [{
-        appointmentId,
-        bookedAt: Date.now()
-      }]
-    });
+    return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS - 1 };
   }
+
+  if (record.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  // Increment count
+  record.count++;
+  return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS - record.count };
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const clientId = getClientIdentifier(req);
-    const currentTime = Date.now();
-    
-    // Check rate limiting
-    const clientData = submissionStore.get(clientId);
-    if (clientData) {
-      if (currentTime - clientData.lastSubmission < RATE_LIMIT_WINDOW) {
-        if (clientData.count >= MAX_APPOINTMENTS_PER_DAY) {
-          return NextResponse.json(
-            { 
-              success: false, 
-              error: 'Daily appointment limit reached. Please try again tomorrow.',
-              timeUntilReset: Math.ceil((RATE_LIMIT_WINDOW - (currentTime - clientData.lastSubmission)) / (60 * 60 * 1000))
-            },
-            { status: 429 }
-          );
-        }
-      } else {
-        clientData.count = 0;
-      }
-    }
-    
-    // Parse request body
-    const body = await req.json();
-    
-    // Validate appointment data
-    const validation = validateAppointmentData(body);
-    if (!validation.isValid) {
+    // Rate limiting
+    const clientIP = req.ip || req.headers.get('x-forwarded-for') || 'unknown';
+    const rateLimit = checkRateLimit(clientIP);
+
+    if (!rateLimit.allowed) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Invalid appointment data: ' + validation.errors.join(', '),
-          details: validation.errors 
-        },
-        { status: 400 }
-      );
-    }
-    
-    // Check if time slot is available
-    if (!isTimeSlotAvailable(body.date, body.time)) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'This time slot is no longer available. Please select a different time.' 
-        },
-        { status: 409 }
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429, headers: { 'X-RateLimit-Remaining': rateLimit.remaining.toString() } }
       );
     }
 
-    // Check for duplicate appointment (same email + date)
-    const duplicateKey = `${body.email}-${body.date}`;
-    const duplicateData = submissionStore.get(duplicateKey);
-    if (duplicateData && currentTime - duplicateData.lastSubmission < RATE_LIMIT_WINDOW) {
+    // Parse request body
+    const body = await req.json();
+
+    // Validate required fields
+    const requiredFields = ['name', 'email', 'phone', 'service', 'date', 'time'];
+    for (const field of requiredFields) {
+      if (!body[field] || typeof body[field] !== 'string' || body[field].trim() === '') {
+        return NextResponse.json(
+          { error: `Missing or invalid ${field}` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate email format
+    if (!validateEmail(body.email)) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'You already have an appointment scheduled for this date. Please choose a different date or contact us to modify your existing appointment.' 
-        },
-        { status: 409 }
+        { error: 'Invalid email format' },
+        { status: 400 }
       );
     }
-    
-    // Generate appointment ID first
-    const appointmentId = `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Reserve the time slot
-    bookTimeSlot(body.date, body.time, appointmentId);
-    
-    // Format appointment date and time for better readability
-    const appointmentDate = new Date(body.date);
-    const formattedDate = appointmentDate.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-    
-    // Convert 24-hour time to 12-hour format
-    const [hours, minutes] = (body.time as string).split(':').map(Number);
-    const appointmentTime = new Date();
-    appointmentTime.setHours(hours, minutes, 0, 0);
-    const formattedTime = appointmentTime.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
-    
-    // Prepare appointment data for Google Sheets
+
+    // Validate phone format
+    if (!validatePhone(body.phone)) {
+      return NextResponse.json(
+        { error: 'Invalid phone number format' },
+        { status: 400 }
+      );
+    }
+
+    // Validate date (must be today or future)
+    if (!validateDate(body.date)) {
+      return NextResponse.json(
+        { error: 'Date must be today or in the future' },
+        { status: 400 }
+      );
+    }
+
+    // Validate time format
+    if (!validateTime(body.time)) {
+      return NextResponse.json(
+        { error: 'Invalid time format' },
+        { status: 400 }
+      );
+    }
+
+    // Prepare appointment data
     const appointmentData = {
-      // Main appointment info (first columns)
-      appointmentId,
-      status: 'PENDING',
-      appointmentDate: formattedDate,
-      appointmentTime: formattedTime,
-      service: body.service,
-      duration: '1 hour',
-      
-      // Customer details
-      customerName: body.name,
-      customerEmail: body.email,
-      customerPhone: body.phone,
-      specialRequests: (body as any).message || 'None',
-      
-      // System data
-      bookingSubmittedAt: new Date().toLocaleString('en-US', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      }),
-      clientPlatform: (body as any).clientInfo?.platform || 'unknown',
-      
-      // Raw data for processing
+      timestamp: new Date().toISOString(),
+      name: body.name.trim(),
+      email: body.email.trim().toLowerCase(),
+      phone: body.phone.trim(),
+      service: body.service.trim(),
+      date: body.date,
+      time: body.time,
+      specialRequest: body.specialRequest ? body.specialRequest.trim() : '',
       rawDate: body.date,
       rawTime: body.time,
       type: 'appointment'
     };
-    
-    // Send to Google Sheets (if configured)
-    if (GOOGLE_APPS_SCRIPT_URL) {
+
+    // Send to Google Sheets
+    const scriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL;
+
+    if (scriptUrl) {
       try {
-        const sheetsResponse = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+        const sheetsResponse = await fetch(scriptUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(appointmentData),
         });
-        
+
         if (!sheetsResponse.ok) {
-          console.warn('Google Sheets response not OK:', sheetsResponse.status, sheetsResponse.statusText);
-          // Fallback best-effort (no-cors)
-          await fetch(GOOGLE_APPS_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(appointmentData),
-          });
+          console.error('Google Sheets response error:', sheetsResponse.status, sheetsResponse.statusText);
+          // Continue with fallback even if Google Sheets fails
+        } else {
+          const sheetsResult = await sheetsResponse.text();
+          console.log('Google Sheets response:', sheetsResult);
         }
       } catch (fetchError) {
         console.error('Primary fetch error to Google Sheets:', fetchError);
-        try {
-          // Fallback best-effort (no-cors)
-          await fetch(GOOGLE_APPS_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(appointmentData),
-          });
-        } catch (fallbackError) {
-          console.error('Fallback fetch also failed:', fallbackError);
-          console.warn('Appointment booked locally but may not have synced to Google Sheets');
-        }
+        // Continue with fallback
       }
     } else {
       console.warn('GOOGLE_APPS_SCRIPT_URL is not configured. Skipping Google Sheets sync.');
     }
-    
-    // Update rate limiting data
-    if (clientData) {
-      clientData.count += 1;
-      clientData.lastSubmission = currentTime;
-    } else {
-      submissionStore.set(clientId, { count: 1, lastSubmission: currentTime });
+
+    // Update rate limiting
+    const currentRecord = rateLimitStore.get(clientIP);
+    if (currentRecord) {
+      currentRecord.count++;
     }
-    
-    // Track duplicate prevention
-    submissionStore.set(duplicateKey, { count: 1, lastSubmission: currentTime });
-    
+
+    // Return success response
     return NextResponse.json(
       { 
         success: true, 
-        message: 'Appointment booked successfully! Your appointment has been saved to our system.',
-        appointmentId: appointmentData.appointmentId,
-        appointmentDetails: {
-          date: body.date,
-          time: body.time,
-          service: body.service
-        }
+        message: 'Appointment booked successfully!',
+        appointmentId: `APPT-${Date.now()}`,
+        rateLimitRemaining: rateLimit.remaining - 1
       },
-      { status: 200 }
-    );
-    
-  } catch (error) {
-    console.error('Appointment booking API error:', error);
-    return NextResponse.json(
       { 
-        success: false, 
-        error: 'Internal server error. Please try again later.' 
-      },
+        status: 200,
+        headers: { 'X-RateLimit-Remaining': (rateLimit.remaining - 1).toString() }
+      }
+    );
+
+  } catch (error) {
+    console.error('Appointment booking error:', error);
+    
+    return NextResponse.json(
+      { error: 'Internal server error. Please try again later.' },
       { status: 500 }
     );
   }
 }
+
+// Clean up old rate limit records periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, record] of rateLimitStore.entries()) {
+    if (now > record.resetTime) {
+      rateLimitStore.delete(key);
+    }
+  }
+}, RATE_LIMIT_WINDOW);
 
 // GET method to check available time slots
 export async function GET(req: NextRequest) {

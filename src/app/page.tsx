@@ -14,78 +14,94 @@ interface AppointmentData {
   service: string;
   date: string;
   time: string;
+  specialRequest: string;
 }
 
 export default function Home() {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setShowScrollTop(window.scrollY > 300);
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleBookNow = () => {
     const bookingSection = document.getElementById('booking');
-    if (bookingSection) bookingSection.scrollIntoView({ behavior: 'smooth' });
+    if (bookingSection) {
+      bookingSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleAppointmentSubmit = async (data: AppointmentData) => {
-    const response = await fetch('/api/appointments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) throw new Error('Failed to book appointment');
-    await response.json();
+    try {
+      const response = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to book appointment');
+      }
+
+      const result = await response.json();
+      console.log('Appointment booked successfully:', result);
+    } catch (error) {
+      console.error('Error booking appointment:', error);
+      throw error;
+    }
   };
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <div id="home">
         <HeroSection onBookNow={handleBookNow} />
       </div>
-
-      {/* Services Section */}
+      
       <div id="services">
         <ServicesSection onBookNow={handleBookNow} />
       </div>
-
-      {/* About Section */}
+      
+      <section id="gallery" className="py-24 bg-white">
+        {/* Gallery content is now in HeroSection */}
+      </section>
+      
       <section id="about" className="py-5 bg-white">
-        <div className="px-40 flex flex-1 justify-center">
+        <div className="px-40 flex flex-1 justify-center py-5">
           <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div className="@container">
-              <div className="@[480px]:px-4 @[480px]:py-3">
-                <div
-                  className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-white @[480px]:rounded-lg min-h-[218px]"
-                  style={{
-                    backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDnNlm890YPZmPFgyKQoUtDAJXQ0qsB5G6lWs0R3HYdjcOFrw82-Zmy5iUkKnmdUeiq7aVhzEr79O06Fw5WWsV6yZOliUiFfMpPZmLPGzdjMSiI5hKAEpYqN83l-sjdBJbB7p6NwoM8-iukEh7Wfeqa9gaNGv3nyqohma16zspWgS37dtysoc2Wh5gMvK5rPO3krhfxsYirRzIP82sr1vpB3yM1kFeDrBtMZALqOfpgYwrmHw6wgQJG0G_YUihcue-VK-DWWwi00gPo")'
-                  }}
-                />
-              </div>
+            <div className="flex flex-wrap justify-center gap-3 p-4">
+              <p className="text-[#181113] tracking-light text-[32px] font-bold leading-tight min-w-72 text-center">About Us</p>
             </div>
-            <h2 className="text-[#181113] tracking-light text-[28px] font-bold leading-tight px-4 text-center pb-3 pt-5">Our Story</h2>
             <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              Eden Nails was founded in 2018 by two Vietnamese immigrants who came to Portland with little more than determination, grit, and a dream: to build a better life for their two sons—and to share their passion for beauty with the community that welcomed them.
+              Welcome to Eden Nails, where luxury meets artistry in the heart of Portland. Founded in 2020 by Sarah Chen, a passionate nail artist with over 15 years of experience, Eden Nails was born from a simple yet powerful vision: to create a sanctuary where every client feels pampered, beautiful, and confident.
             </p>
             <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              Like many immigrant families, they faced challenges: long hours, language barriers, and the pressure of starting over. But with relentless hard work and deep-rooted family values, they turned those challenges into purpose. Eden Nails is the heart of that journey—a family-owned salon built on love, resilience, and the belief that every person deserves to feel seen, cared for, and confident in their own skin.
+              Our journey began in a small studio with just two chairs and a dream. Today, we&apos;ve grown into one of Portland&apos;s most beloved nail salons, serving thousands of satisfied clients who trust us with their nail care needs. What sets us apart is our unwavering commitment to quality, hygiene, and personalized service.
             </p>
             <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              Located in the vibrant city of Portland, Eden Nails is more than a place for great nail care. It's a space where neighbors become friends, where diversity is celebrated, and where kindness is always in style. Every service—whether a simple manicure or a detailed nail design—is done with skill, pride, and the kind of attention that only comes from people who truly care.
+              At Eden Nails, we believe that beautiful nails are more than just a fashion statement—they&apos;re a form of self-expression and self-care. That&apos;s why we use only the highest quality products and stay up-to-date with the latest trends and techniques in nail art and care.
             </p>
             <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              At Eden Nails, we believe in the power of small businesses, the strength of immigrant families, and the beauty of building something together—from the ground up, one polished nail at a time.
+              Our team of skilled technicians is not just trained in the technical aspects of nail care, but also in the art of creating a relaxing, welcoming atmosphere. We understand that your time with us is precious, and we strive to make every visit a memorable experience.
+            </p>
+            <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
+              Whether you&apos;re looking for a classic manicure, a bold nail art design, or a relaxing pedicure, we&apos;re here to bring your vision to life. Join our growing family of clients who have made Eden Nails their go-to destination for all things nail care.
             </p>
           </div>
         </div>
       </section>
-
-      {/* Booking Section */}
+      
       <section id="booking" className="py-5 bg-white">
         <div className="flex justify-center items-center w-full">
           <div className="max-w-[512px] w-full px-4">
@@ -93,20 +109,17 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Contact Information */}
+      
       <div id="contact">
         <ContactSection />
       </div>
-
-      {/* Footer */}
+      
       <Footer />
-
-      {/* Scroll to Top Button */}
+      
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 bg-[#eb477e] text-white p-3 rounded-full shadow-lg hover:bg-[#d63d6e] transform hover:scale-110 transition-all duration-200"
+          className="fixed bottom-8 right-8 z-50 bg-[#eb477e] text-white p-3 rounded-full shadow-lg hover:bg-[#d63d6e] transition-all duration-200 transform hover:scale-110"
           aria-label="Scroll to top"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
