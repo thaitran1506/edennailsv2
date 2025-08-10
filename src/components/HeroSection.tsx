@@ -12,6 +12,7 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hoveredImage, setHoveredImage] = useState<number | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [imageLoadError, setImageLoadError] = useState<number | null>(null);
 
   const featuredImages = Array.from({ length: 15 }, (_, i) => `/featuredDesigns/featured${i + 1}.jpg`);
 
@@ -48,21 +49,31 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
 
   const openLightbox = (index: number) => {
     setSelectedImage(index);
+    setImageLoadError(null);
+    // Prevent body scroll when lightbox is open
+    document.body.style.overflow = 'hidden';
   };
 
   const closeLightbox = useCallback(() => {
     setSelectedImage(null);
+    setImageLoadError(null);
+    // Restore body scroll
+    document.body.style.overflow = 'unset';
   }, []);
 
   const nextImage = useCallback(() => {
     if (selectedImage !== null) {
-      setSelectedImage((selectedImage + 1) % featuredImages.length);
+      const nextIndex = (selectedImage + 1) % featuredImages.length;
+      setSelectedImage(nextIndex);
+      setImageLoadError(null);
     }
   }, [selectedImage, featuredImages.length]);
 
   const prevImage = useCallback(() => {
     if (selectedImage !== null) {
-      setSelectedImage(selectedImage === 0 ? featuredImages.length - 1 : selectedImage - 1);
+      const prevIndex = selectedImage === 0 ? featuredImages.length - 1 : selectedImage - 1;
+      setSelectedImage(prevIndex);
+      setImageLoadError(null);
     }
   }, [selectedImage, featuredImages.length]);
 
@@ -82,6 +93,11 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [selectedImage, closeLightbox, nextImage, prevImage]);
+
+  const handleImageError = (index: number) => {
+    setImageLoadError(index);
+    console.error(`Failed to load image: ${featuredImages[index]}`);
+  };
 
   return (
     <div className="px-40 flex flex-1 justify-center py-5">
@@ -141,6 +157,7 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover transition-all duration-500 group-hover:scale-110"
                   loading="lazy"
+                  onError={() => handleImageError(index)}
                 />
                 
                 {/* Overlay */}
@@ -201,46 +218,65 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
 
       {/* Lightbox Modal */}
       {selectedImage !== null && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4" onClick={closeLightbox}>
-          <div className="relative max-w-4xl max-h-full">
+        <div 
+          className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center p-4 backdrop-blur-sm" 
+          onClick={closeLightbox}
+        >
+          <div className="relative max-w-5xl max-h-full w-full h-full flex items-center justify-center">
+            {/* Close Button */}
             <button
               onClick={closeLightbox}
-              className="absolute top-4 right-4 z-10 text-white hover:text-gray-300 transition-colors duration-200"
+              className="absolute top-4 right-4 z-20 text-white hover:text-gray-300 transition-colors duration-200 bg-black bg-opacity-50 rounded-full p-2 backdrop-blur-sm"
             >
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
             
+            {/* Previous Button */}
             <button
               onClick={(e) => { e.stopPropagation(); prevImage(); }}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 text-white hover:text-gray-300 transition-colors duration-200"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 text-white hover:text-gray-300 transition-colors duration-200 bg-black bg-opacity-50 rounded-full p-3 backdrop-blur-sm"
             >
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             
+            {/* Next Button */}
             <button
               onClick={(e) => { e.stopPropagation(); nextImage(); }}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 text-white hover:text-gray-300 transition-colors duration-200"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 text-white hover:text-gray-300 transition-colors duration-200 bg-black bg-opacity-50 rounded-full p-3 backdrop-blur-sm"
             >
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
             
-            <div className="relative aspect-square max-h-[80vh]">
-              <Image
-                src={featuredImages[selectedImage]}
-                alt={`Featured design ${selectedImage + 1}`}
-                fill
-                className="object-contain"
-                priority
-              />
+            {/* Image Container */}
+            <div className="relative w-full h-full max-w-4xl max-h-[80vh] flex items-center justify-center">
+              {imageLoadError === selectedImage ? (
+                <div className="text-white text-center">
+                  <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-lg">Failed to load image</p>
+                  <p className="text-sm text-gray-400 mt-2">Image {selectedImage + 1} of {featuredImages.length}</p>
+                </div>
+              ) : (
+                <Image
+                  src={featuredImages[selectedImage]}
+                  alt={`Featured design ${selectedImage + 1}`}
+                  fill
+                  className="object-contain"
+                  priority
+                  onError={() => handleImageError(selectedImage)}
+                />
+              )}
             </div>
             
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-center">
+            {/* Image Counter */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-center bg-black bg-opacity-50 px-4 py-2 rounded-full backdrop-blur-sm">
               <p className="text-lg font-semibold">Image {selectedImage + 1} of {featuredImages.length}</p>
             </div>
           </div>
