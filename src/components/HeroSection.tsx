@@ -100,10 +100,10 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
   };
 
   return (
-    <div className="px-40 flex flex-1 justify-center py-5">
+    <div className="px-40 flex flex-1 justify-center py-2">
       {/* Hero Banner */}
       <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
-        <div className="relative h-[400px] rounded-2xl overflow-hidden mb-12">
+        <div className="relative h-[400px] rounded-2xl overflow-hidden mb-8">
           <Image
             src="/hero/hero.jpg"
             alt="Eden Nails Salon"
@@ -127,7 +127,7 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
 
         {/* Featured Nail Designs Gallery */}
         <div id="gallery" className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-[#181113] text-[28px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Featured Nail Designs</h2>
             <p className="text-[#181113] text-base font-normal leading-normal px-4 max-w-2xl mx-auto">Discover our latest nail art creations. Each design is crafted with precision and creativity to bring your vision to life.</p>
           </div>

@@ -73,12 +73,8 @@ export default function Home() {
         <ServicesSection onBookNow={handleBookNow} />
       </div>
       
-      <section id="gallery" className="py-24 bg-white">
-        {/* Gallery content is now in HeroSection */}
-      </section>
-      
-      <section id="about" className="py-5 bg-white">
-        <div className="px-40 flex flex-1 justify-center py-5">
+      <section id="about" className="py-8 bg-white">
+        <div className="px-40 flex flex-1 justify-center">
           <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div className="flex flex-wrap justify-center gap-3 p-4">
               <p className="text-[#181113] tracking-light text-[32px] font-bold leading-tight min-w-72 text-center">About Us</p>
