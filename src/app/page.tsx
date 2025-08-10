@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import BookingForm from '../components/BookingForm';
 import HeroSection from '../components/HeroSection';
+import GallerySection from '../components/GallerySection';
 import ServicesSection from '../components/ServicesSection';
 import ContactSection from '../components/ContactSection';
 import Footer from '../components/Footer';
@@ -67,6 +68,20 @@ export default function Home() {
     <div className="min-h-screen">
       <div id="home">
         <HeroSection onBookNow={handleBookNow} />
+      </div>
+      
+      <div id="gallery" className="py-8 bg-white">
+        <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#181113] mb-4 font-elegant">
+              Featured Nail Designs
+            </h2>
+            <p className="text-lg text-[#88636f] max-w-md mx-auto">
+              Discover our latest nail art creations and get inspired for your next appointment.
+            </p>
+          </div>
+          <GallerySection />
+        </div>
       </div>
       
       <div id="services">
