@@ -180,40 +180,6 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
             ))}
           </div>
         </div>
-
-        {/* Our Salon Section */}
-        <div className="mt-16">
-          <div className="text-center mb-12">
-            <h2 className="text-[#181113] text-[28px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Our Salon</h2>
-            <p className="text-[#181113] text-base font-normal leading-normal px-4 max-w-2xl mx-auto">Experience our beautiful, relaxing salon environment designed for your comfort and enjoyment.</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-4">
-            <div className="group relative aspect-video rounded-2xl overflow-hidden cursor-pointer transform transition-all duration-500 hover:scale-105 hover:shadow-2xl">
-              <Image
-                src="/shoppic/shop1.jpg"
-                alt="Eden Nails Salon Interior"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover transition-all duration-500 group-hover:scale-110"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300"></div>
-            </div>
-            
-            <div className="group relative aspect-video rounded-2xl overflow-hidden cursor-pointer transform transition-all duration-500 hover:scale-105 hover:shadow-2xl">
-              <Image
-                src="/shoppic/shop2.jpg"
-                alt="Eden Nails Salon Interior"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover transition-all duration-500 group-hover:scale-110"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300"></div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Lightbox Modal */}
