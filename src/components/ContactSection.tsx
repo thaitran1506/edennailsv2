@@ -27,7 +27,7 @@ export default function ContactSection() {
         <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">Phone: (503) 673-9971</p>
         <h3 className="text-[#181113] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4 text-center">Business Hours</h3>
         <div className="p-4 flex justify-center">
-          <div className="grid grid-cols-[25%_1fr] gap-x-8 max-w-lg w-full">
+          <div className="grid grid-cols-[30%_1fr] gap-x-12 max-w-lg w-full">
             <div className="col-span-2 grid grid-cols-subgrid border-t border-t-[#e5dcdf] py-3">
               <p className="text-[#88636f] text-sm font-normal leading-normal">Monday</p>
               <p className="text-[#181113] text-sm font-normal leading-normal">9:00 AM - 7:00 PM</p>
