@@ -7,16 +7,6 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const RATE_LIMIT_MAX_REQUESTS = 5; // 5 requests per minute
 
-interface AppointmentData {
-  name: string;
-  email: string;
-  phone: string;
-  service: string;
-  date: string;
-  time: string;
-  specialRequest?: string;
-}
-
 // Validation functions
 function validateEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -230,7 +220,7 @@ export async function GET(req: NextRequest) {
       sunday: { open: '10:00', close: '16:00', closed: false }
     } as const;
     
-    const dayConfig = (businessHours as any)[dayName];
+    const dayConfig = businessHours[dayName as keyof typeof businessHours];
     
     if (dayConfig.closed) {
       return NextResponse.json({

@@ -54,17 +54,17 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
     setSelectedImage(null);
   }, []);
 
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     if (selectedImage !== null) {
       setSelectedImage((selectedImage + 1) % featuredImages.length);
     }
-  };
+  }, [selectedImage, featuredImages.length]);
 
-  const prevImage = () => {
+  const prevImage = useCallback(() => {
     if (selectedImage !== null) {
       setSelectedImage(selectedImage === 0 ? featuredImages.length - 1 : selectedImage - 1);
     }
-  };
+  }, [selectedImage, featuredImages.length]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
