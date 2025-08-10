@@ -42,7 +42,6 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
     { title: "Dipping Powder", price: "$50+" }
   ];
 
-  // Use 24-hour values with 12-hour labels for API compatibility
   const timeSlots: Array<{ label: string; value: string }> = [
     { label: '9:00 AM', value: '09:00' },
     { label: '10:00 AM', value: '10:00' },
@@ -75,7 +74,6 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Clear error when user starts typing
     if (errors[name as keyof AppointmentData]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -99,7 +97,7 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
         time: '',
         specialRequest: ''
       });
-      setTimeout(() => setIsSuccess(false), 5000); // Hide success message after 5 seconds
+      setTimeout(() => setIsSuccess(false), 5000);
     } catch (error) {
       console.error('Booking failed:', error);
     } finally {
@@ -113,171 +111,253 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
   };
 
   return (
-    <div className="layout-content-container flex flex-col w-[512px] max-w-[512px] py-3 max-w-[960px] flex-1">
-      <h2 className="text-[#181113] tracking-light text-[28px] font-bold leading-tight px-4 text-center pb-2 pt-3">Schedule Your Appointment</h2>
-      <p className="text-[#181113] text-base font-normal leading-normal pb-2 pt-1 px-4 text-center">Ready to pamper yourself? Book your next nail service with us.</p>
-      
+    <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Header Section */}
+      <div className="text-center mb-8">
+        <h2 className="text-3xl sm:text-4xl font-bold text-[#181113] mb-4 font-elegant">
+          Schedule Your Appointment
+        </h2>
+        <p className="text-lg text-[#88636f] max-w-md mx-auto">
+          Ready to pamper yourself? Book your next nail service with us.
+        </p>
+      </div>
+
+      {/* Success Message */}
       {isSuccess && (
-        <div className="mx-4 mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center">
-            <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <p className="text-green-800 font-medium">Appointment booked successfully! We&apos;ll confirm your booking shortly.</p>
+        <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl shadow-sm">
+          <div className="flex items-center justify-center">
+            <div className="flex-shrink-0">
+              <svg className="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-green-800 font-medium">Appointment booked successfully!</p>
+              <p className="text-green-700 text-sm">We'll confirm your booking shortly.</p>
+            </div>
           </div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-2">
-          <label className="flex flex-col min-w-40 flex-1">
-            <p className="text-[#181113] text-base font-medium leading-normal pb-1">Name</p>
-            <input
-              type="text"
-              name="name"
-              placeholder="Your Name"
-              value={formData.name}
-              onChange={handleChange}
-              className={`form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#181113] focus:outline-0 focus:ring-0 border h-12 placeholder:text-[#88636f] p-[12px] text-base font-normal leading-normal transition-colors duration-200 ${
-                errors.name ? 'border-red-300 bg-red-50' : 'border-[#e5dcdf] bg-white focus:border-[#eb477e]'
-              }`}
-            />
-            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-          </label>
-        </div>
-
-        <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-2">
-          <label className="flex flex-col min-w-40 flex-1">
-            <p className="text-[#181113] text-base font-medium leading-normal pb-1">Email</p>
-            <input
-              type="email"
-              name="email"
-              placeholder="Your Email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#181113] focus:outline-0 focus:ring-0 border h-12 placeholder:text-[#88636f] p-[12px] text-base font-normal leading-normal transition-colors duration-200 ${
-                errors.email ? 'border-red-300 bg-red-50' : 'border-[#e5dcdf] bg-white focus:border-[#eb477e]'
-              }`}
-            />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-          </label>
-        </div>
-
-        <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-2">
-          <label className="flex flex-col min-w-40 flex-1">
-            <p className="text-[#181113] text-base font-medium leading-normal pb-1">Phone Number</p>
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Your Phone Number"
-              value={formData.phone}
-              onChange={handleChange}
-              className={`form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#181113] focus:outline-0 focus:ring-0 border h-12 placeholder:text-[#88636f] p-[12px] text-base font-normal leading-normal transition-colors duration-200 ${
-                errors.phone ? 'border-red-300 bg-red-50' : 'border-[#e5dcdf] bg-white focus:border-[#eb477e]'
-              }`}
-            />
-            {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
-          </label>
-        </div>
-
-        <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-2">
-          <label className="flex flex-col min-w-40 flex-1">
-            <p className="text-[#181113] text-base font-medium leading-normal pb-1">Service</p>
-            <select
-              name="service"
-              value={formData.service}
-              onChange={handleChange}
-              className={`form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#181113] focus:outline-0 focus:ring-0 border h-12 bg-[image:var(--select-button-svg)] bg-no-repeat bg-[right_12px_center] appearance-none pr-10 placeholder:text-[#88636f] p-[12px] text-base font-normal leading-normal transition-colors duration-200 ${
-                errors.service ? 'border-red-300 bg-red-50' : 'border-[#e5dcdf] bg-white focus:border-[#eb477e]'
-              }`}
-            >
-              <option value="">Select a service</option>
-              {services.map((service) => (
-                <option key={service.title} value={service.title}>
-                  {service.title} - {service.price}
-                </option>
-              ))}
-            </select>
-            {errors.service && <p className="text-red-500 text-sm mt-1">{errors.service}</p>}
-          </label>
-        </div>
-
-        <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-2">
-          <label className="flex flex-col min-w-40 flex-1">
-            <p className="text-[#181113] text-base font-medium leading-normal pb-1">Date</p>
-            <input
-              type="date"
-              name="date"
-              min={getMinDate()}
-              value={formData.date}
-              onChange={handleChange}
-              className={`form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#181113] focus:outline-0 focus:ring-0 border h-12 placeholder:text-[#88636f] p-[12px] text-base font-normal leading-normal transition-colors duration-200 ${
-                errors.date ? 'border-red-300 bg-red-50' : 'border-[#e5dcdf] bg-white focus:border-[#eb477e]'
-              }`}
-            />
-            {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
-          </label>
-        </div>
-
-        <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-2">
-          <label className="flex flex-col min-w-40 flex-1">
-            <p className="text-[#181113] text-base font-medium leading-normal pb-1">Time</p>
-            <select
-              name="time"
-              value={formData.time}
-              onChange={handleChange}
-              className={`form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#181113] focus:outline-0 focus:ring-0 border h-12 bg-[image:var(--select-button-svg)] bg-no-repeat bg-[right_12px_center] appearance-none pr-10 placeholder:text-[#88636f] p-[12px] text-base font-normal leading-normal transition-colors duration-200 ${
-                errors.time ? 'border-red-300 bg-red-50' : 'border-[#e5dcdf] bg-white focus:border-[#eb477e]'
-              }`}
-            >
-              <option value="">Select a time</option>
-              {timeSlots.map((slot) => (
-                <option key={slot.value} value={slot.value}>
-                  {slot.label}
-                </option>
-              ))}
-            </select>
-            {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
-          </label>
-        </div>
-
-        <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-2">
-          <label className="flex flex-col min-w-40 flex-1">
-            <p className="text-[#181113] text-base font-medium leading-normal pb-1">Special Request (Optional)</p>
-            <textarea
-              name="specialRequest"
-              placeholder="Any special requests or notes for your appointment..."
-              value={formData.specialRequest}
-              onChange={handleChange}
-              rows={3}
-              className={`form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#181113] focus:outline-0 focus:ring-0 border placeholder:text-[#88636f] p-[12px] text-base font-normal leading-normal transition-colors duration-200 ${
-                errors.specialRequest ? 'border-red-300 bg-red-50' : 'border-[#e5dcdf] bg-white focus:border-[#eb477e]'
-              }`}
-            />
-            {errors.specialRequest && <p className="text-red-500 text-sm mt-1">{errors.specialRequest}</p>}
-          </label>
-        </div>
-
-        <div className="flex px-4 py-2">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#eb477e] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#d63d6e] transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            {isLoading ? (
-              <div className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      {/* Form Card */}
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <form onSubmit={handleSubmit} className="p-6 sm:p-8">
+          {/* Personal Information Section */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-[#181113] mb-6 flex items-center">
+              <div className="w-8 h-8 bg-[#eb477e] rounded-full flex items-center justify-center mr-3">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                Booking...
               </div>
-            ) : (
-              <span className="truncate">Book Appointment</span>
-            )}
-          </button>
-        </div>
-      </form>
+              Personal Information
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-[#181113] mb-2">
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Enter your full name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 ${
+                    errors.name 
+                      ? 'border-red-300 bg-red-50' 
+                      : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
+                  }`}
+                />
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#181113] mb-2">
+                  Email Address *
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 ${
+                    errors.email 
+                      ? 'border-red-300 bg-red-50' 
+                      : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
+                  }`}
+                />
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-[#181113] mb-2">
+                  Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Enter your phone number"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 ${
+                    errors.phone 
+                      ? 'border-red-300 bg-red-50' 
+                      : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
+                  }`}
+                />
+                {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Service & Schedule Section */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-[#181113] mb-6 flex items-center">
+              <div className="w-8 h-8 bg-[#eb477e] rounded-full flex items-center justify-center mr-3">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              Service & Schedule
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-[#181113] mb-2">
+                  Select Service *
+                </label>
+                <select
+                  name="service"
+                  value={formData.service}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 appearance-none bg-no-repeat bg-[right_16px_center] ${
+                    errors.service 
+                      ? 'border-red-300 bg-red-50' 
+                      : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
+                  }`}
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`
+                  }}
+                >
+                  <option value="">Choose a service</option>
+                  {services.map((service) => (
+                    <option key={service.title} value={service.title}>
+                      {service.title} - {service.price}
+                    </option>
+                  ))}
+                </select>
+                {errors.service && <p className="text-red-500 text-sm mt-1">{errors.service}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#181113] mb-2">
+                  Preferred Date *
+                </label>
+                <input
+                  type="date"
+                  name="date"
+                  min={getMinDate()}
+                  value={formData.date}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 ${
+                    errors.date 
+                      ? 'border-red-300 bg-red-50' 
+                      : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
+                  }`}
+                />
+                {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-[#181113] mb-2">
+                  Preferred Time *
+                </label>
+                <select
+                  name="time"
+                  value={formData.time}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 appearance-none bg-no-repeat bg-[right_16px_center] ${
+                    errors.time 
+                      ? 'border-red-300 bg-red-50' 
+                      : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
+                  }`}
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`
+                  }}
+                >
+                  <option value="">Select a time slot</option>
+                  {timeSlots.map((slot) => (
+                    <option key={slot.value} value={slot.value}>
+                      {slot.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Special Requests Section */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-[#181113] mb-6 flex items-center">
+              <div className="w-8 h-8 bg-[#eb477e] rounded-full flex items-center justify-center mr-3">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </div>
+              Special Requests
+            </h3>
+            
+            <div>
+              <label className="block text-sm font-medium text-[#181113] mb-2">
+                Additional Notes (Optional)
+              </label>
+              <textarea
+                name="specialRequest"
+                placeholder="Any special requests, preferences, or notes for your appointment..."
+                value={formData.specialRequest}
+                onChange={handleChange}
+                rows={4}
+                className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 resize-none ${
+                  errors.specialRequest 
+                    ? 'border-red-300 bg-red-50' 
+                    : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
+                }`}
+              />
+              {errors.specialRequest && <p className="text-red-500 text-sm mt-1">{errors.specialRequest}</p>}
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#eb477e] to-[#d63d6e] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center min-w-[200px]"
+            >
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Booking Your Appointment...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Book Appointment
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
