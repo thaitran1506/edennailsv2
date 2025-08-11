@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface AppointmentData {
   name: string;
@@ -10,10 +10,6 @@ interface AppointmentData {
   date: string;
   time: string;
   specialRequest: string;
-}
-
-interface BookingFormProps {
-  onSubmit?: (data: AppointmentData) => Promise<void>;
 }
 
 export default function BookingForm() {
