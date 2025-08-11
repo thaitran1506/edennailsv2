@@ -179,7 +179,7 @@ export default function GallerySection() {
 
   return (
     <>
-      <section id="gallery" className="py-16 bg-white">
+      <section id="gallery" className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Gallery Grid */}
           <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
