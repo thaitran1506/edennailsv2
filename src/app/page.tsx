@@ -37,29 +37,6 @@ export default function Home() {
     }
   };
 
-  const handleAppointmentSubmit = async (data: AppointmentData) => {
-    try {
-      const response = await fetch('/api/appointments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to book appointment');
-      }
-
-      const result = await response.json();
-      console.log('Appointment booked successfully:', result);
-    } catch (error) {
-      console.error('Error booking appointment:', error);
-      throw error;
-    }
-  };
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -116,7 +93,7 @@ export default function Home() {
       <section id="booking" className="py-16 bg-white">
         <div className="flex justify-center items-center w-full">
           <div className="w-full px-4">
-            <BookingForm onSubmit={handleAppointmentSubmit} />
+            <BookingForm />
           </div>
         </div>
       </section>

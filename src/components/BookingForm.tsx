@@ -13,7 +13,7 @@ interface AppointmentData {
 }
 
 interface BookingFormProps {
-  onSubmit: (data: AppointmentData) => Promise<void>;
+  onSubmit?: (data: AppointmentData) => Promise<void>;
 }
 
 export default function BookingForm({ onSubmit }: BookingFormProps) {
@@ -91,20 +91,36 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
 
     setIsLoading(true);
     try {
-      await onSubmit(formData);
-      setIsSuccess(true);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        service: '',
-        date: '',
-        time: '',
-        specialRequest: ''
+      const response = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
-      setTimeout(() => setIsSuccess(false), 5000);
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setIsSuccess(true);
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          service: '',
+          date: '',
+          time: '',
+          specialRequest: ''
+        });
+        setTimeout(() => setIsSuccess(false), 5000);
+      } else {
+        // Handle error response
+        const errorMessage = result.error || 'Failed to book appointment. Please try again.';
+        alert(errorMessage);
+      }
     } catch (error) {
       console.error('Booking failed:', error);
+      alert('Network error. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
     }

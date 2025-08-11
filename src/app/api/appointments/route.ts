@@ -128,29 +128,25 @@ export async function POST(req: NextRequest) {
     };
 
     // Send to Google Sheets
-    const scriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL;
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
 
-    if (scriptUrl) {
-      try {
-        const sheetsResponse = await fetch(scriptUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(appointmentData),
-        });
+    try {
+      const sheetsResponse = await fetch(scriptUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(appointmentData),
+      });
 
-        if (!sheetsResponse.ok) {
-          console.error('Google Sheets response error:', sheetsResponse.status, sheetsResponse.statusText);
-          // Continue with fallback even if Google Sheets fails
-        } else {
-          const sheetsResult = await sheetsResponse.text();
-          console.log('Google Sheets response:', sheetsResult);
-        }
-      } catch (fetchError) {
-        console.error('Primary fetch error to Google Sheets:', fetchError);
-        // Continue with fallback
+      if (!sheetsResponse.ok) {
+        console.error('Google Sheets response error:', sheetsResponse.status, sheetsResponse.statusText);
+        // Continue with fallback even if Google Sheets fails
+      } else {
+        const sheetsResult = await sheetsResponse.text();
+        console.log('Google Sheets response:', sheetsResult);
       }
-    } else {
-      console.warn('GOOGLE_APPS_SCRIPT_URL is not configured. Skipping Google Sheets sync.');
+    } catch (fetchError) {
+      console.error('Primary fetch error to Google Sheets:', fetchError);
+      // Continue with fallback
     }
 
     // Update rate limiting
