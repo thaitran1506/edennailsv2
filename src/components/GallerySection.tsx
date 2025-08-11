@@ -5,74 +5,92 @@ import { useState, useEffect } from 'react';
 const galleryImages = [
   {
     id: 1,
-    src: '/images/nail-art-1.jpg',
-    alt: 'Elegant nail art design with floral patterns',
-    category: 'Nail Art'
+    src: '/featuredDesigns/featured1.jpg',
+    alt: 'Featured nail design showcase - Elegant floral patterns',
+    category: 'Featured Design'
   },
   {
     id: 2,
-    src: '/images/nail-art-2.jpg',
-    alt: 'Creative nail art with geometric patterns',
-    category: 'Nail Art'
+    src: '/featuredDesigns/featured2.jpg',
+    alt: 'Featured nail design showcase - Creative geometric patterns',
+    category: 'Featured Design'
   },
   {
     id: 3,
-    src: '/images/nail-art-3.jpg',
-    alt: 'Modern nail art with metallic accents',
-    category: 'Nail Art'
+    src: '/featuredDesigns/featured3.jpg',
+    alt: 'Featured nail design showcase - Modern metallic accents',
+    category: 'Featured Design'
   },
   {
     id: 4,
-    src: '/images/nail-art-4.jpg',
-    alt: 'Sophisticated nail art design',
-    category: 'Nail Art'
+    src: '/featuredDesigns/featured4.jpg',
+    alt: 'Featured nail design showcase - Sophisticated nail art',
+    category: 'Featured Design'
   },
   {
     id: 5,
-    src: '/images/manicure-process.jpg',
-    alt: 'Professional manicure service',
-    category: 'Manicure'
+    src: '/featuredDesigns/featured5.jpg',
+    alt: 'Featured nail design showcase - Professional nail artistry',
+    category: 'Featured Design'
   },
   {
     id: 6,
-    src: '/images/pedicure-service.jpg',
-    alt: 'Luxurious pedicure treatment',
-    category: 'Pedicure'
+    src: '/featuredDesigns/featured6.jpg',
+    alt: 'Featured nail design showcase - Stunning nail art creation',
+    category: 'Featured Design'
   },
   {
     id: 7,
-    src: '/images/nail-salon-service.jpg',
-    alt: 'Premium nail salon services',
-    category: 'Salon Services'
+    src: '/featuredDesigns/featured7.jpg',
+    alt: 'Featured nail design showcase - Elegant nail masterpiece',
+    category: 'Featured Design'
   },
   {
     id: 8,
-    src: '/featuredDesigns/featured1.jpg',
-    alt: 'Featured nail design showcase',
+    src: '/featuredDesigns/featured8.jpg',
+    alt: 'Featured nail design showcase - Creative design inspiration',
     category: 'Featured Design'
   },
   {
     id: 9,
-    src: '/featuredDesigns/featured2.jpg',
-    alt: 'Elegant nail art masterpiece',
+    src: '/featuredDesigns/featured9.jpg',
+    alt: 'Featured nail design showcase - Premium nail artistry',
     category: 'Featured Design'
   },
   {
     id: 10,
-    src: '/featuredDesigns/featured3.jpg',
-    alt: 'Creative nail design inspiration',
+    src: '/featuredDesigns/featured10.jpg',
+    alt: 'Featured nail design showcase - Beautiful nail art',
     category: 'Featured Design'
   },
   {
     id: 11,
-    src: '/featuredDesigns/featured4.jpg',
-    alt: 'Professional nail artistry',
+    src: '/featuredDesigns/featured11.jpg',
+    alt: 'Featured nail design showcase - Artistic nail design',
     category: 'Featured Design'
   },
   {
     id: 12,
-    src: '/featuredDesigns/featured5.jpg',
-    alt: 'Stunning nail art creation',
+    src: '/featuredDesigns/featured12.jpg',
+    alt: 'Featured nail design showcase - Stunning nail creation',
+    category: 'Featured Design'
+  },
+  {
+    id: 13,
+    src: '/featuredDesigns/featured13.jpg',
+    alt: 'Featured nail design showcase - Elegant nail art',
+    category: 'Featured Design'
+  },
+  {
+    id: 14,
+    src: '/featuredDesigns/featured14.jpg',
+    alt: 'Featured nail design showcase - Professional design',
+    category: 'Featured Design'
+  },
+  {
+    id: 15,
+    src: '/featuredDesigns/featured15.jpg',
+    alt: 'Featured nail design showcase - Masterpiece nail art',
     category: 'Featured Design'
   }
 ];
