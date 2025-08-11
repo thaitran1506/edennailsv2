@@ -5,51 +5,75 @@ import { useState, useEffect } from 'react';
 const galleryImages = [
   {
     id: 1,
-    src: '/images/gallery/nail-art-1.jpg',
+    src: '/images/nail-art-1.jpg',
     alt: 'Elegant nail art design with floral patterns',
     category: 'Nail Art'
   },
   {
     id: 2,
-    src: '/images/gallery/manicure-1.jpg',
-    alt: 'Classic manicure with perfect finish',
-    category: 'Manicure'
-  },
-  {
-    id: 3,
-    src: '/images/gallery/pedicure-1.jpg',
-    alt: 'Luxurious pedicure treatment',
-    category: 'Pedicure'
-  },
-  {
-    id: 4,
-    src: '/images/gallery/gel-nails-1.jpg',
-    alt: 'Gel nail extensions with modern design',
-    category: 'Gel Nails'
-  },
-  {
-    id: 5,
-    src: '/images/gallery/nail-art-2.jpg',
+    src: '/images/nail-art-2.jpg',
     alt: 'Creative nail art with geometric patterns',
     category: 'Nail Art'
   },
   {
-    id: 6,
-    src: '/images/gallery/manicure-2.jpg',
-    alt: 'French manicure with subtle accents',
+    id: 3,
+    src: '/images/nail-art-3.jpg',
+    alt: 'Modern nail art with metallic accents',
+    category: 'Nail Art'
+  },
+  {
+    id: 4,
+    src: '/images/nail-art-4.jpg',
+    alt: 'Sophisticated nail art design',
+    category: 'Nail Art'
+  },
+  {
+    id: 5,
+    src: '/images/manicure-process.jpg',
+    alt: 'Professional manicure service',
     category: 'Manicure'
   },
   {
-    id: 7,
-    src: '/images/gallery/pedicure-2.jpg',
-    alt: 'Spa pedicure with premium polish',
+    id: 6,
+    src: '/images/pedicure-service.jpg',
+    alt: 'Luxurious pedicure treatment',
     category: 'Pedicure'
   },
   {
+    id: 7,
+    src: '/images/nail-salon-service.jpg',
+    alt: 'Premium nail salon services',
+    category: 'Salon Services'
+  },
+  {
     id: 8,
-    src: '/images/gallery/gel-nails-2.jpg',
-    alt: 'Long gel nails with ombre effect',
-    category: 'Gel Nails'
+    src: '/featuredDesigns/featured1.jpg',
+    alt: 'Featured nail design showcase',
+    category: 'Featured Design'
+  },
+  {
+    id: 9,
+    src: '/featuredDesigns/featured2.jpg',
+    alt: 'Elegant nail art masterpiece',
+    category: 'Featured Design'
+  },
+  {
+    id: 10,
+    src: '/featuredDesigns/featured3.jpg',
+    alt: 'Creative nail design inspiration',
+    category: 'Featured Design'
+  },
+  {
+    id: 11,
+    src: '/featuredDesigns/featured4.jpg',
+    alt: 'Professional nail artistry',
+    category: 'Featured Design'
+  },
+  {
+    id: 12,
+    src: '/featuredDesigns/featured5.jpg',
+    alt: 'Stunning nail art creation',
+    category: 'Featured Design'
   }
 ];
 
