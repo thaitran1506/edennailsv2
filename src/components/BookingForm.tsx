@@ -192,7 +192,7 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
                   placeholder="Enter your full name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 ${
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 text-[#181113] ${
                     errors.name 
                       ? 'border-red-300 bg-red-50' 
                       : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
@@ -211,7 +211,7 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 ${
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 text-[#181113] ${
                     errors.email 
                       ? 'border-red-300 bg-red-50' 
                       : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
@@ -230,7 +230,7 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
                   placeholder="Enter your phone number"
                   value={formData.phone}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 ${
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 text-[#181113] ${
                     errors.phone 
                       ? 'border-red-300 bg-red-50' 
                       : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
@@ -261,7 +261,7 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
                   name="service"
                   value={formData.service}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 appearance-none bg-no-repeat bg-[right_16px_center] ${
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 appearance-none bg-no-repeat bg-[right_16px_center] text-[#181113] ${
                     errors.service 
                       ? 'border-red-300 bg-red-50' 
                       : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
@@ -290,7 +290,7 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
                   min={getMinDate()}
                   value={formData.date}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 ${
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 text-[#181113] ${
                     errors.date 
                       ? 'border-red-300 bg-red-50' 
                       : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
@@ -307,7 +307,7 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
                   name="time"
                   value={formData.time}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 appearance-none bg-no-repeat bg-[right_16px_center] ${
+                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 appearance-none bg-no-repeat bg-[right_16px_center] text-[#181113] ${
                     errors.time 
                       ? 'border-red-300 bg-red-50' 
                       : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
@@ -356,7 +356,7 @@ export default function BookingForm({ onSubmit }: BookingFormProps) {
                 value={formData.specialRequest}
                 onChange={handleChange}
                 rows={4}
-                className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 resize-none ${
+                className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 resize-none text-[#181113] ${
                   errors.specialRequest 
                     ? 'border-red-300 bg-red-50' 
                     : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
