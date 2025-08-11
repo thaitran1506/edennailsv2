@@ -16,7 +16,7 @@ interface BookingFormProps {
   onSubmit?: (data: AppointmentData) => Promise<void>;
 }
 
-export default function BookingForm({ onSubmit }: BookingFormProps) {
+export default function BookingForm() {
   const [formData, setFormData] = useState<AppointmentData>({
     name: '',
     email: '',

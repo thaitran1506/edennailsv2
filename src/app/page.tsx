@@ -8,16 +8,6 @@ import ServicesSection from '../components/ServicesSection';
 import ContactSection from '../components/ContactSection';
 import Footer from '../components/Footer';
 
-interface AppointmentData {
-  name: string;
-  email: string;
-  phone: string;
-  service: string;
-  date: string;
-  time: string;
-  specialRequest: string;
-}
-
 export default function Home() {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
