@@ -179,7 +179,7 @@ export default function GallerySection() {
 
   return (
     <>
-      <section id="gallery" className="py-16 bg-gradient-to-br from-pink-50 via-white to-purple-50">
+      <section id="gallery" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-12">
@@ -199,7 +199,7 @@ export default function GallerySection() {
               </div>
             )}
 
-            <div className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 transition-all duration-700 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
+            <div className={`grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 xl:gap-8 transition-all duration-700 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
               {galleryImages.map((image, index) => (
                 <div
                   key={image.id}
