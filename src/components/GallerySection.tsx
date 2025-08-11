@@ -181,16 +181,6 @@ export default function GallerySection() {
     <>
       <section id="gallery" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header */}
-          <div className="text-center mb-12">
-            <h2 className="text-4xl sm:text-5xl font-bold text-[#181113] mb-4 font-elegant">
-              Our Gallery
-            </h2>
-            <p className="text-xl text-[#88636f] max-w-2xl mx-auto">
-              Discover our stunning featured nail art creations
-            </p>
-          </div>
-
           {/* Gallery Grid */}
           <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             {isLoading && (
