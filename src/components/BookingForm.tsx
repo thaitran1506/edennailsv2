@@ -24,7 +24,7 @@ const SERVICES: Service[] = [
   { id: 'full-set', name: 'Full Set', price: '$50' },
   { id: 'fill', name: 'Fill', price: '$40' },
   { id: 'dipping-powder', name: 'Dipping Powder', price: '$40' },
-  { id: 'eden-signature-pedicure', name: 'Eden Signature Pedicure', price: '$55' },
+  { id: 'eden-signature-pedicure', name: 'Eden Signature Pedicure', price: '$50' },
   { id: 'pedicure-special', name: 'Pedicure Special', price: '$50' },
 ];
 
