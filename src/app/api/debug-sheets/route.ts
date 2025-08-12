@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
     
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
       console.log(`=== DEBUG: Found ${appointments.length} total appointments ===`);
       
       // Log each appointment with its structure
-      appointments.forEach((appointment: any, index: number) => {
+      appointments.forEach((appointment: { appointmentDate?: string; appointmentTime?: string; customerName?: string }, index: number) => {
         console.log(`=== DEBUG: Appointment ${index + 1} ===`);
         console.log('Full appointment object:', JSON.stringify(appointment, null, 2));
         console.log('Keys:', Object.keys(appointment));
