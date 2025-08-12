@@ -38,17 +38,17 @@ export default function ServicesSection({ onBookNow }: ServicesSectionProps) {
     },
     {
       title: "Full Set",
-      price: "$55+",
+      price: "$50",
       description: "Complete acrylic or gel nail extensions with shaping, design, and professional finish."
     },
     {
       title: "Fill",
-      price: "$45+",
+      price: "$40",
       description: "Maintenance for existing nail extensions with fresh polish and touch-ups."
     },
     {
       title: "Dipping Powder",
-      price: "$50+",
+      price: "$40",
       description: "Durable dipping powder application for long-lasting, chip-resistant nails."
     }
   ];
