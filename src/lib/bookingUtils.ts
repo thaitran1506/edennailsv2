@@ -74,8 +74,22 @@ export const getAvailableTimeSlots = async (date: string): Promise<TimeSlot[]> =
   return availableSlots;
 };
 
+export interface BookingData {
+  appointmentId: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  technicianId?: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: number;
+  service: string;
+  specialRequests: string;
+  bookingSubmittedAt: string;
+  status: string;
+}
+
 // Get existing bookings from Google Sheets
-export const getExistingBookings = async (date: string): Promise<any[]> => {
+export const getExistingBookings = async (date: string): Promise<BookingData[]> => {
   try {
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
     
