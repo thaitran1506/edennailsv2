@@ -2,14 +2,10 @@
 
 import { useState } from 'react';
 import { 
-  getAvailableTimeSlots, 
   formatTimeForDisplay, 
   getMinBookingDate, 
   getMaxBookingDate, 
-  TimeSlot,
-  generateTimeSlots,
-  isTimeAvailable,
-  TECHNICIANS
+  TimeSlot
 } from '../lib/bookingUtils';
 
 interface AppointmentData {

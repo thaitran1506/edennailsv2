@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isSlotAvailable, getNextAvailableTechnician, TECHNICIANS } from '../../../lib/bookingUtils';
+import { TECHNICIANS } from '../../../lib/bookingUtils';
+
+interface BookingData {
+  appointmentId: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  technicianId?: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: number;
+  service: string;
+  specialRequests: string;
+  bookingSubmittedAt: string;
+  status: string;
+}
 
 // Server-side function to fetch existing bookings from Google Sheets
-async function getExistingBookingsServerSide(date: string) {
+async function getExistingBookingsServerSide(date: string): Promise<BookingData[]> {
   try {
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
     
@@ -27,7 +41,7 @@ async function isSlotAvailableServerSide(date: string, time: string): Promise<bo
   try {
     const existingBookings = await getExistingBookingsServerSide(date);
     const bookingsAtThisTime = existingBookings.filter(
-      (booking: any) => booking.appointmentTime === time
+      (booking: BookingData) => booking.appointmentTime === time
     );
     
     return bookingsAtThisTime.length < 3;
@@ -42,11 +56,11 @@ async function getNextAvailableTechnicianServerSide(date: string, time: string):
   try {
     const existingBookings = await getExistingBookingsServerSide(date);
     const bookingsAtThisTime = existingBookings.filter(
-      (booking: any) => booking.appointmentTime === time
+      (booking: BookingData) => booking.appointmentTime === time
     );
 
     // Get technician IDs that are already booked
-    const bookedTechnicianIds = bookingsAtThisTime.map((booking: any) => booking.technicianId);
+    const bookedTechnicianIds = bookingsAtThisTime.map((booking: BookingData) => booking.technicianId);
     
     // Find the first available technician
     const availableTechnician = TECHNICIANS.find(tech => 
@@ -190,7 +204,7 @@ export async function POST(req: NextRequest) {
     const technician = TECHNICIANS.find(tech => tech.id === technicianId);
 
     // Prepare appointment data
-    const appointmentData = {
+    const appointmentData: BookingData = {
       appointmentId: `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       status: 'PENDING',
       appointmentDate: new Date(body.date + 'T' + body.time + ':00.000Z').toISOString(),

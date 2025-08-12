@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAvailableTimeSlots, generateTimeSlots, isTimeAvailable, TECHNICIANS } from '../../../lib/bookingUtils';
+import { generateTimeSlots, isTimeAvailable, TECHNICIANS } from '../../../lib/bookingUtils';
+
+interface BookingData {
+  appointmentId: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  technicianId?: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: number;
+  service: string;
+  specialRequests: string;
+  bookingSubmittedAt: string;
+  status: string;
+}
 
 // Server-side function to fetch existing bookings from Google Sheets
-async function getExistingBookingsServerSide(date: string) {
+async function getExistingBookingsServerSide(date: string): Promise<BookingData[]> {
   try {
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
     
@@ -48,7 +62,7 @@ export async function GET(req: NextRequest) {
 
       // Count how many bookings exist for this time slot
       const bookingsAtThisTime = existingBookings.filter(
-        (booking: any) => booking.appointmentTime === time
+        (booking: BookingData) => booking.appointmentTime === time
       );
 
       const availableSlotsCount = Math.max(0, 3 - bookingsAtThisTime.length);
