@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isSlotAvailable, getNextAvailableTechnician, TECHNICIANS } from '../../../lib/bookingUtils';
 
 // In-memory storage for rate limiting (in production, use Redis or similar)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -112,6 +113,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Check if the time slot is still available
+    const isAvailable = await isSlotAvailable(body.date, body.time);
+    if (!isAvailable) {
+      return NextResponse.json(
+        { error: 'This time slot is no longer available. Please select another time.' },
+        { status: 409 }
+      );
+    }
+
+    // Get the next available technician
+    const technicianId = await getNextAvailableTechnician(body.date, body.time);
+    const technician = TECHNICIANS.find(tech => tech.id === technicianId);
+
     // Prepare appointment data
     const appointmentData = {
       appointmentId: `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -128,7 +142,9 @@ export async function POST(req: NextRequest) {
       clientPlatform: 'web',
       rawDate: new Date(body.date + 'T' + body.time + ':00.000Z').toISOString(),
       rawTime: new Date('1899-12-30T' + body.time + ':00.000Z').toISOString(),
-      type: 'appointment'
+      type: 'appointment',
+      technicianId: technicianId,
+      technicianName: technician?.name || 'Sarah Chen'
     };
 
     // Send to Google Sheets
@@ -143,14 +159,20 @@ export async function POST(req: NextRequest) {
 
       if (!sheetsResponse.ok) {
         console.error('Google Sheets response error:', sheetsResponse.status, sheetsResponse.statusText);
-        // Continue with fallback even if Google Sheets fails
+        return NextResponse.json(
+          { error: 'Failed to save booking. Please try again.' },
+          { status: 500 }
+        );
       } else {
         const sheetsResult = await sheetsResponse.text();
         console.log('Google Sheets response:', sheetsResult);
       }
     } catch (fetchError) {
       console.error('Primary fetch error to Google Sheets:', fetchError);
-      // Continue with fallback
+      return NextResponse.json(
+        { error: 'Failed to save booking. Please try again.' },
+        { status: 500 }
+      );
     }
 
     // Update rate limiting
@@ -164,7 +186,8 @@ export async function POST(req: NextRequest) {
       { 
         success: true, 
         message: 'Appointment booked successfully!',
-        appointmentId: `APPT-${Date.now()}`,
+        appointmentId: appointmentData.appointmentId,
+        technicianName: appointmentData.technicianName,
         rateLimitRemaining: rateLimit.remaining - 1
       },
       { 

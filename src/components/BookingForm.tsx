@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getAvailableTimeSlots, formatTimeForDisplay, getMinBookingDate, getMaxBookingDate, TimeSlot } from '../lib/bookingUtils';
 
 interface AppointmentData {
   name: string;
@@ -25,6 +26,8 @@ export default function BookingForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errors, setErrors] = useState<Partial<AppointmentData>>({});
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<TimeSlot[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
   const services = [
     { title: "Manicure", price: "$25" },
@@ -36,19 +39,6 @@ export default function BookingForm() {
     { title: "Full Set", price: "$55+" },
     { title: "Fill", price: "$45+" },
     { title: "Dipping Powder", price: "$50+" }
-  ];
-
-  const allTimeSlots: Array<{ label: string; value: string }> = [
-    { label: '9:00 AM', value: '09:00' },
-    { label: '10:00 AM', value: '10:00' },
-    { label: '11:00 AM', value: '11:00' },
-    { label: '12:00 PM', value: '12:00' },
-    { label: '1:00 PM', value: '13:00' },
-    { label: '2:00 PM', value: '14:00' },
-    { label: '3:00 PM', value: '15:00' },
-    { label: '4:00 PM', value: '16:00' },
-    { label: '5:00 PM', value: '17:00' },
-    { label: '6:00 PM', value: '18:00' },
   ];
 
   const validateForm = () => {
@@ -66,13 +56,28 @@ export default function BookingForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
     // Clear time selection when date changes
     if (name === 'date') {
       setFormData(prev => ({ ...prev, time: '' }));
+      setAvailableTimeSlots([]);
+      
+      // Fetch available time slots for the selected date
+      if (value) {
+        setIsLoadingSlots(true);
+        try {
+          const slots = await getAvailableTimeSlots(value);
+          setAvailableTimeSlots(slots);
+        } catch (error) {
+          console.error('Error fetching time slots:', error);
+          setAvailableTimeSlots([]);
+        } finally {
+          setIsLoadingSlots(false);
+        }
+      }
     }
     
     if (errors[name as keyof AppointmentData]) {
@@ -108,6 +113,7 @@ export default function BookingForm() {
           time: '',
           specialRequest: ''
         });
+        setAvailableTimeSlots([]);
         setTimeout(() => setIsSuccess(false), 5000);
       } else {
         // Handle error response
@@ -122,34 +128,6 @@ export default function BookingForm() {
     }
   };
 
-  const getMinDate = () => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  };
-
-  const getAvailableTimeSlots = () => {
-    if (!formData.date) return allTimeSlots;
-
-    const selectedDate = new Date(formData.date);
-    const today = new Date();
-    const now = new Date();
-    
-    // If selected date is today, filter out past times
-    if (selectedDate.toDateString() === today.toDateString()) {
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
-      
-      return allTimeSlots.filter(slot => {
-        const [hour, minute] = slot.value.split(':').map(Number);
-        return hour > currentHour || (hour === currentHour && minute > currentMinute);
-      });
-    }
-    
-    return allTimeSlots;
-  };
-
-  const availableTimeSlots = getAvailableTimeSlots();
-
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header Section */}
@@ -158,7 +136,7 @@ export default function BookingForm() {
           Schedule Your Appointment
         </h2>
         <p className="text-lg text-[#88636f] max-w-md mx-auto">
-          Ready to pamper yourself? Book your next nail service with us.
+          Book your appointment with our skilled technicians. Available slots are shown in real-time.
         </p>
       </div>
 
@@ -299,7 +277,8 @@ export default function BookingForm() {
                 <input
                   type="date"
                   name="date"
-                  min={getMinDate()}
+                  min={getMinBookingDate()}
+                  max={getMaxBookingDate()}
                   value={formData.date}
                   onChange={handleChange}
                   className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 text-[#181113] ${
@@ -313,36 +292,44 @@ export default function BookingForm() {
 
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-[#181113] mb-2">
-                  Preferred Time *
+                  Available Time Slots *
                 </label>
-                <select
-                  name="time"
-                  value={formData.time}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#eb477e]/20 appearance-none bg-no-repeat bg-[right_16px_center] text-[#181113] ${
-                    errors.time 
-                      ? 'border-red-300 bg-red-50' 
-                      : 'border-gray-200 bg-gray-50 focus:border-[#eb477e] focus:bg-white'
-                  }`}
-                  style={{
-                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`
-                  }}
-                >
-                  <option value="">Select a time slot</option>
-                  {availableTimeSlots.length > 0 ? (
-                    availableTimeSlots.map((slot) => (
-                      <option key={slot.value} value={slot.value}>
-                        {slot.label}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>No available times for selected date</option>
-                  )}
-                </select>
-                {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
-                {formData.date && availableTimeSlots.length === 0 && (
-                  <p className="text-orange-600 text-sm mt-1">No available time slots for today. Please select a future date.</p>
+                {isLoadingSlots ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#eb477e]"></div>
+                    <span className="ml-3 text-[#88636f]">Loading available times...</span>
+                  </div>
+                ) : availableTimeSlots.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {availableTimeSlots.map((slot) => (
+                      <button
+                        key={slot.time}
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, time: slot.time }))}
+                        className={`p-3 rounded-xl border-2 transition-all duration-200 text-sm font-medium ${
+                          formData.time === slot.time
+                            ? 'border-[#eb477e] bg-[#eb477e] text-white'
+                            : 'border-gray-200 bg-gray-50 text-[#181113] hover:border-[#eb477e] hover:bg-white'
+                        }`}
+                      >
+                        <div>{formatTimeForDisplay(slot.time)}</div>
+                        <div className="text-xs opacity-75">
+                          {slot.availableSlots} slot{slot.availableSlots !== 1 ? 's' : ''} available
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : formData.date ? (
+                  <div className="text-center py-8 text-[#88636f]">
+                    <p>No available time slots for this date.</p>
+                    <p className="text-sm mt-1">Please select a different date.</p>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-[#88636f]">
+                    <p>Please select a date to see available time slots.</p>
+                  </div>
                 )}
+                {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
               </div>
             </div>
           </div>
