@@ -47,7 +47,7 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
       console.log(`Found ${appointments.length} total appointments`);
       
       // Filter appointments by date
-      const filteredAppointments = appointments.filter((appointment: any) => {
+      const filteredAppointments = appointments.filter((appointment: { appointmentDate?: string }) => {
         if (!appointment.appointmentDate) return false;
         
         // Try to parse the appointment date
