@@ -147,8 +147,16 @@ function isTimeSlotAvailable(date: string, time: string, googleSheetBookings: Ar
     
     // Handle different time formats
     if (typeof bookingTime === 'string') {
+      // Handle the weird Excel-style time format: "1899-12-30T21:00:00.000Z"
+      if (bookingTime.includes('1899-12-30T')) {
+        const timePart = bookingTime.split('T')[1];
+        if (timePart.includes(':')) {
+          bookingTime = timePart.split(':').slice(0, 2).join(':');
+          console.log(`Extracted time from Excel format: "${bookingTime}"`);
+        }
+      }
       // If it's an ISO string with date, extract just the time part
-      if (bookingTime.includes('T')) {
+      else if (bookingTime.includes('T')) {
         const timePart = bookingTime.split('T')[1];
         if (timePart.includes(':')) {
           bookingTime = timePart.split(':').slice(0, 2).join(':');
@@ -192,8 +200,15 @@ function getAvailableSpots(date: string, time: string, googleSheetBookings: Arra
     
     // Handle different time formats
     if (typeof bookingTime === 'string') {
+      // Handle the weird Excel-style time format: "1899-12-30T21:00:00.000Z"
+      if (bookingTime.includes('1899-12-30T')) {
+        const timePart = bookingTime.split('T')[1];
+        if (timePart.includes(':')) {
+          bookingTime = timePart.split(':').slice(0, 2).join(':');
+        }
+      }
       // If it's an ISO string with date, extract just the time part
-      if (bookingTime.includes('T')) {
+      else if (bookingTime.includes('T')) {
         const timePart = bookingTime.split('T')[1];
         if (timePart.includes(':')) {
           bookingTime = timePart.split(':').slice(0, 2).join(':');
