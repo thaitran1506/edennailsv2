@@ -122,6 +122,12 @@ export async function GET(req: NextRequest) {
 
     console.log(`\n=== Availability Check for ${date} ===`);
 
+    // Clear cache for today to ensure fresh data
+    if (date === new Date().toISOString().split('T')[0]) {
+      cache.delete(`bookings_${date}`);
+      console.log(`Cache cleared for today (${date})`);
+    }
+
     // Get existing bookings server-side (no CORS issues)
     const existingBookings = await getExistingBookingsServerSide(date);
     
@@ -151,7 +157,12 @@ export async function GET(req: NextRequest) {
     });
 
     for (const time of allTimeSlots) {
-      if (!isTimeAvailable(date, time)) {
+      console.log(`\nChecking time: ${time}`);
+      const isAvailable = isTimeAvailable(date, time);
+      console.log(`isTimeAvailable(${date}, ${time}) returned: ${isAvailable}`);
+      
+      if (!isAvailable) {
+        console.log(`Skipping ${time} - too soon`);
         continue; // Skip times that are too soon
       }
 
