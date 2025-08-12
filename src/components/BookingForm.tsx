@@ -76,6 +76,12 @@ export default function BookingForm() {
           const data = await response.json();
           console.log('API Response for date', value, ':', data);
           console.log('Available time slots:', data.timeSlots);
+          console.log('Time slots details:', data.timeSlots.map((slot: any) => ({
+            time: slot.time,
+            availableSlots: slot.availableSlots,
+            technicians: slot.technicians
+          })));
+          console.log('Debug info:', data.debug);
           setAvailableTimeSlots(data.timeSlots || []);
         } else {
           console.error('Failed to fetch availability');

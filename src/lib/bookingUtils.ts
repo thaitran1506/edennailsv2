@@ -107,11 +107,16 @@ export const isTimeAvailable = (date: string, time: string): boolean => {
   // Add 1 hour to current time
   const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
   
-  console.log(`Time check: ${date} ${time}`);
-  console.log(`Now: ${now.toISOString()} (${now.toLocaleString()})`);
-  console.log(`Booking time: ${bookingDateTime.toISOString()} (${bookingDateTime.toLocaleString()})`);
-  console.log(`One hour from now: ${oneHourFromNow.toISOString()} (${oneHourFromNow.toLocaleString()})`);
+  console.log(`\n=== TIME AVAILABILITY CHECK ===`);
+  console.log(`Checking: ${date} ${time}`);
+  console.log(`Now (UTC): ${now.toISOString()}`);
+  console.log(`Now (Local): ${now.toLocaleString()}`);
+  console.log(`Booking time (UTC): ${bookingDateTime.toISOString()}`);
+  console.log(`Booking time (Local): ${bookingDateTime.toLocaleString()}`);
+  console.log(`One hour from now (UTC): ${oneHourFromNow.toISOString()}`);
+  console.log(`One hour from now (Local): ${oneHourFromNow.toLocaleString()}`);
   console.log(`Available: ${bookingDateTime >= oneHourFromNow}`);
+  console.log(`=== END TIME CHECK ===\n`);
   
   return bookingDateTime >= oneHourFromNow;
 };
