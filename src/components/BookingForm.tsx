@@ -56,10 +56,14 @@ export default function BookingForm() {
     const selectedDate = new Date(date);
     const dayOfWeek = selectedDate.getDay();
     
-    if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-      return "Business Hours: Monday - Friday, 9:00 AM - 7:00 PM";
+    if (dayOfWeek >= 1 && dayOfWeek <= 4) {
+      return "Business Hours: Monday - Thursday, 10:00 AM - 7:00 PM";
+    } else if (dayOfWeek === 5) {
+      return "Business Hours: Friday, 10:00 AM - 8:00 PM";
+    } else if (dayOfWeek === 6) {
+      return "Business Hours: Saturday, 9:00 AM - 6:00 PM";
     } else {
-      return "Business Hours: Saturday - Sunday, 10:00 AM - 6:00 PM";
+      return "Business Hours: Sunday, 11:00 AM - 5:00 PM";
     }
   };
 
