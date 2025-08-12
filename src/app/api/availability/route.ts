@@ -22,7 +22,8 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
     
     console.log(`Fetching bookings for date: ${date}`);
     
-    const response = await fetch(`${scriptUrl}?action=getBookings&date=${date}`, {
+    // The Google Apps Script doesn't support date filtering, so we get all appointments
+    const response = await fetch(scriptUrl, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -43,8 +44,40 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
         appointments = data;
       }
       
-      console.log(`Found ${appointments.length} appointments for ${date}`);
-      return appointments;
+      console.log(`Found ${appointments.length} total appointments`);
+      
+      // Filter appointments by date
+      const filteredAppointments = appointments.filter((appointment: any) => {
+        if (!appointment.appointmentDate) return false;
+        
+        // Try to parse the appointment date
+        let appointmentDateStr = appointment.appointmentDate;
+        
+        // Handle different date formats
+        if (typeof appointmentDateStr === 'string') {
+          // If it's an ISO string, extract just the date part
+          if (appointmentDateStr.includes('T')) {
+            appointmentDateStr = appointmentDateStr.split('T')[0];
+          }
+          
+          // If it's a date object, convert to string
+          if (appointmentDateStr.includes('/')) {
+            const dateParts = appointmentDateStr.split('/');
+            if (dateParts.length === 3) {
+              const year = dateParts[2];
+              const month = dateParts[0].padStart(2, '0');
+              const day = dateParts[1].padStart(2, '0');
+              appointmentDateStr = `${year}-${month}-${day}`;
+            }
+          }
+        }
+        
+        console.log(`Comparing appointment date: ${appointmentDateStr} with requested date: ${date}`);
+        return appointmentDateStr === date;
+      });
+      
+      console.log(`Filtered to ${filteredAppointments.length} appointments for ${date}`);
+      return filteredAppointments;
     } else {
       console.error('Google Apps Script error response:', response.status, response.statusText);
     }
@@ -72,7 +105,7 @@ export async function GET(req: NextRequest) {
     // Get existing bookings server-side (no CORS issues)
     const existingBookings = await getExistingBookingsServerSide(date);
     
-    console.log(`Total existing bookings: ${existingBookings.length}`);
+    console.log(`Total existing bookings for ${date}: ${existingBookings.length}`);
     
     // Generate all time slots
     const allTimeSlots = generateTimeSlots();
@@ -88,12 +121,24 @@ export async function GET(req: NextRequest) {
         (booking: BookingData) => {
           // Try different time formats
           const bookingTime = booking.appointmentTime;
-          const matches = bookingTime === time || 
-                         bookingTime === time.replace(':', '') ||
-                         bookingTime === time.replace(':', '.');
+          if (!bookingTime) return false;
+          
+          // Normalize time formats
+          let normalizedBookingTime = bookingTime;
+          if (typeof bookingTime === 'string') {
+            // Remove any timezone info
+            if (bookingTime.includes('T')) {
+              const timePart = bookingTime.split('T')[1];
+              normalizedBookingTime = timePart.split('.')[0].substring(0, 5);
+            }
+            // Handle different separators
+            normalizedBookingTime = normalizedBookingTime.replace(/[.:]/g, ':');
+          }
+          
+          const matches = normalizedBookingTime === time;
           
           if (matches) {
-            console.log(`Found booking at ${time}: ${booking.customerName} (${booking.appointmentTime})`);
+            console.log(`Found booking at ${time}: ${booking.customerName} (${booking.appointmentTime} -> ${normalizedBookingTime})`);
           }
           
           return matches;

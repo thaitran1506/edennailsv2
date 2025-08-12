@@ -26,14 +26,55 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
   try {
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
     
-    const response = await fetch(`${scriptUrl}?action=getBookings&date=${date}`, {
+    // The Google Apps Script doesn't support date filtering, so we get all appointments
+    const response = await fetch(scriptUrl, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
 
     if (response.ok) {
       const data = await response.json();
-      return data.appointments || [];
+      
+      // Handle different response formats
+      let appointments = [];
+      if (data.appointments) {
+        appointments = data.appointments;
+      } else if (data.success && data.appointments) {
+        appointments = data.appointments;
+      } else if (Array.isArray(data)) {
+        appointments = data;
+      }
+      
+      // Filter appointments by date
+      const filteredAppointments = appointments.filter((appointment: any) => {
+        if (!appointment.appointmentDate) return false;
+        
+        // Try to parse the appointment date
+        let appointmentDateStr = appointment.appointmentDate;
+        
+        // Handle different date formats
+        if (typeof appointmentDateStr === 'string') {
+          // If it's an ISO string, extract just the date part
+          if (appointmentDateStr.includes('T')) {
+            appointmentDateStr = appointmentDateStr.split('T')[0];
+          }
+          
+          // If it's a date object, convert to string
+          if (appointmentDateStr.includes('/')) {
+            const dateParts = appointmentDateStr.split('/');
+            if (dateParts.length === 3) {
+              const year = dateParts[2];
+              const month = dateParts[0].padStart(2, '0');
+              const day = dateParts[1].padStart(2, '0');
+              appointmentDateStr = `${year}-${month}-${day}`;
+            }
+          }
+        }
+        
+        return appointmentDateStr === date;
+      });
+      
+      return filteredAppointments;
     }
   } catch (error) {
     console.error('Error fetching existing bookings server-side:', error);
