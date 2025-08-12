@@ -1,6 +1,69 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isSlotAvailable, getNextAvailableTechnician, TECHNICIANS } from '../../../lib/bookingUtils';
 
+// Server-side function to fetch existing bookings from Google Sheets
+async function getExistingBookingsServerSide(date: string) {
+  try {
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
+    
+    const response = await fetch(`${scriptUrl}?action=getBookings&date=${date}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.appointments || [];
+    }
+  } catch (error) {
+    console.error('Error fetching existing bookings server-side:', error);
+  }
+  
+  return [];
+}
+
+// Server-side function to check slot availability
+async function isSlotAvailableServerSide(date: string, time: string): Promise<boolean> {
+  try {
+    const existingBookings = await getExistingBookingsServerSide(date);
+    const bookingsAtThisTime = existingBookings.filter(
+      (booking: any) => booking.appointmentTime === time
+    );
+    
+    return bookingsAtThisTime.length < 3;
+  } catch (error) {
+    console.error('Error checking slot availability server-side:', error);
+    return false; // Assume not available if we can't check
+  }
+}
+
+// Server-side function to get next available technician
+async function getNextAvailableTechnicianServerSide(date: string, time: string): Promise<string> {
+  try {
+    const existingBookings = await getExistingBookingsServerSide(date);
+    const bookingsAtThisTime = existingBookings.filter(
+      (booking: any) => booking.appointmentTime === time
+    );
+
+    // Get technician IDs that are already booked
+    const bookedTechnicianIds = bookingsAtThisTime.map((booking: any) => booking.technicianId);
+    
+    // Find the first available technician
+    const availableTechnician = TECHNICIANS.find(tech => 
+      !bookedTechnicianIds.includes(tech.id)
+    );
+
+    return availableTechnician?.id || 'tech1'; // Fallback to first technician
+  } catch (error) {
+    console.error('Error determining technician availability server-side:', error);
+    // Use round-robin assignment based on time
+    const timeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00'];
+    const timeIndex = timeSlots.indexOf(time);
+    const technicianIndex = timeIndex % TECHNICIANS.length;
+    return TECHNICIANS[technicianIndex]?.id || 'tech1';
+  }
+}
+
 // In-memory storage for rate limiting (in production, use Redis or similar)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
@@ -114,7 +177,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if the time slot is still available
-    const isAvailable = await isSlotAvailable(body.date, body.time);
+    const isAvailable = await isSlotAvailableServerSide(body.date, body.time);
     if (!isAvailable) {
       return NextResponse.json(
         { error: 'This time slot is no longer available. Please select another time.' },
@@ -123,7 +186,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get the next available technician
-    const technicianId = await getNextAvailableTechnician(body.date, body.time);
+    const technicianId = await getNextAvailableTechnicianServerSide(body.date, body.time);
     const technician = TECHNICIANS.find(tech => tech.id === technicianId);
 
     // Prepare appointment data

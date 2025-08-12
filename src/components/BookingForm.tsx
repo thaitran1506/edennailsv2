@@ -78,23 +78,23 @@ export default function BookingForm() {
       if (value) {
         setIsLoadingSlots(true);
         try {
-          const slots = await getAvailableTimeSlots(value);
-          setAvailableTimeSlots(slots);
-        } catch (error) {
-          console.error('Error fetching time slots:', error);
-          // If CORS error, show all time slots as available
-          if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-            const allSlots = generateTimeSlots()
-              .filter(time => isTimeAvailable(value, time))
-              .map(time => ({
-                time,
-                availableSlots: 3,
-                technicians: TECHNICIANS.map(tech => tech.name)
-              }));
-            setAvailableTimeSlots(allSlots);
+          // Use server-side API instead of direct Google Sheets call
+          const response = await fetch(`/api/availability?date=${value}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              setAvailableTimeSlots(data.timeSlots);
+            } else {
+              console.error('Failed to fetch availability:', data.error);
+              setAvailableTimeSlots([]);
+            }
           } else {
+            console.error('Failed to fetch availability:', response.status);
             setAvailableTimeSlots([]);
           }
+        } catch (error) {
+          console.error('Error fetching time slots:', error);
+          setAvailableTimeSlots([]);
         } finally {
           setIsLoadingSlots(false);
         }
