@@ -112,13 +112,17 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const date = searchParams.get('date');
-
+    
     if (!date) {
-      return NextResponse.json(
-        { error: 'Date parameter is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
     }
+
+    // Test the isTimeAvailable function
+    console.log(`\n=== TESTING isTimeAvailable FUNCTION ===`);
+    console.log(`isTimeAvailable function exists: ${typeof isTimeAvailable}`);
+    const testResult = isTimeAvailable(date, '10:00');
+    console.log(`Test result for ${date} 10:00: ${testResult}`);
+    console.log(`=== END TEST ===\n`);
 
     console.log(`\n=== Availability Check for ${date} ===`);
 
@@ -155,13 +159,20 @@ export async function GET(req: NextRequest) {
     });
 
     for (const time of allTimeSlots) {
-      console.log(`\nChecking time: ${time}`);
-      const isAvailable = isTimeAvailable(date, time);
-      console.log(`isTimeAvailable(${date}, ${time}) returned: ${isAvailable}`);
+      console.log(`\n=== DEBUGGING TIME SLOT: ${time} ===`);
+      console.log(`All time slots: ${allTimeSlots.join(', ')}`);
       
-      if (!isAvailable) {
-        console.log(`Skipping ${time} - too soon`);
-        continue; // Skip times that are too soon
+      try {
+        const isAvailable = isTimeAvailable(date, time);
+        console.log(`isTimeAvailable(${date}, ${time}) returned: ${isAvailable}`);
+        
+        if (!isAvailable) {
+          console.log(`Skipping ${time} - too soon`);
+          continue; // Skip times that are too soon
+        }
+      } catch (error) {
+        console.error(`Error in isTimeAvailable for ${time}:`, error);
+        // Continue anyway to see what happens
       }
 
       // Count how many bookings exist for this time slot
