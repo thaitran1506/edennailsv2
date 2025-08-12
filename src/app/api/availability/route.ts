@@ -51,7 +51,7 @@ async function getGoogleSheetBookings(date: string): Promise<Array<{ appointment
       console.log(`Found ${appointments.length} total appointments in Google Sheets`);
       
       // Log all appointments for debugging
-      appointments.forEach((appointment: any, index: number) => {
+      appointments.forEach((appointment: { appointmentDate?: string; appointmentTime?: string; customerName?: string }, index: number) => {
         console.log(`Appointment ${index + 1}:`, {
           appointmentDate: appointment.appointmentDate,
           appointmentTime: appointment.appointmentTime,
@@ -112,7 +112,7 @@ async function getGoogleSheetBookings(date: string): Promise<Array<{ appointment
       console.log(`Filtered to ${filteredAppointments.length} appointments for ${date}`);
       
       // Log filtered appointments
-      filteredAppointments.forEach((appointment: any, index: number) => {
+      filteredAppointments.forEach((appointment: { appointmentDate?: string; appointmentTime?: string; customerName?: string }, index: number) => {
         console.log(`Filtered appointment ${index + 1}:`, {
           appointmentDate: appointment.appointmentDate,
           appointmentTime: appointment.appointmentTime,
