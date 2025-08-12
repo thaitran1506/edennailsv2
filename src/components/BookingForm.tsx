@@ -20,12 +20,12 @@ const SERVICES: Service[] = [
   { id: 'manicure', name: 'Manicure', price: '$25' },
   { id: 'gel-manicure', name: 'Gel Manicure', price: '$35' },
   { id: 'pedicure', name: 'Pedicure', price: '$35' },
-  { id: 'gel-pedicure', name: 'Gel Pedicure', price: '$45' },
+  { id: 'gel-pedicure', name: 'Gel Pedicure', price: '$50' },
   { id: 'full-set', name: 'Full Set', price: '$50' },
   { id: 'fill', name: 'Fill', price: '$40' },
   { id: 'dipping-powder', name: 'Dipping Powder', price: '$40' },
   { id: 'eden-signature-pedicure', name: 'Eden Signature Pedicure', price: '$55' },
-  { id: 'pedicure-special', name: 'Pedicure Special', price: '$40' },
+  { id: 'pedicure-special', name: 'Pedicure Special', price: '$50' },
 ];
 
 export default function BookingForm() {
