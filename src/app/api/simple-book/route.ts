@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Simple in-memory storage for availability (same as simple-availability)
 const availabilityStore = new Map<string, number>();
