@@ -256,6 +256,8 @@ export async function GET(req: NextRequest) {
     const requestedDate = new Date(date);
     const dayName = requestedDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
     
+    console.log(`Requested date: ${date}, Day of week: ${dayName}`);
+    
     const businessHours = {
       monday: { open: '10:00', close: '19:00', closed: false },
       tuesday: { open: '10:00', close: '19:00', closed: false },
@@ -267,6 +269,7 @@ export async function GET(req: NextRequest) {
     };
     
     const dayConfig = businessHours[dayName as keyof typeof businessHours];
+    console.log(`Business hours for ${dayName}: ${dayConfig.open} - ${dayConfig.close}`);
     
     if (dayConfig.closed) {
       return NextResponse.json({
@@ -282,6 +285,9 @@ export async function GET(req: NextRequest) {
     
     const startTime = openHour * 60 + openMinute;
     const endTime = closeHour * 60 + closeMinute;
+    
+    console.log(`Generating time slots from ${openHour}:${openMinute.toString().padStart(2, '0')} to ${closeHour}:${closeMinute.toString().padStart(2, '0')}`);
+    console.log(`Start time in minutes: ${startTime}, End time in minutes: ${endTime}`);
     
                         // Generate 1-hour slots with availability info
                     for (let time = startTime; time < endTime; time += 60) {
