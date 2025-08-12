@@ -71,11 +71,13 @@ export default function BookingForm() {
       setIsLoadingSlots(true);
       try {
         const response = await fetch(`/api/availability?date=${value}`);
-        const data = await response.json();
-        
-        if (data.success) {
-          setAvailableTimeSlots(data.timeSlots);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('API Response for date', value, ':', data);
+          console.log('Available time slots:', data.timeSlots);
+          setAvailableTimeSlots(data.timeSlots || []);
         } else {
+          console.error('Failed to fetch availability');
           setAvailableTimeSlots([]);
         }
       } catch (error) {
