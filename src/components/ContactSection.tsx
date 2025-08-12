@@ -29,34 +29,34 @@ export default function ContactSection() {
         <div className="p-4 flex justify-center">
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 max-w-md w-full">
             <div className="space-y-3">
-              <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                <span className="text-[#88636f] font-medium text-sm">Monday</span>
-                <span className="text-[#181113] font-semibold text-sm">10:00 AM - 7:00 PM</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                <span className="text-[#88636f] font-medium text-sm">Tuesday</span>
-                <span className="text-[#181113] font-semibold text-sm">10:00 AM - 7:00 PM</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                <span className="text-[#88636f] font-medium text-sm">Wednesday</span>
-                <span className="text-[#181113] font-semibold text-sm">10:00 AM - 7:00 PM</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                <span className="text-[#88636f] font-medium text-sm">Thursday</span>
-                <span className="text-[#181113] font-semibold text-sm">10:00 AM - 7:00 PM</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                <span className="text-[#88636f] font-medium text-sm">Friday</span>
-                <span className="text-[#181113] font-semibold text-sm">10:00 AM - 8:00 PM</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                <span className="text-[#88636f] font-medium text-sm">Saturday</span>
-                <span className="text-[#181113] font-semibold text-sm">9:00 AM - 6:00 PM</span>
-              </div>
-              <div className="flex justify-between items-center py-2">
-                <span className="text-[#88636f] font-medium text-sm">Sunday</span>
-                <span className="text-[#181113] font-semibold text-sm">11:00 AM - 5:00 PM</span>
-              </div>
+                              <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-[#88636f] font-medium text-sm">Monday</span>
+                  <span className="text-[#181113] font-semibold text-sm">9:00 AM - 7:00 PM</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-[#88636f] font-medium text-sm">Tuesday</span>
+                  <span className="text-[#181113] font-semibold text-sm">9:00 AM - 7:00 PM</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-[#88636f] font-medium text-sm">Wednesday</span>
+                  <span className="text-[#181113] font-semibold text-sm">9:00 AM - 7:00 PM</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-[#88636f] font-medium text-sm">Thursday</span>
+                  <span className="text-[#181113] font-semibold text-sm">9:00 AM - 7:00 PM</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-[#88636f] font-medium text-sm">Friday</span>
+                  <span className="text-[#181113] font-semibold text-sm">9:00 AM - 7:00 PM</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-[#88636f] font-medium text-sm">Saturday</span>
+                  <span className="text-[#181113] font-semibold text-sm">10:00 AM - 6:00 PM</span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-[#88636f] font-medium text-sm">Sunday</span>
+                  <span className="text-[#181113] font-semibold text-sm">10:00 AM - 6:00 PM</span>
+                </div>
             </div>
           </div>
         </div>
