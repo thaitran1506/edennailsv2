@@ -58,15 +58,6 @@ export default function GallerySection() {
   return (
     <section id="gallery" className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#181113] mb-4 font-elegant">
-            Our Gallery
-          </h2>
-          <p className="text-lg text-[#88636f] max-w-2xl mx-auto">
-            Discover our stunning nail art designs and transformations. Each piece is crafted with precision and creativity.
-          </p>
-        </div>
-
         {/* 3x3 Grid Gallery */}
         <div className="grid grid-cols-3 gap-4 max-w-4xl mx-auto">
           {imageSets[currentImageSet].map((image, index) => (
