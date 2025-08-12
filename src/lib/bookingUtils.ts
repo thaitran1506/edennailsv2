@@ -96,13 +96,21 @@ export function generateTimeSlotsForDate(date: string): string[] {
 // Check if a time is at least 1 hour from now
 export const isTimeAvailable = (date: string, time: string): boolean => {
   const now = new Date();
-  const bookingDateTime = new Date(`${date}T${time}:00`);
+  
+  // Create the booking date/time in the local timezone
+  const [year, month, day] = date.split('-').map(Number);
+  const [hours, minutes] = time.split(':').map(Number);
+  
+  // Create booking datetime in local timezone
+  const bookingDateTime = new Date(year, month - 1, day, hours, minutes, 0);
+  
+  // Add 1 hour to current time
   const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
   
   console.log(`Time check: ${date} ${time}`);
-  console.log(`Now: ${now.toISOString()}`);
-  console.log(`Booking time: ${bookingDateTime.toISOString()}`);
-  console.log(`One hour from now: ${oneHourFromNow.toISOString()}`);
+  console.log(`Now: ${now.toISOString()} (${now.toLocaleString()})`);
+  console.log(`Booking time: ${bookingDateTime.toISOString()} (${bookingDateTime.toLocaleString()})`);
+  console.log(`One hour from now: ${oneHourFromNow.toISOString()} (${oneHourFromNow.toLocaleString()})`);
   console.log(`Available: ${bookingDateTime >= oneHourFromNow}`);
   
   return bookingDateTime >= oneHourFromNow;
