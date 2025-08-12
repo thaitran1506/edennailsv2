@@ -18,15 +18,125 @@ function getClientIdentifier(req: NextRequest): string {
   return `${ip}-${userAgent.substring(0, 50)}`;
 }
 
-function isTimeSlotAvailable(date: string, time: string): boolean {
-  const slotKey = `${date}-${time}`;
-  const slotData = appointmentStore.get(slotKey);
-  
-  if (!slotData) {
-    return true; // No appointments booked for this slot
+// Function to fetch actual bookings from Google Sheets (same as availability API)
+async function getGoogleSheetBookings(date: string): Promise<Array<{ appointmentTime: string; customerName: string }>> {
+  try {
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
+    
+    console.log(`Fetching Google Sheet bookings for date: ${date} in appointments API`);
+    
+    const response = await fetch(scriptUrl, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Handle different response formats
+      let appointments = [];
+      if (data.appointments) {
+        appointments = data.appointments;
+      } else if (data.success && data.appointments) {
+        appointments = data.appointments;
+      } else if (Array.isArray(data)) {
+        appointments = data;
+      }
+      
+      console.log(`Found ${appointments.length} total appointments in Google Sheets`);
+      
+      // Filter appointments by date
+      const filteredAppointments = appointments.filter((appointment: { appointmentDate?: string; appointmentTime?: string }) => {
+        if (!appointment.appointmentDate || !appointment.appointmentTime) return false;
+        
+        // Try to parse the appointment date
+        let appointmentDateStr = appointment.appointmentDate;
+        
+        // Handle different date formats
+        if (typeof appointmentDateStr === 'string') {
+          // If it's an ISO string, extract just the date part
+          if (appointmentDateStr.includes('T')) {
+            appointmentDateStr = appointmentDateStr.split('T')[0];
+          }
+          
+          // If it's already in YYYY-MM-DD format, use it directly
+          if (/^\d{4}-\d{2}-\d{2}$/.test(appointmentDateStr)) {
+            return appointmentDateStr === date;
+          }
+          
+          // If it's a date object, convert to string
+          if (appointmentDateStr.includes('/')) {
+            const dateParts = appointmentDateStr.split('/');
+            if (dateParts.length === 3) {
+              // Handle MM/DD/YYYY format
+              const month = dateParts[0].padStart(2, '0');
+              const day = dateParts[1].padStart(2, '0');
+              const year = dateParts[2];
+              appointmentDateStr = `${year}-${month}-${day}`;
+            }
+          }
+          
+          return appointmentDateStr === date;
+        }
+        
+        return false;
+      });
+      
+      console.log(`Filtered to ${filteredAppointments.length} appointments for ${date}`);
+      
+      // Return appointments with time and customer info
+      return filteredAppointments.map((appointment: { appointmentTime: string; customerName: string }) => ({
+        appointmentTime: appointment.appointmentTime,
+        customerName: appointment.customerName
+      }));
+      
+    } else {
+      console.error('Google Sheets error response:', response.status, response.statusText);
+    }
+  } catch (error) {
+    console.error('Error fetching Google Sheet bookings:', error);
   }
   
-  return slotData.appointments.length < MAX_APPOINTMENTS_PER_SLOT;
+  return [];
+}
+
+function isTimeSlotAvailable(date: string, time: string, googleSheetBookings: Array<{ appointmentTime: string; customerName: string }>): boolean {
+  // Count bookings from Google Sheets for this time slot
+  const googleSheetBookingsAtTime = googleSheetBookings.filter(booking => {
+    let bookingTime = booking.appointmentTime;
+    
+    // Handle different time formats
+    if (typeof bookingTime === 'string') {
+      // If it's an ISO string with date, extract just the time part
+      if (bookingTime.includes('T')) {
+        const timePart = bookingTime.split('T')[1];
+        if (timePart.includes(':')) {
+          bookingTime = timePart.split(':').slice(0, 2).join(':');
+        }
+      }
+      
+      // If it's already in HH:MM format, use it directly
+      if (/^\d{2}:\d{2}$/.test(bookingTime)) {
+        return bookingTime === time;
+      }
+      
+      // Handle other time formats if needed
+      return bookingTime === time;
+    }
+    
+    return false;
+  });
+  
+  // Also check in-memory store (for new bookings in this session)
+  const slotKey = `${date}-${time}`;
+  const slotData = appointmentStore.get(slotKey);
+  const inMemoryBookings = slotData ? slotData.appointments.length : 0;
+  
+  const totalBookings = googleSheetBookingsAtTime.length + inMemoryBookings;
+  
+  console.log(`Appointments API - Time ${time}: Google Sheet bookings: ${googleSheetBookingsAtTime.length}, In-memory: ${inMemoryBookings}, Total: ${totalBookings}, Available: ${totalBookings < MAX_APPOINTMENTS_PER_SLOT}`);
+  
+  return totalBookings < MAX_APPOINTMENTS_PER_SLOT;
 }
 
 function bookTimeSlot(date: string, time: string, appointmentId: string): void {
@@ -97,8 +207,11 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // Check if time slot is available
-    if (!isTimeSlotAvailable(body.date, body.time)) {
+    // Fetch Google Sheets data to check real-time availability
+    const googleSheetBookings = await getGoogleSheetBookings(body.date);
+    
+    // Check if time slot is available using Google Sheets data
+    if (!isTimeSlotAvailable(body.date, body.time, googleSheetBookings)) {
       return NextResponse.json(
         { 
           success: false, 
