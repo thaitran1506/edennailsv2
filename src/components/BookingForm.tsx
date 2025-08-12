@@ -1,7 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { getAvailableTimeSlots, formatTimeForDisplay, getMinBookingDate, getMaxBookingDate, TimeSlot } from '../lib/bookingUtils';
+import { 
+  getAvailableTimeSlots, 
+  formatTimeForDisplay, 
+  getMinBookingDate, 
+  getMaxBookingDate, 
+  TimeSlot,
+  generateTimeSlots,
+  isTimeAvailable,
+  TECHNICIANS
+} from '../lib/bookingUtils';
 
 interface AppointmentData {
   name: string;
@@ -73,7 +82,19 @@ export default function BookingForm() {
           setAvailableTimeSlots(slots);
         } catch (error) {
           console.error('Error fetching time slots:', error);
-          setAvailableTimeSlots([]);
+          // If CORS error, show all time slots as available
+          if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+            const allSlots = generateTimeSlots()
+              .filter(time => isTimeAvailable(value, time))
+              .map(time => ({
+                time,
+                availableSlots: 3,
+                technicians: TECHNICIANS.map(tech => tech.name)
+              }));
+            setAvailableTimeSlots(allSlots);
+          } else {
+            setAvailableTimeSlots([]);
+          }
         } finally {
           setIsLoadingSlots(false);
         }

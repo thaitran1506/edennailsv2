@@ -47,8 +47,14 @@ export const getAvailableTimeSlots = async (date: string): Promise<TimeSlot[]> =
   const allTimeSlots = generateTimeSlots();
   const availableSlots: TimeSlot[] = [];
 
-  // Get existing bookings for this date from Google Sheets
-  const existingBookings = await getExistingBookings(date);
+  // Try to get existing bookings, but don't fail if CORS blocks it
+  let existingBookings: BookingData[] = [];
+  try {
+    existingBookings = await getExistingBookings(date);
+  } catch (error) {
+    console.warn('Could not fetch existing bookings due to CORS. Using fallback availability.');
+    // Continue with empty bookings array - this means all slots appear available
+  }
 
   for (const time of allTimeSlots) {
     if (!isTimeAvailable(date, time)) {
@@ -104,6 +110,7 @@ export const getExistingBookings = async (date: string): Promise<BookingData[]> 
     }
   } catch (error) {
     console.error('Error fetching existing bookings:', error);
+    throw error; // Re-throw to let caller handle it
   }
   
   return [];
@@ -111,30 +118,43 @@ export const getExistingBookings = async (date: string): Promise<BookingData[]> 
 
 // Check if a specific time slot is available
 export const isSlotAvailable = async (date: string, time: string): Promise<boolean> => {
-  const existingBookings = await getExistingBookings(date);
-  const bookingsAtThisTime = existingBookings.filter(
-    booking => booking.appointmentTime === time
-  );
-  
-  return bookingsAtThisTime.length < 3;
+  try {
+    const existingBookings = await getExistingBookings(date);
+    const bookingsAtThisTime = existingBookings.filter(
+      booking => booking.appointmentTime === time
+    );
+    
+    return bookingsAtThisTime.length < 3;
+  } catch (error) {
+    console.warn('Could not verify slot availability due to CORS. Assuming available.');
+    return true; // Assume available if we can't check
+  }
 };
 
 // Get next available technician for a time slot
 export const getNextAvailableTechnician = async (date: string, time: string): Promise<string> => {
-  const existingBookings = await getExistingBookings(date);
-  const bookingsAtThisTime = existingBookings.filter(
-    booking => booking.appointmentTime === time
-  );
+  try {
+    const existingBookings = await getExistingBookings(date);
+    const bookingsAtThisTime = existingBookings.filter(
+      booking => booking.appointmentTime === time
+    );
 
-  // Get technician IDs that are already booked
-  const bookedTechnicianIds = bookingsAtThisTime.map(booking => booking.technicianId);
-  
-  // Find the first available technician
-  const availableTechnician = TECHNICIANS.find(tech => 
-    !bookedTechnicianIds.includes(tech.id)
-  );
+    // Get technician IDs that are already booked
+    const bookedTechnicianIds = bookingsAtThisTime.map(booking => booking.technicianId);
+    
+    // Find the first available technician
+    const availableTechnician = TECHNICIANS.find(tech => 
+      !bookedTechnicianIds.includes(tech.id)
+    );
 
-  return availableTechnician?.id || 'tech1'; // Fallback to first technician
+    return availableTechnician?.id || 'tech1'; // Fallback to first technician
+  } catch (error) {
+    console.warn('Could not determine technician availability due to CORS. Using default assignment.');
+    // Use round-robin assignment based on time
+    const timeIndex = generateTimeSlots().indexOf(time);
+    const technicianIndex = timeIndex % TECHNICIANS.length;
+    return TECHNICIANS[technicianIndex]?.id || 'tech1';
+  }
 };
 
 // Format time for display
