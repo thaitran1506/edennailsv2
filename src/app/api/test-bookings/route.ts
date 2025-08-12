@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       } catch (error) {
         results.push({
           test: test.description,
-          error: error.message,
+          error: error instanceof Error ? error.message : String(error),
           url: test.url
         });
       }
