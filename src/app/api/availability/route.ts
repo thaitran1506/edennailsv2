@@ -163,8 +163,10 @@ export async function GET(req: NextRequest) {
       console.log(`All time slots: ${allTimeSlots.join(', ')}`);
       
       try {
-        const isAvailable = isTimeAvailable(date, time);
-        console.log(`isTimeAvailable(${date}, ${time}) returned: ${isAvailable}`);
+        // TEMPORARY TEST: Skip the isTimeAvailable check to see if that's the issue
+        console.log(`TEMPORARY TEST: Skipping isTimeAvailable check for ${time}`);
+        const isAvailable = true; // Force all times to be available for testing
+        console.log(`isTimeAvailable(${date}, ${time}) returned: ${isAvailable} (FORCED TRUE FOR TESTING)`);
         
         if (!isAvailable) {
           console.log(`Skipping ${time} - too soon`);
