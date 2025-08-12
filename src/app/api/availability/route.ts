@@ -163,10 +163,9 @@ export async function GET(req: NextRequest) {
       console.log(`All time slots: ${allTimeSlots.join(', ')}`);
       
       try {
-        // TEMPORARY TEST: Skip the isTimeAvailable check to see if that's the issue
-        console.log(`TEMPORARY TEST: Skipping isTimeAvailable check for ${time}`);
-        const isAvailable = true; // Force all times to be available for testing
-        console.log(`isTimeAvailable(${date}, ${time}) returned: ${isAvailable} (FORCED TRUE FOR TESTING)`);
+        // Check if this time is available (at least 1 hour from now)
+        const isAvailable = isTimeAvailable(date, time);
+        console.log(`isTimeAvailable(${date}, ${time}) returned: ${isAvailable}`);
         
         if (!isAvailable) {
           console.log(`Skipping ${time} - too soon`);
@@ -174,7 +173,7 @@ export async function GET(req: NextRequest) {
         }
       } catch (error) {
         console.error(`Error in isTimeAvailable for ${time}:`, error);
-        // Continue anyway to see what happens
+        continue; // Skip this time slot if there's an error
       }
 
       // Count how many bookings exist for this time slot
