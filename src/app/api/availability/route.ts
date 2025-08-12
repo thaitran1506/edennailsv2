@@ -27,7 +27,7 @@ async function getGoogleSheetBookings(date: string): Promise<Array<{ appointment
   try {
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
     
-    console.log(`Fetching Google Sheet bookings for date: ${date}`);
+    console.log(`\n=== Fetching Google Sheet bookings for date: ${date} ===`);
     
     const response = await fetch(scriptUrl, {
       method: 'GET',
@@ -36,6 +36,7 @@ async function getGoogleSheetBookings(date: string): Promise<Array<{ appointment
 
     if (response.ok) {
       const data = await response.json();
+      console.log('Raw Google Sheets response:', JSON.stringify(data, null, 2));
       
       // Handle different response formats
       let appointments = [];
@@ -49,23 +50,41 @@ async function getGoogleSheetBookings(date: string): Promise<Array<{ appointment
       
       console.log(`Found ${appointments.length} total appointments in Google Sheets`);
       
+      // Log all appointments for debugging
+      appointments.forEach((appointment: any, index: number) => {
+        console.log(`Appointment ${index + 1}:`, {
+          appointmentDate: appointment.appointmentDate,
+          appointmentTime: appointment.appointmentTime,
+          customerName: appointment.customerName,
+          rawDate: appointment.appointmentDate,
+          rawTime: appointment.appointmentTime
+        });
+      });
+      
       // Filter appointments by date
       const filteredAppointments = appointments.filter((appointment: { appointmentDate?: string; appointmentTime?: string }) => {
-        if (!appointment.appointmentDate || !appointment.appointmentTime) return false;
+        if (!appointment.appointmentDate || !appointment.appointmentTime) {
+          console.log('Skipping appointment - missing date or time:', appointment);
+          return false;
+        }
         
         // Try to parse the appointment date
         let appointmentDateStr = appointment.appointmentDate;
+        console.log(`Processing appointment date: "${appointmentDateStr}" for target date: "${date}"`);
         
         // Handle different date formats
         if (typeof appointmentDateStr === 'string') {
           // If it's an ISO string, extract just the date part
           if (appointmentDateStr.includes('T')) {
             appointmentDateStr = appointmentDateStr.split('T')[0];
+            console.log(`Extracted date from ISO string: "${appointmentDateStr}"`);
           }
           
           // If it's already in YYYY-MM-DD format, use it directly
           if (/^\d{4}-\d{2}-\d{2}$/.test(appointmentDateStr)) {
-            return appointmentDateStr === date;
+            const matches = appointmentDateStr === date;
+            console.log(`Date comparison: "${appointmentDateStr}" === "${date}" = ${matches}`);
+            return matches;
           }
           
           // If it's a date object, convert to string
@@ -77,16 +96,29 @@ async function getGoogleSheetBookings(date: string): Promise<Array<{ appointment
               const day = dateParts[1].padStart(2, '0');
               const year = dateParts[2];
               appointmentDateStr = `${year}-${month}-${day}`;
+              console.log(`Converted MM/DD/YYYY to YYYY-MM-DD: "${appointmentDateStr}"`);
             }
           }
           
-          return appointmentDateStr === date;
+          const matches = appointmentDateStr === date;
+          console.log(`Final date comparison: "${appointmentDateStr}" === "${date}" = ${matches}`);
+          return matches;
         }
         
+        console.log('Skipping appointment - date is not a string:', appointmentDateStr);
         return false;
       });
       
       console.log(`Filtered to ${filteredAppointments.length} appointments for ${date}`);
+      
+      // Log filtered appointments
+      filteredAppointments.forEach((appointment: any, index: number) => {
+        console.log(`Filtered appointment ${index + 1}:`, {
+          appointmentDate: appointment.appointmentDate,
+          appointmentTime: appointment.appointmentTime,
+          customerName: appointment.customerName
+        });
+      });
       
       // Return appointments with time and customer info
       return filteredAppointments.map((appointment: { appointmentTime: string; customerName: string }) => ({
@@ -105,9 +137,13 @@ async function getGoogleSheetBookings(date: string): Promise<Array<{ appointment
 }
 
 function isTimeSlotAvailable(date: string, time: string, googleSheetBookings: Array<{ appointmentTime: string; customerName: string }>): boolean {
+  console.log(`\n--- Checking availability for ${date} at ${time} ---`);
+  console.log(`Total Google Sheet bookings to check: ${googleSheetBookings.length}`);
+  
   // Count bookings from Google Sheets for this time slot
   const googleSheetBookingsAtTime = googleSheetBookings.filter(booking => {
     let bookingTime = booking.appointmentTime;
+    console.log(`Checking booking time: "${bookingTime}" against target time: "${time}"`);
     
     // Handle different time formats
     if (typeof bookingTime === 'string') {
@@ -116,18 +152,24 @@ function isTimeSlotAvailable(date: string, time: string, googleSheetBookings: Ar
         const timePart = bookingTime.split('T')[1];
         if (timePart.includes(':')) {
           bookingTime = timePart.split(':').slice(0, 2).join(':');
+          console.log(`Extracted time from ISO string: "${bookingTime}"`);
         }
       }
       
       // If it's already in HH:MM format, use it directly
       if (/^\d{2}:\d{2}$/.test(bookingTime)) {
-        return bookingTime === time;
+        const matches = bookingTime === time;
+        console.log(`Time comparison: "${bookingTime}" === "${time}" = ${matches}`);
+        return matches;
       }
       
       // Handle other time formats if needed
-      return bookingTime === time;
+      const matches = bookingTime === time;
+      console.log(`Fallback time comparison: "${bookingTime}" === "${time}" = ${matches}`);
+      return matches;
     }
     
+    console.log(`Skipping booking - time is not a string: ${bookingTime}`);
     return false;
   });
   
