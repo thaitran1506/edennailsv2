@@ -114,16 +114,20 @@ export async function POST(req: NextRequest) {
 
     // Prepare appointment data
     const appointmentData = {
-      timestamp: new Date().toISOString(),
-      name: body.name.trim(),
-      email: body.email.trim().toLowerCase(),
-      phone: body.phone.trim(),
+      appointmentId: `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      status: 'PENDING',
+      appointmentDate: new Date(body.date + 'T' + body.time + ':00.000Z').toISOString(),
+      appointmentTime: new Date('1899-12-30T' + body.time + ':00.000Z').toISOString(),
       service: body.service.trim(),
-      date: body.date,
-      time: body.time,
-      specialRequest: body.specialRequest ? body.specialRequest.trim() : '',
-      rawDate: body.date,
-      rawTime: body.time,
+      duration: '1 hour',
+      customerName: body.name.trim(),
+      customerEmail: body.email.trim().toLowerCase(),
+      customerPhone: parseInt(body.phone.replace(/[\s\-\(\)]/g, '')),
+      specialRequests: body.specialRequest ? body.specialRequest.trim() : '',
+      bookingSubmittedAt: new Date().toISOString(),
+      clientPlatform: 'web',
+      rawDate: new Date(body.date + 'T' + body.time + ':00.000Z').toISOString(),
+      rawTime: new Date('1899-12-30T' + body.time + ':00.000Z').toISOString(),
       type: 'appointment'
     };
 
