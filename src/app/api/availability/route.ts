@@ -122,11 +122,9 @@ export async function GET(req: NextRequest) {
 
     console.log(`\n=== Availability Check for ${date} ===`);
 
-    // Clear cache for today to ensure fresh data
-    if (date === new Date().toISOString().split('T')[0]) {
-      cache.delete(`bookings_${date}`);
-      console.log(`Cache cleared for today (${date})`);
-    }
+    // Force clear all cache to ensure fresh data and debugging
+    cache.clear();
+    console.log(`All cache cleared to ensure fresh data`);
 
     // Get existing bookings server-side (no CORS issues)
     const existingBookings = await getExistingBookingsServerSide(date);

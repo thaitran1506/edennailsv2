@@ -59,7 +59,10 @@ export default function BookingConfirmationModal({
   if (!isOpen) return null;
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    // Handle YYYY-MM-DD format correctly in local timezone
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // month is 0-indexed
+    
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
