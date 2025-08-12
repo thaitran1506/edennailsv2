@@ -1,6 +1,6 @@
 export default function ContactSection() {
   return (
-    <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 flex flex-1 justify-center py-16 bg-white">
+    <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 flex flex-1 justify-center py-8 bg-white">
       <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
         <div className="flex flex-wrap justify-center gap-3 p-4">
           <p className="text-[#181113] tracking-light text-[32px] font-bold leading-tight min-w-72 text-center">Contact Us</p>

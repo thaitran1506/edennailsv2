@@ -37,7 +37,10 @@ export default function Home() {
         <HeroSection onBookNow={handleBookNow} />
       </div>
       
-      <div id="gallery" className="py-16 bg-white">
+      {/* Break line */}
+      <hr className="border-gray-200" />
+      
+      <div id="gallery" className="py-8 bg-white">
         <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40">
           <div className="text-center mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#181113] mb-4 font-elegant">
@@ -51,11 +54,17 @@ export default function Home() {
         </div>
       </div>
       
+      {/* Break line */}
+      <hr className="border-gray-200" />
+      
       <div id="services">
         <ServicesSection onBookNow={handleBookNow} />
       </div>
       
-      <section id="about" className="py-16 bg-white">
+      {/* Break line */}
+      <hr className="border-gray-200" />
+      
+      <section id="about" className="py-8 bg-white">
         <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 flex flex-1 justify-center">
           <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div className="flex flex-wrap justify-center gap-3 p-4">
@@ -77,13 +86,19 @@ export default function Home() {
         </div>
       </section>
       
-      <section id="booking" className="py-16 bg-white">
+      {/* Break line */}
+      <hr className="border-gray-200" />
+      
+      <section id="booking" className="py-8 bg-white">
         <div className="flex justify-center items-center w-full">
           <div className="w-full px-4">
             <BookingForm />
           </div>
         </div>
       </section>
+      
+      {/* Break line */}
+      <hr className="border-gray-200" />
       
       <div id="contact">
         <ContactSection />
