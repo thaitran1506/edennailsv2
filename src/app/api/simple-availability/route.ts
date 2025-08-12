@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { initializeAvailabilityForDate } from '../../../lib/availabilityStore';
+import { initializeAvailabilityForDate, bookTimeSlot } from '../../../lib/availabilityStore';
 
 export async function GET(req: NextRequest) {
   try {
