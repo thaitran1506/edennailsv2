@@ -51,7 +51,7 @@ export const getAvailableTimeSlots = async (date: string): Promise<TimeSlot[]> =
   let existingBookings: BookingData[] = [];
   try {
     existingBookings = await getExistingBookings(date);
-  } catch (_error) {
+  } catch {
     console.warn('Could not fetch existing bookings due to CORS. Using fallback availability.');
     // Continue with empty bookings array - this means all slots appear available
   }
@@ -125,7 +125,7 @@ export const isSlotAvailable = async (date: string, time: string): Promise<boole
     );
     
     return bookingsAtThisTime.length < 3;
-  } catch (_error) {
+  } catch {
     console.warn('Could not verify slot availability due to CORS. Assuming available.');
     return true; // Assume available if we can't check
   }
@@ -148,7 +148,7 @@ export const getNextAvailableTechnician = async (date: string, time: string): Pr
     );
 
     return availableTechnician?.id || 'tech1'; // Fallback to first technician
-  } catch (_error) {
+  } catch {
     console.warn('Could not determine technician availability due to CORS. Using default assignment.');
     // Use round-robin assignment based on time
     const timeIndex = generateTimeSlots().indexOf(time);
