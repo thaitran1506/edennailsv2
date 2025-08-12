@@ -76,18 +76,20 @@ export default function BookingForm() {
       try {
         const cacheBuster = Date.now();
         const response = await fetch(`/api/availability?date=${value}&_t=${cacheBuster}`);
-        if (response.ok) {
-          const data = await response.json();
-          console.log('API Response for date', value, ':', data);
-          console.log('Available time slots:', data.timeSlots);
-          console.log('Time slots details:', data.timeSlots.map((slot: { time: string; availableSlots: number; technicians: string[] }) => ({
-            time: slot.time,
-            availableSlots: slot.availableSlots,
-            technicians: slot.technicians
-          })));
-          console.log('Debug info:', data.debug);
-          setAvailableTimeSlots(data.timeSlots || []);
-        } else {
+                        if (response.ok) {
+                  const data = await response.json();
+                  console.log('API Response for date', value, ':', JSON.stringify(data, null, 2));
+                  console.log('Available time slots:', data.timeSlots);
+                  console.log('Time slots details:', data.timeSlots.map((slot: { time: string; availableSlots: number; technicians: string[] }) => ({
+                    time: slot.time,
+                    availableSlots: slot.availableSlots,
+                    technicians: slot.technicians
+                  })));
+                  console.log('Debug info:', JSON.stringify(data.debug, null, 2));
+                  console.log('Total existing bookings:', data.totalExistingBookings);
+                  console.log('Cached:', data.cached);
+                  setAvailableTimeSlots(data.timeSlots || []);
+                } else {
           console.error('Failed to fetch availability');
           setAvailableTimeSlots([]);
         }
