@@ -62,19 +62,16 @@ export default function Home() {
               <p className="text-[#181113] tracking-light text-[32px] font-bold leading-tight min-w-72 text-center">About Us</p>
             </div>
             <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              Welcome to Eden Nails, where luxury meets artistry in the heart of Portland. Founded in 2020 by Sarah Chen, a passionate nail artist with over 15 years of experience, Eden Nails was born from a simple yet powerful vision: to create a sanctuary where every client feels pampered, beautiful, and confident.
+              Eden Nails was founded in 2018 by two Vietnamese immigrants who came to Portland with little more than determination, grit, and a dream: to build a better life for their two sons—and to share their passion for beauty with the community that welcomed them.
             </p>
             <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              Our journey began in a small studio with just two chairs and a dream. Today, we&apos;ve grown into one of Portland&apos;s most beloved nail salons, serving thousands of satisfied clients who trust us with their nail care needs. What sets us apart is our unwavering commitment to quality, hygiene, and personalized service.
+              Like many immigrant families, they faced challenges: long hours, language barriers, and the pressure of starting over. But with relentless hard work and deep-rooted family values, they turned those challenges into purpose. Eden Nails is the heart of that journey—a family-owned salon built on love, resilience, and the belief that every person deserves to feel seen, cared for, and confident in their own skin.
             </p>
             <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              At Eden Nails, we believe that beautiful nails are more than just a fashion statement—they&apos;re a form of self-expression and self-care. That&apos;s why we use only the highest quality products and stay up-to-date with the latest trends and techniques in nail art and care.
+              Located in the vibrant city of Portland, Eden Nails is more than a place for great nail care. It&apos;s a space where neighbors become friends, where diversity is celebrated, and where kindness is always in style. Every service—whether a simple manicure or a detailed nail design—is done with skill, pride, and the kind of attention that only comes from people who truly care.
             </p>
             <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              Our team of skilled technicians is not just trained in the technical aspects of nail care, but also in the art of creating a relaxing, welcoming atmosphere. We understand that your time with us is precious, and we strive to make every visit a memorable experience.
-            </p>
-            <p className="text-[#181113] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              Whether you&apos;re looking for a classic manicure, a bold nail art design, or a relaxing pedicure, we&apos;re here to bring your vision to life. Join our growing family of clients who have made Eden Nails their go-to destination for all things nail care.
+              At Eden Nails, we believe in the power of small businesses, the strength of immigrant families, and the beauty of building something together—from the ground up, one polished nail at a time.
             </p>
           </div>
         </div>
