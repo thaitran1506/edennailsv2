@@ -77,10 +77,7 @@ export default function BookingConfirmationModal({
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
-  const totalDuration = appointment.services.reduce((total, service) => {
-    const duration = parseInt(service.duration.split(' ')[0]);
-    return total + duration;
-  }, 0);
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
