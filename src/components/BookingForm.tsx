@@ -43,7 +43,15 @@ export default function BookingForm() {
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [confirmationData, setConfirmationData] = useState<any>(null);
+  const [confirmationData, setConfirmationData] = useState<{
+    date: string;
+    time: string;
+    services: Service[];
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    specialRequests?: string;
+  } | null>(null);
 
   const getBusinessHoursInfo = (date: string) => {
     const selectedDate = new Date(date);

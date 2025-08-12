@@ -309,8 +309,6 @@ export async function POST(req: NextRequest) {
     const technicianId = await getNextAvailableTechnicianServerSide(body.date, body.time);
     const technician = TECHNICIANS.find(tech => tech.id === technicianId);
 
-    // Prepare appointment data
-    const appointmentId = `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     // Create appointment data with human-readable formats
     const appointmentData = {
       appointmentId: `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
