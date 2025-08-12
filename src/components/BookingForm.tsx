@@ -100,9 +100,7 @@ export default function BookingForm() {
 
   const getMinBookingDate = () => {
     const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1); // Book from tomorrow
-    return tomorrow.toISOString().split('T')[0];
+    return today.toISOString().split('T')[0]; // Allow booking for today
   };
 
   const getMaxBookingDate = () => {
