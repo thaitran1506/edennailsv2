@@ -14,18 +14,17 @@ interface Service {
   id: string;
   name: string;
   price: string;
-  duration: string;
 }
 
 const SERVICES: Service[] = [
-  { id: 'manicure', name: 'Manicure', price: '$25', duration: '30 minutes' },
-  { id: 'gel-manicure', name: 'Gel Manicure', price: '$35', duration: '45 minutes' },
-  { id: 'pedicure', name: 'Pedicure', price: '$35', duration: '45 minutes' },
-  { id: 'gel-pedicure', name: 'Gel Pedicure', price: '$45', duration: '60 minutes' },
-  { id: 'full-set', name: 'Full Set', price: '$45', duration: '60 minutes' },
-  { id: 'fill', name: 'Fill', price: '$35', duration: '45 minutes' },
-  { id: 'eden-signature-pedicure', name: 'Eden Signature Pedicure', price: '$55', duration: '75 minutes' },
-  { id: 'pedicure-special', name: 'Pedicure Special', price: '$40', duration: '60 minutes' },
+  { id: 'manicure', name: 'Manicure', price: '$25' },
+  { id: 'gel-manicure', name: 'Gel Manicure', price: '$35' },
+  { id: 'pedicure', name: 'Pedicure', price: '$35' },
+  { id: 'gel-pedicure', name: 'Gel Pedicure', price: '$45' },
+  { id: 'full-set', name: 'Full Set', price: '$45' },
+  { id: 'fill', name: 'Fill', price: '$35' },
+  { id: 'eden-signature-pedicure', name: 'Eden Signature Pedicure', price: '$55' },
+  { id: 'pedicure-special', name: 'Pedicure Special', price: '$40' },
 ];
 
 export default function BookingForm() {
@@ -292,10 +291,9 @@ export default function BookingForm() {
                           </svg>
                         )}
                       </div>
-                      <div>
-                        <h3 className="font-medium text-[#181113]">{service.name}</h3>
-                        <p className="text-sm text-[#88636f]">{service.duration}</p>
-                      </div>
+                                             <div>
+                         <h3 className="font-medium text-[#181113]">{service.name}</h3>
+                       </div>
                     </div>
                     <span className="font-semibold text-[#eb477e]">{service.price}</span>
                   </div>

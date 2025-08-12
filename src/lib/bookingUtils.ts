@@ -99,6 +99,12 @@ export const isTimeAvailable = (date: string, time: string): boolean => {
   const bookingDateTime = new Date(`${date}T${time}:00`);
   const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
   
+  console.log(`Time check: ${date} ${time}`);
+  console.log(`Now: ${now.toISOString()}`);
+  console.log(`Booking time: ${bookingDateTime.toISOString()}`);
+  console.log(`One hour from now: ${oneHourFromNow.toISOString()}`);
+  console.log(`Available: ${bookingDateTime >= oneHourFromNow}`);
+  
   return bookingDateTime >= oneHourFromNow;
 };
 

@@ -6,7 +6,6 @@ interface Service {
   id: string;
   name: string;
   price: string;
-  duration: string;
 }
 
 interface BookingConfirmationModalProps {
