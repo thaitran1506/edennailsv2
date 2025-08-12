@@ -13,6 +13,12 @@ interface BookingData {
   specialRequests: string;
   bookingSubmittedAt: string;
   status: string;
+  duration?: string;
+  clientPlatform?: string;
+  rawDate?: string;
+  rawTime?: string;
+  type?: string;
+  technicianName?: string;
 }
 
 // Server-side function to fetch existing bookings from Google Sheets
