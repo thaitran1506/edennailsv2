@@ -129,6 +129,10 @@ export async function GET(req: NextRequest) {
     // Force clear all cache to ensure fresh data and debugging
     cache.clear();
     console.log(`All cache cleared to ensure fresh data`);
+    
+    // Add a timestamp to force cache miss
+    const cacheBuster = Date.now();
+    console.log(`Cache buster timestamp: ${cacheBuster}`);
 
     // Get existing bookings server-side (no CORS issues)
     const existingBookings = await getExistingBookingsServerSide(date);
@@ -219,15 +223,28 @@ export async function GET(req: NextRequest) {
 
     console.log(`\nFinal result: ${availableSlots.length} available time slots`);
 
+    // Don't cache this result to ensure fresh data
+    const cacheKey = `bookings_${date}`;
+    if (cache.has(cacheKey)) {
+      cache.delete(cacheKey);
+      console.log(`Removed cache for ${cacheKey} to ensure fresh data`);
+    }
+
     return NextResponse.json({
       success: true,
       date,
       timeSlots: availableSlots,
       totalExistingBookings: existingBookings.length,
-      cached: cache.has(`bookings_${date}`),
+      cached: false, // Force to false to ensure fresh data
+      cacheBuster,
       debug: {
         allBookings: existingBookings,
-        allTimeSlots: allTimeSlots
+        allTimeSlots: allTimeSlots,
+        currentTime: new Date().toISOString(),
+        timeAvailabilityChecks: availableSlots.map(slot => ({
+          time: slot.time,
+          available: true // All slots in availableSlots passed the time check
+        }))
       }
     });
 
