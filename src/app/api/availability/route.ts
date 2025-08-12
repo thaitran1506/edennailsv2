@@ -55,13 +55,41 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
       
       console.log(`Found ${appointments.length} total appointments`);
       
-      // Optimized date filtering - only process appointments for the requested date
+      // Filter appointments by date
       const filteredAppointments = appointments.filter((appointment: { appointmentDate?: string }) => {
         if (!appointment.appointmentDate) return false;
         
-        // Fast date comparison - extract just the date part
-        const appointmentDateStr = appointment.appointmentDate.split('T')[0];
-        return appointmentDateStr === date;
+        // Try to parse the appointment date
+        let appointmentDateStr = appointment.appointmentDate;
+        
+        // Handle different date formats
+        if (typeof appointmentDateStr === 'string') {
+          // If it's an ISO string, extract just the date part
+          if (appointmentDateStr.includes('T')) {
+            appointmentDateStr = appointmentDateStr.split('T')[0];
+          }
+          
+          // If it's already in YYYY-MM-DD format, use it directly
+          if (/^\d{4}-\d{2}-\d{2}$/.test(appointmentDateStr)) {
+            return appointmentDateStr === date;
+          }
+          
+          // If it's a date object, convert to string
+          if (appointmentDateStr.includes('/')) {
+            const dateParts = appointmentDateStr.split('/');
+            if (dateParts.length === 3) {
+              // Handle MM/DD/YYYY format
+              const month = dateParts[0].padStart(2, '0');
+              const day = dateParts[1].padStart(2, '0');
+              const year = dateParts[2];
+              appointmentDateStr = `${year}-${month}-${day}`;
+            }
+          }
+          
+          return appointmentDateStr === date;
+        }
+        
+        return false;
       });
       
       console.log(`Filtered to ${filteredAppointments.length} appointments for ${date}`);
@@ -127,8 +155,33 @@ export async function GET(req: NextRequest) {
         continue; // Skip times that are too soon
       }
 
-      // Fast lookup instead of filtering
-      const bookingsAtThisTime = bookingsByTime.get(time) || [];
+      // Count how many bookings exist for this time slot
+      const bookingsAtThisTime = existingBookings.filter((appointment: { appointmentTime?: string }) => {
+        if (!appointment.appointmentTime) return false;
+        
+        let appointmentTimeStr = appointment.appointmentTime;
+        
+        // Handle different time formats
+        if (typeof appointmentTimeStr === 'string') {
+          // If it's an ISO string with date, extract just the time part
+          if (appointmentTimeStr.includes('T')) {
+            const timePart = appointmentTimeStr.split('T')[1];
+            if (timePart.includes(':')) {
+              appointmentTimeStr = timePart.split(':').slice(0, 2).join(':');
+            }
+          }
+          
+          // If it's already in HH:MM format, use it directly
+          if (/^\d{2}:\d{2}$/.test(appointmentTimeStr)) {
+            return appointmentTimeStr === time;
+          }
+          
+          // Handle other time formats if needed
+          return appointmentTimeStr === time;
+        }
+        
+        return false;
+      });
       const availableSlotsCount = Math.max(0, 3 - bookingsAtThisTime.length);
       
       console.log(`Time ${time}: ${bookingsAtThisTime.length} bookings, ${availableSlotsCount} available`);

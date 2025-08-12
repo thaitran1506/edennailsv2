@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TECHNICIANS } from '../../../lib/bookingUtils';
+import { TECHNICIANS, formatTimeForDisplay } from '../../../lib/bookingUtils';
 
 interface BookingData {
   appointmentId: string;
@@ -19,6 +19,9 @@ interface BookingData {
   rawTime?: string;
   type?: string;
   technicianName?: string;
+  readableDate?: string;
+  readableTime?: string;
+  readableDateTime?: string;
 }
 
 interface CacheEntry {
@@ -63,13 +66,41 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
         appointments = data;
       }
       
-      // Optimized date filtering - only process appointments for the requested date
+      // Filter appointments by date
       const filteredAppointments = appointments.filter((appointment: { appointmentDate?: string }) => {
         if (!appointment.appointmentDate) return false;
         
-        // Fast date comparison - extract just the date part
-        const appointmentDateStr = appointment.appointmentDate.split('T')[0];
-        return appointmentDateStr === date;
+        // Try to parse the appointment date
+        let appointmentDateStr = appointment.appointmentDate;
+        
+        // Handle different date formats
+        if (typeof appointmentDateStr === 'string') {
+          // If it's an ISO string, extract just the date part
+          if (appointmentDateStr.includes('T')) {
+            appointmentDateStr = appointmentDateStr.split('T')[0];
+          }
+          
+          // If it's already in YYYY-MM-DD format, use it directly
+          if (/^\d{4}-\d{2}-\d{2}$/.test(appointmentDateStr)) {
+            return appointmentDateStr === date;
+          }
+          
+          // If it's a date object, convert to string
+          if (appointmentDateStr.includes('/')) {
+            const dateParts = appointmentDateStr.split('/');
+            if (dateParts.length === 3) {
+              // Handle MM/DD/YYYY format
+              const month = dateParts[0].padStart(2, '0');
+              const day = dateParts[1].padStart(2, '0');
+              const year = dateParts[2];
+              appointmentDateStr = `${year}-${month}-${day}`;
+            }
+          }
+          
+          return appointmentDateStr === date;
+        }
+        
+        return false;
       });
       
       // Cache the result (shared cache)
@@ -91,9 +122,33 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
 async function isSlotAvailableServerSide(date: string, time: string): Promise<boolean> {
   try {
     const existingBookings = await getExistingBookingsServerSide(date);
-    const bookingsAtThisTime = existingBookings.filter(
-      (booking: BookingData) => booking.appointmentTime === time
-    );
+    // Count how many bookings exist for this time slot
+    const bookingsAtThisTime = existingBookings.filter((appointment: { appointmentTime?: string }) => {
+      if (!appointment.appointmentTime) return false;
+      
+      let appointmentTimeStr = appointment.appointmentTime;
+      
+      // Handle different time formats
+      if (typeof appointmentTimeStr === 'string') {
+        // If it's an ISO string with date, extract just the time part
+        if (appointmentTimeStr.includes('T')) {
+          const timePart = appointmentTimeStr.split('T')[1];
+          if (timePart.includes(':')) {
+            appointmentTimeStr = timePart.split(':').slice(0, 2).join(':');
+          }
+        }
+        
+        // If it's already in HH:MM format, use it directly
+        if (/^\d{2}:\d{2}$/.test(appointmentTimeStr)) {
+          return appointmentTimeStr === time;
+        }
+        
+        // Handle other time formats if needed
+        return appointmentTimeStr === time;
+      }
+      
+      return false;
+    });
     
     return bookingsAtThisTime.length < 3;
   } catch (error) {
@@ -255,24 +310,39 @@ export async function POST(req: NextRequest) {
     const technician = TECHNICIANS.find(tech => tech.id === technicianId);
 
     // Prepare appointment data
-    const appointmentData: BookingData = {
-      appointmentId: `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    const appointmentId = `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Create appointment data with human-readable formats
+    const appointmentData = {
+      appointmentId: appointmentId,
       status: 'PENDING',
-      appointmentDate: new Date(body.date + 'T' + body.time + ':00.000Z').toISOString(),
-      appointmentTime: new Date('1899-12-30T' + body.time + ':00.000Z').toISOString(),
-      service: body.service.trim(),
+      appointmentDate: body.date, // Store as YYYY-MM-DD for easy reading
+      appointmentTime: body.time, // Store as HH:MM for easy reading
+      service: body.service,
       duration: '1 hour',
-      customerName: body.name.trim(),
-      customerEmail: body.email.trim().toLowerCase(),
-      customerPhone: parseInt(body.phone.replace(/[\s\-\(\)]/g, '')),
-      specialRequests: body.specialRequest ? body.specialRequest.trim() : '',
+      customerName: body.name,
+      customerEmail: body.email,
+      customerPhone: parseInt(body.phone),
+      specialRequests: body.specialRequest || 'None',
       bookingSubmittedAt: new Date().toISOString(),
       clientPlatform: 'web',
-      rawDate: new Date(body.date + 'T' + body.time + ':00.000Z').toISOString(),
-      rawTime: new Date('1899-12-30T' + body.time + ':00.000Z').toISOString(),
+      rawDate: body.date, // Keep original format for compatibility
+      rawTime: body.time, // Keep original format for compatibility
       type: 'appointment',
       technicianId: technicianId,
-      technicianName: technician?.name || 'Sarah Chen'
+      technicianName: technician?.name || 'Sarah Chen',
+      // Add human-readable fields for easier Google Sheets viewing
+      readableDate: new Date(body.date).toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }),
+      readableTime: formatTimeForDisplay(body.time),
+      readableDateTime: `${new Date(body.date).toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      })} at ${formatTimeForDisplay(body.time)}`
     };
 
     // Send to Google Sheets
