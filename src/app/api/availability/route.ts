@@ -15,9 +15,21 @@ interface BookingData {
   status: string;
 }
 
-// Server-side function to fetch existing bookings from Google Sheets
+// Simple in-memory cache (in production, use Redis or similar)
+const cache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 30000; // 30 seconds
+
+// Optimized server-side function to fetch existing bookings from Google Sheets
 async function getExistingBookingsServerSide(date: string): Promise<BookingData[]> {
   try {
+    // Check cache first
+    const cacheKey = `bookings_${date}`;
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      console.log(`Cache hit for ${date}`);
+      return cached.data;
+    }
+
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
     
     console.log(`Fetching bookings for date: ${date}`);
@@ -28,11 +40,8 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
       headers: { 'Content-Type': 'application/json' },
     });
 
-    console.log(`Response status: ${response.status}`);
-    
     if (response.ok) {
       const data = await response.json();
-      console.log('Google Apps Script response:', JSON.stringify(data, null, 2));
       
       // Handle different response formats
       let appointments = [];
@@ -46,37 +55,20 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
       
       console.log(`Found ${appointments.length} total appointments`);
       
-      // Filter appointments by date
+      // Optimized date filtering - only process appointments for the requested date
       const filteredAppointments = appointments.filter((appointment: { appointmentDate?: string }) => {
         if (!appointment.appointmentDate) return false;
         
-        // Try to parse the appointment date
-        let appointmentDateStr = appointment.appointmentDate;
-        
-        // Handle different date formats
-        if (typeof appointmentDateStr === 'string') {
-          // If it's an ISO string, extract just the date part
-          if (appointmentDateStr.includes('T')) {
-            appointmentDateStr = appointmentDateStr.split('T')[0];
-          }
-          
-          // If it's a date object, convert to string
-          if (appointmentDateStr.includes('/')) {
-            const dateParts = appointmentDateStr.split('/');
-            if (dateParts.length === 3) {
-              const year = dateParts[2];
-              const month = dateParts[0].padStart(2, '0');
-              const day = dateParts[1].padStart(2, '0');
-              appointmentDateStr = `${year}-${month}-${day}`;
-            }
-          }
-        }
-        
-        console.log(`Comparing appointment date: ${appointmentDateStr} with requested date: ${date}`);
+        // Fast date comparison - extract just the date part
+        const appointmentDateStr = appointment.appointmentDate.split('T')[0];
         return appointmentDateStr === date;
       });
       
       console.log(`Filtered to ${filteredAppointments.length} appointments for ${date}`);
+      
+      // Cache the result
+      cache.set(cacheKey, { data: filteredAppointments, timestamp: Date.now() });
+      
       return filteredAppointments;
     } else {
       console.error('Google Apps Script error response:', response.status, response.statusText);
@@ -111,40 +103,32 @@ export async function GET(req: NextRequest) {
     const allTimeSlots = generateTimeSlots();
     const availableSlots = [];
 
+    // Create a fast lookup map for bookings by time
+    const bookingsByTime = new Map<string, BookingData[]>();
+    existingBookings.forEach(booking => {
+      if (booking.appointmentTime) {
+        // Normalize time format quickly
+        let normalizedTime = booking.appointmentTime;
+        if (normalizedTime.includes('T')) {
+          const timePart = normalizedTime.split('T')[1];
+          normalizedTime = timePart.split('.')[0].substring(0, 5);
+        }
+        normalizedTime = normalizedTime.replace(/[.:]/g, ':');
+        
+        if (!bookingsByTime.has(normalizedTime)) {
+          bookingsByTime.set(normalizedTime, []);
+        }
+        bookingsByTime.get(normalizedTime)!.push(booking);
+      }
+    });
+
     for (const time of allTimeSlots) {
       if (!isTimeAvailable(date, time)) {
         continue; // Skip times that are too soon
       }
 
-      // Count how many bookings exist for this time slot
-      const bookingsAtThisTime = existingBookings.filter(
-        (booking: BookingData) => {
-          // Try different time formats
-          const bookingTime = booking.appointmentTime;
-          if (!bookingTime) return false;
-          
-          // Normalize time formats
-          let normalizedBookingTime = bookingTime;
-          if (typeof bookingTime === 'string') {
-            // Remove any timezone info
-            if (bookingTime.includes('T')) {
-              const timePart = bookingTime.split('T')[1];
-              normalizedBookingTime = timePart.split('.')[0].substring(0, 5);
-            }
-            // Handle different separators
-            normalizedBookingTime = normalizedBookingTime.replace(/[.:]/g, ':');
-          }
-          
-          const matches = normalizedBookingTime === time;
-          
-          if (matches) {
-            console.log(`Found booking at ${time}: ${booking.customerName} (${booking.appointmentTime} -> ${normalizedBookingTime})`);
-          }
-          
-          return matches;
-        }
-      );
-
+      // Fast lookup instead of filtering
+      const bookingsAtThisTime = bookingsByTime.get(time) || [];
       const availableSlotsCount = Math.max(0, 3 - bookingsAtThisTime.length);
       
       console.log(`Time ${time}: ${bookingsAtThisTime.length} bookings, ${availableSlotsCount} available`);
@@ -166,6 +150,7 @@ export async function GET(req: NextRequest) {
       date,
       timeSlots: availableSlots,
       totalExistingBookings: existingBookings.length,
+      cached: cache.has(`bookings_${date}`),
       debug: {
         allBookings: existingBookings,
         allTimeSlots: allTimeSlots

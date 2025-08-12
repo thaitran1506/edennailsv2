@@ -24,6 +24,14 @@ interface BookingData {
 // Server-side function to fetch existing bookings from Google Sheets
 async function getExistingBookingsServerSide(date: string): Promise<BookingData[]> {
   try {
+    // Check cache first (shared with availability API)
+    const cacheKey = `bookings_${date}`;
+    const cached = (global as any).bookingCache?.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < 30000) {
+      console.log(`Cache hit for ${date} in appointments API`);
+      return cached.data;
+    }
+
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
     
     // The Google Apps Script doesn't support date filtering, so we get all appointments
@@ -45,34 +53,20 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
         appointments = data;
       }
       
-      // Filter appointments by date
+      // Optimized date filtering - only process appointments for the requested date
       const filteredAppointments = appointments.filter((appointment: { appointmentDate?: string }) => {
         if (!appointment.appointmentDate) return false;
         
-        // Try to parse the appointment date
-        let appointmentDateStr = appointment.appointmentDate;
-        
-        // Handle different date formats
-        if (typeof appointmentDateStr === 'string') {
-          // If it's an ISO string, extract just the date part
-          if (appointmentDateStr.includes('T')) {
-            appointmentDateStr = appointmentDateStr.split('T')[0];
-          }
-          
-          // If it's a date object, convert to string
-          if (appointmentDateStr.includes('/')) {
-            const dateParts = appointmentDateStr.split('/');
-            if (dateParts.length === 3) {
-              const year = dateParts[2];
-              const month = dateParts[0].padStart(2, '0');
-              const day = dateParts[1].padStart(2, '0');
-              appointmentDateStr = `${year}-${month}-${day}`;
-            }
-          }
-        }
-        
+        // Fast date comparison - extract just the date part
+        const appointmentDateStr = appointment.appointmentDate.split('T')[0];
         return appointmentDateStr === date;
       });
+      
+      // Cache the result (shared cache)
+      if (!(global as any).bookingCache) {
+        (global as any).bookingCache = new Map();
+      }
+      (global as any).bookingCache.set(cacheKey, { data: filteredAppointments, timestamp: Date.now() });
       
       return filteredAppointments;
     }
@@ -305,20 +299,20 @@ export async function POST(req: NextRequest) {
       currentRecord.count++;
     }
 
+    // Clear cache for this date to ensure fresh data
+    if ((global as any).bookingCache) {
+      (global as any).bookingCache.delete(`bookings_${body.date}`);
+      console.log(`Cache cleared for ${body.date} after new booking`);
+    }
+
     // Return success response
-    return NextResponse.json(
-      { 
-        success: true, 
-        message: 'Appointment booked successfully!',
-        appointmentId: appointmentData.appointmentId,
-        technicianName: appointmentData.technicianName,
-        rateLimitRemaining: rateLimit.remaining - 1
-      },
-      { 
-        status: 200,
-        headers: { 'X-RateLimit-Remaining': (rateLimit.remaining - 1).toString() }
-      }
-    );
+    return NextResponse.json({
+      success: true,
+      message: 'Appointment booked successfully!',
+      appointmentId: appointmentData.appointmentId,
+      technicianName: appointmentData.technicianName,
+      rateLimitRemaining: rateLimit.remaining - 1
+    });
 
   } catch (error) {
     console.error('Appointment booking error:', error);
