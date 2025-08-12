@@ -70,7 +70,8 @@ export default function BookingForm() {
     if (name === 'date' && value) {
       setIsLoadingSlots(true);
       try {
-        const response = await fetch(`/api/availability?date=${value}`);
+        const cacheBuster = Date.now();
+        const response = await fetch(`/api/availability?date=${value}&_t=${cacheBuster}`);
         if (response.ok) {
           const data = await response.json();
           console.log('API Response for date', value, ':', data);

@@ -133,6 +133,22 @@ export async function GET(req: NextRequest) {
     // Add a timestamp to force cache miss
     const cacheBuster = Date.now();
     console.log(`Cache buster timestamp: ${cacheBuster}`);
+    
+    // Force clear any existing cache entries for this date
+    const currentCacheKey = `bookings_${date}`;
+    if (cache.has(currentCacheKey)) {
+      cache.delete(currentCacheKey);
+      console.log(`Explicitly removed cache for ${currentCacheKey}`);
+    }
+    
+    // Clear all cache entries that might be related
+    const allCacheKeys = Array.from(cache.keys());
+    allCacheKeys.forEach(key => {
+      if (key.includes('bookings') || key.includes(date)) {
+        cache.delete(key);
+        console.log(`Removed related cache key: ${key}`);
+      }
+    });
 
     // Get existing bookings server-side (no CORS issues)
     const existingBookings = await getExistingBookingsServerSide(date);
