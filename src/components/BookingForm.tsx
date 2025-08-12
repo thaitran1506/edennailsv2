@@ -70,7 +70,7 @@ export default function BookingForm() {
   const loadAvailableSlots = async (date: string) => {
     setIsLoadingSlots(true);
     try {
-      const response = await fetch(`/api/simple-availability?date=${date}`);
+      const response = await fetch(`/api/simple-book?date=${date}`);
       if (response.ok) {
         const data = await response.json();
         console.log('Simple API Response for date', date, ':', JSON.stringify(data, null, 2));

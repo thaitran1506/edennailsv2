@@ -1,5 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { bookTimeSlot } from '../../../lib/availabilityStore';
+import { bookTimeSlot, initializeAvailabilityForDate } from '../../../lib/availabilityStore';
+
+// GET method to check availability
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const date = searchParams.get('date');
+    
+    if (!date) {
+      return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
+    }
+
+    console.log(`=== Simple Availability Check for ${date} ===`);
+    
+    const timeSlots = initializeAvailabilityForDate(date);
+    
+    console.log(`Generated ${timeSlots.length} available time slots`);
+    
+    return NextResponse.json({
+      success: true,
+      date,
+      timeSlots,
+      totalSlots: timeSlots.length
+    });
+
+  } catch (error) {
+    console.error('Error in simple availability:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch availability' },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,6 +61,20 @@ export async function POST(req: NextRequest) {
           error: 'Appointments must be booked for a future time. Please select a later time.' 
         },
         { status: 400 }
+      );
+    }
+
+    // Initialize availability for the date and check if slot is available
+    const timeSlots = initializeAvailabilityForDate(body.date);
+    const targetSlot = timeSlots.find(slot => slot.time === body.time);
+    
+    if (!targetSlot || targetSlot.availableSlots <= 0) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'This time slot is no longer available. Please select a different time.' 
+        },
+        { status: 409 }
       );
     }
 
