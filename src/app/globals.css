@@ -26,17 +26,6 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
-  background-image: 
-    radial-gradient(circle at 20% 80%, rgba(235, 71, 126, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(136, 99, 111, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(235, 71, 126, 0.02) 0%, transparent 50%),
-    radial-gradient(circle at 60% 60%, rgba(136, 99, 111, 0.02) 0%, transparent 50%),
-    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23eb477e' fill-opacity='0.02'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm0 0c0 11.046 8.954 20 20 20s20-8.954 20-20-8.954-20-20-20-20 8.954-20 20z'/%3E%3Cpath d='M30 15c-8.284 0-15 6.716-15 15s6.716 15 15 15 15-6.716 15-15-6.716-15-15-15zm0 0c8.284 0 15-6.716 15-15s-6.716-15-15-15-15 6.716-15 15 6.716 15 15 15z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2388636f' fill-opacity='0.015'%3E%3Cpath d='M20 20c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10-4.477-10-10-10zm0 0c5.523 0 10-4.477 10-10s-4.477-10-10-10-10 4.477-10 10 4.477 10 10 10z'/%3E%3Cpath d='M20 10c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10-4.477-10-10-10zm0 0c5.523 0 10-4.477 10-10s-4.477-10-10-10-10 4.477-10 10 4.477 10 10 10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 60px 60px, 40px 40px;
-  background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 20px 20px;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, repeat;
-  background-attachment: fixed;
 }
 
 .font-elegant {
@@ -71,26 +60,4 @@ body {
   .layout-content-container {
     padding: 0 10rem;
   }
-}
-
-/* Elegant section backgrounds with subtle floral accents */
-.section-elegant {
-  background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 100%),
-    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23eb477e' fill-opacity='0.03'%3E%3Cpath d='M40 40c-11.046 0-20-8.954-20-20s8.954-20 20-20 20 8.954 20 20-8.954 20-20 20zm0-35c-8.284 0-15 6.716-15 15s6.716 15 15 15 15-6.716 15-15-6.716-15-15-15z'/%3E%3Cpath d='M40 25c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm0-7c-1.105 0-2 0.895-2 2s0.895 2 2 2 2-0.895 2-2-0.895-2-2-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  background-size: 100% 100%, 80px 80px;
-  background-position: 0 0, 40px 40px;
-  background-repeat: no-repeat, repeat;
-}
-
-/* Hero section with special floral background */
-.hero-elegant {
-  background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.96) 100%),
-    radial-gradient(circle at 30% 70%, rgba(235, 71, 126, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 70% 30%, rgba(136, 99, 111, 0.04) 0%, transparent 50%),
-    url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23eb477e' fill-opacity='0.025'%3E%3Cpath d='M50 50c-13.807 0-25-11.193-25-25s11.193-25 25-25 25 11.193 25 25-11.193 25-25 25zm0-45c-11.046 0-20 8.954-20 20s8.954 20 20 20 20-8.954 20-20-8.954-20-20-20z'/%3E%3Cpath d='M50 30c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm0-7c-1.105 0-2 0.895-2 2s0.895 2 2 2 2-0.895 2-2-0.895-2-2-2z'/%3E%3Cpath d='M50 70c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm0-7c-1.105 0-2 0.895-2 2s0.895 2 2 2 2-0.895 2-2-0.895-2-2-2z'/%3E%3Cpath d='M30 50c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm-7 0c-1.105 0-2 0.895-2 2s0.895 2 2 2 2-0.895 2-2-0.895-2-2-2z'/%3E%3Cpath d='M70 50c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm-7 0c-1.105 0-2 0.895-2 2s0.895 2 2 2 2-0.895 2-2-0.895-2-2-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  background-size: 100% 100%, 100% 100%, 100% 100%, 100px 100px;
-  background-position: 0 0, 0 0, 0 0, 50px 50px;
-  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
 }

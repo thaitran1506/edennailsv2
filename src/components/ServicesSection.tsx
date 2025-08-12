@@ -54,7 +54,7 @@ export default function ServicesSection({ onBookNow }: ServicesSectionProps) {
   ];
 
   return (
-    <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 flex flex-1 justify-center py-8">
+    <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 flex flex-1 justify-center py-8 bg-white">
       <div className="layout-content-container flex flex-col max-w-[1200px] flex-1">
         {/* Header Section */}
         <div className="text-center mb-12">
