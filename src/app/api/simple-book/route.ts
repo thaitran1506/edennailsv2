@@ -1,20 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-// Simple in-memory storage for availability (same as simple-availability)
-const availabilityStore = new Map<string, number>();
-
-// Book a time slot (decrement availability)
-function bookTimeSlot(date: string, time: string): boolean {
-  const slotKey = `${date}-${time}`;
-  const currentAvailability = availabilityStore.get(slotKey) || 0;
-  
-  if (currentAvailability > 0) {
-    availabilityStore.set(slotKey, currentAvailability - 1);
-    return true;
-  }
-  
-  return false;
-}
+import { bookTimeSlot } from '../../../lib/availabilityStore';
 
 export async function POST(req: NextRequest) {
   try {
