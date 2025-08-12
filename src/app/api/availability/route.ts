@@ -241,12 +241,13 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const date = searchParams.get('date');
+    const cacheBuster = searchParams.get('_t');
     
     if (!date) {
       return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
     }
 
-    console.log(`\n=== Availability Check for ${date} ===`);
+    console.log(`\n=== Availability Check for ${date} (cache buster: ${cacheBuster}) ===`);
 
     // Fetch actual bookings from Google Sheets
     const googleSheetBookings = await getGoogleSheetBookings(date);
@@ -282,35 +283,37 @@ export async function GET(req: NextRequest) {
     const startTime = openHour * 60 + openMinute;
     const endTime = closeHour * 60 + closeMinute;
     
-    // Generate 1-hour slots with availability info
-    for (let time = startTime; time < endTime; time += 60) {
-      const hour = Math.floor(time / 60);
-      const minute = time % 60;
-      const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-      
-      // Check if slot is available using Google Sheets data
-      const isAvailable = isTimeSlotAvailable(date, timeString, googleSheetBookings);
-      const availableSpots = getAvailableSpots(date, timeString, googleSheetBookings);
-      
-      // Check if slot is in the future (allow next available slot)
-      const now = new Date();
-      
-      // Create slot datetime in Pacific Time
-      const slotDateTime = new Date(`${date}T${timeString}:00-07:00`);
-      
-      // Allow booking if slot is in the future (next available slot)
-      const isInFuture = slotDateTime.getTime() > now.getTime();
-      
-      console.log(`Time ${timeString}: available=${isAvailable}, spots=${availableSpots}, future=${isInFuture}`);
-      
-      if (isAvailable && isInFuture) {
-        availableSlots.push({
-          time: timeString,
-          availableSlots: availableSpots,
-          technicians: ['Technician 1', 'Technician 2', 'Technician 3']
-        });
-      }
-    }
+                        // Generate 1-hour slots with availability info
+                    for (let time = startTime; time < endTime; time += 60) {
+                      const hour = Math.floor(time / 60);
+                      const minute = time % 60;
+                      const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                      
+                      // Check if slot is available using Google Sheets data
+                      const isAvailable = isTimeSlotAvailable(date, timeString, googleSheetBookings);
+                      const availableSpots = getAvailableSpots(date, timeString, googleSheetBookings);
+                      
+                      // Check if slot is in the future (allow next available slot)
+                      const now = new Date();
+                      
+                      // Create slot datetime in Pacific Time
+                      const slotDateTime = new Date(`${date}T${timeString}:00-07:00`);
+                      
+                      // Allow booking if slot is in the future (next available slot)
+                      const isInFuture = slotDateTime.getTime() > now.getTime();
+                      
+                      console.log(`Time ${timeString}: available=${isAvailable}, spots=${availableSpots}, future=${isInFuture}, slotDateTime=${slotDateTime.toISOString()}, now=${now.toISOString()}`);
+                      
+                      if (isAvailable && isInFuture) {
+                        availableSlots.push({
+                          time: timeString,
+                          availableSlots: availableSpots,
+                          technicians: ['Technician 1', 'Technician 2', 'Technician 3']
+                        });
+                      } else {
+                        console.log(`Skipping ${timeString}: available=${isAvailable}, future=${isInFuture}`);
+                      }
+                    }
 
     console.log(`Final result: ${availableSlots.length} available time slots`);
 
