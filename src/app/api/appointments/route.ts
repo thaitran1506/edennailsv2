@@ -21,12 +21,22 @@ interface BookingData {
   technicianName?: string;
 }
 
+interface CacheEntry {
+  data: BookingData[];
+  timestamp: number;
+}
+
+interface GlobalCache {
+  bookingCache?: Map<string, CacheEntry>;
+}
+
 // Server-side function to fetch existing bookings from Google Sheets
 async function getExistingBookingsServerSide(date: string): Promise<BookingData[]> {
   try {
     // Check cache first (shared with availability API)
     const cacheKey = `bookings_${date}`;
-    const cached = (global as any).bookingCache?.get(cacheKey);
+    const globalCache = (global as GlobalCache);
+    const cached = globalCache.bookingCache?.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < 30000) {
       console.log(`Cache hit for ${date} in appointments API`);
       return cached.data;
@@ -44,7 +54,7 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
       const data = await response.json();
       
       // Handle different response formats
-      let appointments = [];
+      let appointments: BookingData[] = [];
       if (data.appointments) {
         appointments = data.appointments;
       } else if (data.success && data.appointments) {
@@ -63,10 +73,10 @@ async function getExistingBookingsServerSide(date: string): Promise<BookingData[
       });
       
       // Cache the result (shared cache)
-      if (!(global as any).bookingCache) {
-        (global as any).bookingCache = new Map();
+      if (!globalCache.bookingCache) {
+        globalCache.bookingCache = new Map();
       }
-      (global as any).bookingCache.set(cacheKey, { data: filteredAppointments, timestamp: Date.now() });
+      globalCache.bookingCache.set(cacheKey, { data: filteredAppointments, timestamp: Date.now() });
       
       return filteredAppointments;
     }
@@ -300,8 +310,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Clear cache for this date to ensure fresh data
-    if ((global as any).bookingCache) {
-      (global as any).bookingCache.delete(`bookings_${body.date}`);
+    const globalCache = (global as GlobalCache);
+    if (globalCache.bookingCache) {
+      globalCache.bookingCache.delete(`bookings_${body.date}`);
       console.log(`Cache cleared for ${body.date} after new booking`);
     }
 

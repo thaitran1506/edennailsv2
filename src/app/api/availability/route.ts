@@ -16,7 +16,7 @@ interface BookingData {
 }
 
 // Simple in-memory cache (in production, use Redis or similar)
-const cache = new Map<string, { data: any; timestamp: number }>();
+const cache = new Map<string, { data: BookingData[]; timestamp: number }>();
 const CACHE_DURATION = 30000; // 30 seconds
 
 // Optimized server-side function to fetch existing bookings from Google Sheets
