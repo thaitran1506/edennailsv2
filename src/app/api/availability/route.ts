@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateTimeSlots, isTimeAvailable, TECHNICIANS } from '../../../lib/bookingUtils';
+import { generateTimeSlotsForDate, isTimeAvailable, TECHNICIANS } from '../../../lib/bookingUtils';
 
 interface BookingData {
   appointmentId: string;
@@ -100,7 +100,7 @@ export async function GET(req: NextRequest) {
     console.log(`Total existing bookings for ${date}: ${existingBookings.length}`);
     
     // Generate all time slots
-    const allTimeSlots = generateTimeSlots();
+    const allTimeSlots = generateTimeSlotsForDate(date);
     const availableSlots = [];
 
     // Create a fast lookup map for bookings by time

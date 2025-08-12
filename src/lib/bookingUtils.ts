@@ -21,17 +21,77 @@ export const TECHNICIANS: Technician[] = [
   { id: 'tech3', name: 'Jennifer Kim', available: true }
 ];
 
-// Generate time slots from 9 AM to 7 PM in 30-minute increments
-export const generateTimeSlots = (): string[] => {
+// Generate time slots based on business hours
+export function generateTimeSlots(): string[] {
   const slots: string[] = [];
-  for (let hour = 9; hour <= 19; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
-      const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-      slots.push(timeString);
-    }
+  
+  // Get current date to determine day of week
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  
+  // Business hours:
+  // Monday-Friday: 9:00 AM - 7:00 PM
+  // Saturday-Sunday: 10:00 AM - 6:00 PM
+  
+  let startHour: number;
+  let endHour: number;
+  
+  if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+    // Monday-Friday: 9 AM - 7 PM
+    startHour = 9;
+    endHour = 19; // 7 PM in 24-hour format
+  } else {
+    // Saturday-Sunday: 10 AM - 6 PM
+    startHour = 10;
+    endHour = 18; // 6 PM in 24-hour format
   }
+  
+  // Generate 30-minute slots
+  for (let hour = startHour; hour < endHour; hour++) {
+    // Add :00 slot
+    slots.push(`${hour.toString().padStart(2, '0')}:00`);
+    // Add :30 slot
+    slots.push(`${hour.toString().padStart(2, '0')}:30`);
+  }
+  
   return slots;
-};
+}
+
+// Generate time slots for a specific date
+export function generateTimeSlotsForDate(date: string): string[] {
+  const slots: string[] = [];
+  
+  // Parse the date to determine day of week
+  const targetDate = new Date(date);
+  const dayOfWeek = targetDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  
+  // Business hours:
+  // Monday-Friday: 9:00 AM - 7:00 PM
+  // Saturday-Sunday: 10:00 AM - 6:00 PM
+  
+  let startHour: number;
+  let endHour: number;
+  
+  if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+    // Monday-Friday: 9 AM - 7 PM
+    startHour = 9;
+    endHour = 19; // 7 PM in 24-hour format
+  } else {
+    // Saturday-Sunday: 10 AM - 6 PM
+    startHour = 10;
+    endHour = 18; // 6 PM in 24-hour format
+  }
+  
+  // Generate 30-minute slots
+  for (let hour = startHour; hour < endHour; hour++) {
+    // Add :00 slot
+    slots.push(`${hour.toString().padStart(2, '0')}:00`);
+    // Add :30 slot
+    slots.push(`${hour.toString().padStart(2, '0')}:30`);
+  }
+  
+  return slots;
+}
 
 // Check if a time is at least 1 hour from now
 export const isTimeAvailable = (date: string, time: string): boolean => {
