@@ -313,36 +313,30 @@ export async function POST(req: NextRequest) {
     const appointmentId = `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     // Create appointment data with human-readable formats
     const appointmentData = {
-      appointmentId: appointmentId,
+      appointmentId: `APT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       status: 'PENDING',
-      appointmentDate: body.date, // Store as YYYY-MM-DD for easy reading
-      appointmentTime: body.time, // Store as HH:MM for easy reading
+      appointmentDate: body.date,
+      appointmentTime: body.time,
       service: body.service,
-      duration: '1 hour',
+      serviceName: body.serviceName || body.service,
+      servicePrice: body.servicePrice || '',
+      serviceDuration: body.serviceDuration || '1 hour',
+      duration: body.serviceDuration || '1 hour',
       customerName: body.name,
       customerEmail: body.email,
-      customerPhone: parseInt(body.phone),
-      specialRequests: body.specialRequest || 'None',
+      customerPhone: body.phone,
+      specialRequests: body.specialRequests || body.specialRequest || 'None',
       bookingSubmittedAt: new Date().toISOString(),
       clientPlatform: 'web',
-      rawDate: body.date, // Keep original format for compatibility
-      rawTime: body.time, // Keep original format for compatibility
+      rawDate: body.date,
+      rawTime: body.time,
       type: 'appointment',
       technicianId: technicianId,
       technicianName: technician?.name || 'Sarah Chen',
       // Add human-readable fields for easier Google Sheets viewing
-      readableDate: new Date(body.date).toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      }),
+      readableDate: formatTimeForDisplay(body.date),
       readableTime: formatTimeForDisplay(body.time),
-      readableDateTime: `${new Date(body.date).toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
-      })} at ${formatTimeForDisplay(body.time)}`
+      readableDateTime: `${formatTimeForDisplay(body.date)} at ${formatTimeForDisplay(body.time)}`
     };
 
     // Send to Google Sheets
