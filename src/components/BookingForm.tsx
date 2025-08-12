@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { generateTimeSlotsForDate, formatTimeForDisplay } from '../lib/bookingUtils';
+import { formatTimeForDisplay } from '../lib/bookingUtils';
 
 interface TimeSlot {
   time: string;
@@ -90,7 +90,7 @@ export default function BookingForm() {
         setSubmitStatus('error');
         setSubmitMessage(data.error || 'Failed to book appointment. Please try again.');
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus('error');
       setSubmitMessage('Network error. Please check your connection and try again.');
     } finally {
