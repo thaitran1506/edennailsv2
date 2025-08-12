@@ -1,111 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateTimeSlotsForDate, isTimeAvailable, TECHNICIANS } from '../../../lib/bookingUtils';
 
-interface BookingData {
-  appointmentId: string;
-  appointmentDate: string;
-  appointmentTime: string;
-  technicianId?: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: number;
-  service: string;
-  specialRequests: string;
-  bookingSubmittedAt: string;
-  status: string;
-}
+// In-memory storage for appointment tracking
+const appointmentStore = new Map<string, { appointments: Array<{ appointmentId: string; bookedAt: number }> }>();
 
-// Simple in-memory cache (in production, use Redis or similar)
-const cache = new Map<string, { data: BookingData[]; timestamp: number }>();
-const CACHE_DURATION = 30000; // 30 seconds
+// Salon capacity configuration
+const MAX_TECHNICIANS = 3; // Number of nail technicians available
+const MAX_APPOINTMENTS_PER_SLOT = MAX_TECHNICIANS; // One appointment per technician
 
-// Optimized server-side function to fetch existing bookings from Google Sheets
-async function getExistingBookingsServerSide(date: string): Promise<BookingData[]> {
-  try {
-    // Check cache first
-    const cacheKey = `bookings_${date}`;
-    const cached = cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      console.log(`Cache hit for ${date}`);
-      return cached.data;
-    }
-
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzem-hzGGuaR81oMojjoTAIU-0ypciqaBsQzNm6a5zczxytuZmAuRZBgsKtpNHvBnEu/exec';
-    
-    console.log(`Fetching bookings for date: ${date}`);
-    
-    // The Google Apps Script doesn't support date filtering, so we get all appointments
-    const response = await fetch(scriptUrl, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      
-      // Handle different response formats
-      let appointments = [];
-      if (data.appointments) {
-        appointments = data.appointments;
-      } else if (data.success && data.appointments) {
-        appointments = data.appointments;
-      } else if (Array.isArray(data)) {
-        appointments = data;
-      }
-      
-      console.log(`Found ${appointments.length} total appointments`);
-      
-      // Filter appointments by date
-      const filteredAppointments = appointments.filter((appointment: { appointmentDate?: string }) => {
-        if (!appointment.appointmentDate) return false;
-        
-        // Try to parse the appointment date
-        let appointmentDateStr = appointment.appointmentDate;
-        
-        // Handle different date formats
-        if (typeof appointmentDateStr === 'string') {
-          // If it's an ISO string, extract just the date part
-          if (appointmentDateStr.includes('T')) {
-            appointmentDateStr = appointmentDateStr.split('T')[0];
-          }
-          
-          // If it's already in YYYY-MM-DD format, use it directly
-          if (/^\d{4}-\d{2}-\d{2}$/.test(appointmentDateStr)) {
-            return appointmentDateStr === date;
-          }
-          
-          // If it's a date object, convert to string
-          if (appointmentDateStr.includes('/')) {
-            const dateParts = appointmentDateStr.split('/');
-            if (dateParts.length === 3) {
-              // Handle MM/DD/YYYY format
-              const month = dateParts[0].padStart(2, '0');
-              const day = dateParts[1].padStart(2, '0');
-              const year = dateParts[2];
-              appointmentDateStr = `${year}-${month}-${day}`;
-            }
-          }
-          
-          return appointmentDateStr === date;
-        }
-        
-        return false;
-      });
-      
-      console.log(`Filtered to ${filteredAppointments.length} appointments for ${date}`);
-      
-      // Cache the result
-      cache.set(cacheKey, { data: filteredAppointments, timestamp: Date.now() });
-      
-      return filteredAppointments;
+// Clean up old appointment slots (older than 7 days)
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of appointmentStore.entries()) {
+    const filteredAppointments = value.appointments.filter(
+      apt => now - apt.bookedAt <= 7 * 24 * 60 * 60 * 1000
+    );
+    if (filteredAppointments.length === 0) {
+      appointmentStore.delete(key);
     } else {
-      console.error('Google Apps Script error response:', response.status, response.statusText);
+      value.appointments = filteredAppointments;
     }
-  } catch (error) {
-    console.error('Error fetching existing bookings server-side:', error);
+  }
+}, 60 * 60 * 1000); // Clean up every hour
+
+function isTimeSlotAvailable(date: string, time: string): boolean {
+  const slotKey = `${date}-${time}`;
+  const slotData = appointmentStore.get(slotKey);
+  
+  if (!slotData) {
+    return true; // No appointments booked for this slot
   }
   
-  return [];
+  return slotData.appointments.length < MAX_APPOINTMENTS_PER_SLOT;
+}
+
+function getAvailableSpots(date: string, time: string): number {
+  const slotKey = `${date}-${time}`;
+  const slotData = appointmentStore.get(slotKey);
+  
+  if (!slotData) {
+    return MAX_APPOINTMENTS_PER_SLOT;
+  }
+  
+  return MAX_APPOINTMENTS_PER_SLOT - slotData.appointments.length;
 }
 
 export async function GET(req: NextRequest) {
@@ -117,150 +53,81 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
     }
 
-    // Test the isTimeAvailable function
-    console.log(`\n=== TESTING isTimeAvailable FUNCTION ===`);
-    console.log(`isTimeAvailable function exists: ${typeof isTimeAvailable}`);
-    const testResult = isTimeAvailable(date, '10:00');
-    console.log(`Test result for ${date} 10:00: ${testResult}`);
-    console.log(`=== END TEST ===\n`);
-
     console.log(`\n=== Availability Check for ${date} ===`);
 
-    // Force clear all cache to ensure fresh data and debugging
-    cache.clear();
-    console.log(`All cache cleared to ensure fresh data`);
+    // Generate business hours for the requested date
+    const requestedDate = new Date(date);
+    const dayName = requestedDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
     
-    // Add a timestamp to force cache miss
-    const cacheBuster = Date.now();
-    console.log(`Cache buster timestamp: ${cacheBuster}`);
+    const businessHours = {
+      monday: { open: '09:00', close: '18:00', closed: false },
+      tuesday: { open: '09:00', close: '18:00', closed: false },
+      wednesday: { open: '09:00', close: '18:00', closed: false },
+      thursday: { open: '09:00', close: '18:00', closed: false },
+      friday: { open: '09:00', close: '19:00', closed: false },
+      saturday: { open: '08:00', close: '17:00', closed: false },
+      sunday: { open: '10:00', close: '16:00', closed: false }
+    };
     
-    // Force clear any existing cache entries for this date
-    const currentCacheKey = `bookings_${date}`;
-    if (cache.has(currentCacheKey)) {
-      cache.delete(currentCacheKey);
-      console.log(`Explicitly removed cache for ${currentCacheKey}`);
+    const dayConfig = businessHours[dayName as keyof typeof businessHours];
+    
+    if (dayConfig.closed) {
+      return NextResponse.json({
+        success: true,
+        timeSlots: [],
+        message: 'Closed on this day'
+      });
     }
     
-    // Clear all cache entries that might be related
-    const allCacheKeys = Array.from(cache.keys());
-    allCacheKeys.forEach(key => {
-      if (key.includes('bookings') || key.includes(date)) {
-        cache.delete(key);
-        console.log(`Removed related cache key: ${key}`);
-      }
-    });
-
-    // Get existing bookings server-side (no CORS issues)
-    const existingBookings = await getExistingBookingsServerSide(date);
-    
-    console.log(`Total existing bookings for ${date}: ${existingBookings.length}`);
-    
-    // Generate all time slots
-    const allTimeSlots = generateTimeSlotsForDate(date);
     const availableSlots = [];
-
-    // Create a fast lookup map for bookings by time
-    const bookingsByTime = new Map<string, BookingData[]>();
-    existingBookings.forEach(booking => {
-      if (booking.appointmentTime) {
-        // Normalize time format quickly
-        let normalizedTime = booking.appointmentTime;
-        if (normalizedTime.includes('T')) {
-          const timePart = normalizedTime.split('T')[1];
-          normalizedTime = timePart.split('.')[0].substring(0, 5);
-        }
-        normalizedTime = normalizedTime.replace(/[.:]/g, ':');
-        
-        if (!bookingsByTime.has(normalizedTime)) {
-          bookingsByTime.set(normalizedTime, []);
-        }
-        bookingsByTime.get(normalizedTime)!.push(booking);
-      }
-    });
-
-    for (const time of allTimeSlots) {
-      console.log(`\n=== DEBUGGING TIME SLOT: ${time} ===`);
-      console.log(`All time slots: ${allTimeSlots.join(', ')}`);
+    const [openHour, openMinute] = dayConfig.open.split(':').map(Number);
+    const [closeHour, closeMinute] = dayConfig.close.split(':').map(Number);
+    
+    const startTime = openHour * 60 + openMinute;
+    const endTime = closeHour * 60 + closeMinute;
+    
+    // Generate 1-hour slots with availability info
+    for (let time = startTime; time < endTime; time += 60) {
+      const hour = Math.floor(time / 60);
+      const minute = time % 60;
+      const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
       
-      try {
-        // Check if this time is available (at least 1 hour from now)
-        const isAvailable = isTimeAvailable(date, time);
-        console.log(`isTimeAvailable(${date}, ${time}) returned: ${isAvailable}`);
-        
-        if (!isAvailable) {
-          console.log(`Skipping ${time} - too soon`);
-          continue; // Skip times that are too soon
-        }
-      } catch (error) {
-        console.error(`Error in isTimeAvailable for ${time}:`, error);
-        continue; // Skip this time slot if there's an error
-      }
-
-      // Count how many bookings exist for this time slot
-      const bookingsAtThisTime = existingBookings.filter((appointment: { appointmentTime?: string }) => {
-        if (!appointment.appointmentTime) return false;
-        
-        let appointmentTimeStr = appointment.appointmentTime;
-        
-        // Handle different time formats
-        if (typeof appointmentTimeStr === 'string') {
-          // If it's an ISO string with date, extract just the time part
-          if (appointmentTimeStr.includes('T')) {
-            const timePart = appointmentTimeStr.split('T')[1];
-            if (timePart.includes(':')) {
-              appointmentTimeStr = timePart.split(':').slice(0, 2).join(':');
-            }
-          }
-          
-          // If it's already in HH:MM format, use it directly
-          if (/^\d{2}:\d{2}$/.test(appointmentTimeStr)) {
-            return appointmentTimeStr === time;
-          }
-          
-          // Handle other time formats if needed
-          return appointmentTimeStr === time;
-        }
-        
-        return false;
-      });
-      const availableSlotsCount = Math.max(0, 3 - bookingsAtThisTime.length);
+      // Check if slot is available
+      const isAvailable = isTimeSlotAvailable(date, timeString);
+      const availableSpots = getAvailableSpots(date, timeString);
       
-      console.log(`Time ${time}: ${bookingsAtThisTime.length} bookings, ${availableSlotsCount} available`);
+      // Check if slot is in the future (allow next available slot)
+      const now = new Date();
       
-      if (availableSlotsCount > 0) {
+      // Create slot datetime in Pacific Time
+      const slotDateTime = new Date(`${date}T${timeString}:00-07:00`);
+      
+      // Allow booking if slot is in the future (next available slot)
+      const isInFuture = slotDateTime.getTime() > now.getTime();
+      
+      console.log(`Time ${timeString}: available=${isAvailable}, spots=${availableSpots}, future=${isInFuture}`);
+      
+      if (isAvailable && isInFuture) {
         availableSlots.push({
-          time,
-          availableSlots: availableSlotsCount,
-          technicians: TECHNICIANS.map(tech => tech.name),
-          totalBookings: bookingsAtThisTime.length
+          time: timeString,
+          availableSlots: availableSpots,
+          technicians: ['Technician 1', 'Technician 2', 'Technician 3']
         });
       }
     }
 
-    console.log(`\nFinal result: ${availableSlots.length} available time slots`);
-
-    // Don't cache this result to ensure fresh data
-    const cacheKey = `bookings_${date}`;
-    if (cache.has(cacheKey)) {
-      cache.delete(cacheKey);
-      console.log(`Removed cache for ${cacheKey} to ensure fresh data`);
-    }
+    console.log(`Final result: ${availableSlots.length} available time slots`);
 
     return NextResponse.json({
       success: true,
       date,
       timeSlots: availableSlots,
-      totalExistingBookings: existingBookings.length,
-      cached: false, // Force to false to ensure fresh data
-      cacheBuster,
+      totalExistingBookings: 0, // Using in-memory storage now
+      cached: false,
       debug: {
-        allBookings: existingBookings,
-        allTimeSlots: allTimeSlots,
-        currentTime: new Date().toISOString(),
-        timeAvailabilityChecks: availableSlots.map(slot => ({
-          time: slot.time,
-          available: true // All slots in availableSlots passed the time check
-        }))
+        dayName,
+        businessHours: dayConfig,
+        currentTime: new Date().toISOString()
       }
     });
 
