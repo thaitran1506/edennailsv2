@@ -67,30 +67,34 @@ export default function BookingForm() {
     }
   };
 
+  const loadAvailableSlots = async (date: string) => {
+    setIsLoadingSlots(true);
+    try {
+      const response = await fetch(`/api/simple-availability?date=${date}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Simple API Response for date', date, ':', JSON.stringify(data, null, 2));
+        console.log('Available time slots:', data.timeSlots);
+        console.log('Total slots:', data.totalSlots);
+        setAvailableTimeSlots(data.timeSlots || []);
+      } else {
+        console.error('Failed to fetch availability');
+        setAvailableTimeSlots([]);
+      }
+    } catch (error) {
+      console.error('Error fetching availability:', error);
+      setAvailableTimeSlots([]);
+    } finally {
+      setIsLoadingSlots(false);
+    }
+  };
+
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
 
     if (name === 'date' && value) {
-      setIsLoadingSlots(true);
-      try {
-        const response = await fetch(`/api/simple-availability?date=${value}`);
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Simple API Response for date', value, ':', JSON.stringify(data, null, 2));
-          console.log('Available time slots:', data.timeSlots);
-          console.log('Total slots:', data.totalSlots);
-          setAvailableTimeSlots(data.timeSlots || []);
-        } else {
-          console.error('Failed to fetch availability');
-          setAvailableTimeSlots([]);
-        }
-      } catch (error) {
-        console.error('Error fetching availability:', error);
-        setAvailableTimeSlots([]);
-      } finally {
-        setIsLoadingSlots(false);
-      }
+      await loadAvailableSlots(value);
     }
   };
 
@@ -168,7 +172,11 @@ export default function BookingForm() {
         services: [],
         specialRequests: ''
       });
-      setAvailableTimeSlots([]);
+      
+      // Refresh availability for the current date to show updated slot counts
+      if (formData.date) {
+        await loadAvailableSlots(formData.date);
+      }
 
     } catch (error) {
       console.error('Error booking appointment:', error);
