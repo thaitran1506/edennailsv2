@@ -86,7 +86,7 @@ export default function GallerySection() {
   }, [cycleImages]);
 
   // Get animation classes based on phase
-  const getAnimationClasses = (index: number) => {
+  const getAnimationClasses = () => {
     const baseClasses = 'relative aspect-square overflow-hidden rounded-lg shadow-lg transition-all duration-500 ease-in-out';
     
     switch (animationPhase) {
@@ -107,7 +107,7 @@ export default function GallerySection() {
           {imageSets[currentImageSet].map((image, index) => (
             <div
               key={`${currentImageSet}-${index}`}
-              className={getAnimationClasses(index)}
+              className={getAnimationClasses()}
               style={{
                 transitionDelay: `${index * 30}ms`, // Staggered animation
                 animationDelay: `${index * 30}ms`,
