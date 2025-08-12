@@ -74,22 +74,14 @@ export default function BookingForm() {
     if (name === 'date' && value) {
       setIsLoadingSlots(true);
       try {
-        const cacheBuster = Date.now();
-        const response = await fetch(`/api/availability?date=${value}&_t=${cacheBuster}`);
-                        if (response.ok) {
-                  const data = await response.json();
-                  console.log('API Response for date', value, ':', JSON.stringify(data, null, 2));
-                  console.log('Available time slots:', data.timeSlots);
-                  console.log('Time slots details:', data.timeSlots.map((slot: { time: string; availableSlots: number; technicians: string[] }) => ({
-                    time: slot.time,
-                    availableSlots: slot.availableSlots,
-                    technicians: slot.technicians
-                  })));
-                  console.log('Debug info:', JSON.stringify(data.debug, null, 2));
-                  console.log('Total existing bookings:', data.totalExistingBookings);
-                  console.log('Cached:', data.cached);
-                  setAvailableTimeSlots(data.timeSlots || []);
-                } else {
+        const response = await fetch(`/api/simple-availability?date=${value}`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Simple API Response for date', value, ':', JSON.stringify(data, null, 2));
+          console.log('Available time slots:', data.timeSlots);
+          console.log('Total slots:', data.totalSlots);
+          setAvailableTimeSlots(data.timeSlots || []);
+        } else {
           console.error('Failed to fetch availability');
           setAvailableTimeSlots([]);
         }
@@ -142,7 +134,7 @@ export default function BookingForm() {
         serviceCount: selectedServices.length
       };
 
-      const response = await fetch('/api/appointments', {
+      const response = await fetch('/api/simple-book', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
