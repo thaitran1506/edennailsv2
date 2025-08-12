@@ -3,21 +3,21 @@
 import { useState, useEffect, useCallback } from 'react';
 
 const galleryImages = [
-  '/images/featuredDesigns/design1.jpg',
-  '/images/featuredDesigns/design2.jpg',
-  '/images/featuredDesigns/design3.jpg',
-  '/images/featuredDesigns/design4.jpg',
-  '/images/featuredDesigns/design5.jpg',
-  '/images/featuredDesigns/design6.jpg',
-  '/images/featuredDesigns/design7.jpg',
-  '/images/featuredDesigns/design8.jpg',
-  '/images/featuredDesigns/design9.jpg',
-  '/images/featuredDesigns/design10.jpg',
-  '/images/featuredDesigns/design11.jpg',
-  '/images/featuredDesigns/design12.jpg',
-  '/images/featuredDesigns/design13.jpg',
-  '/images/featuredDesigns/design14.jpg',
-  '/images/featuredDesigns/design15.jpg',
+  '/featuredDesigns/featured1.jpg',
+  '/featuredDesigns/featured2.jpg',
+  '/featuredDesigns/featured3.jpg',
+  '/featuredDesigns/featured4.jpg',
+  '/featuredDesigns/featured5.jpg',
+  '/featuredDesigns/featured6.jpg',
+  '/featuredDesigns/featured7.jpg',
+  '/featuredDesigns/featured8.jpg',
+  '/featuredDesigns/featured9.jpg',
+  '/featuredDesigns/featured10.jpg',
+  '/featuredDesigns/featured11.jpg',
+  '/featuredDesigns/featured12.jpg',
+  '/featuredDesigns/featured13.jpg',
+  '/featuredDesigns/featured14.jpg',
+  '/featuredDesigns/featured15.jpg',
 ];
 
 export default function GallerySection() {
