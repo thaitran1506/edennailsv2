@@ -112,29 +112,32 @@ export default function BookingForm() {
     setIsSubmitting(true);
     
     try {
-      // Submit each service as a separate booking
+      // Get selected services
       const selectedServices = SERVICES.filter(service => formData.services.includes(service.id));
       
-      for (const service of selectedServices) {
-        const bookingData = {
-          ...formData,
-          service: service.id,
-          serviceName: service.name,
-          servicePrice: service.price,
-          serviceDuration: service.duration
-        };
+      // Create a single booking with all services listed
+      const bookingData = {
+        ...formData,
+        service: selectedServices.map(s => s.name).join(', '), // List all services in one field
+        serviceNames: selectedServices.map(s => s.name), // Array of service names
+        servicePrices: selectedServices.map(s => s.price), // Array of service prices
+        totalPrice: selectedServices.reduce((total, service) => {
+          const price = parseInt(service.price.replace('$', ''));
+          return total + price;
+        }, 0),
+        serviceCount: selectedServices.length
+      };
 
-        const response = await fetch('/api/appointments', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(bookingData),
-        });
+      const response = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData),
+      });
 
-        if (!response.ok) {
-          throw new Error('Failed to book appointment');
-        }
+      if (!response.ok) {
+        throw new Error('Failed to book appointment');
       }
 
       // Show confirmation modal

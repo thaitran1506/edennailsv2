@@ -315,11 +315,12 @@ export async function POST(req: NextRequest) {
       status: 'PENDING',
       appointmentDate: body.date,
       appointmentTime: body.time,
-      service: body.service,
-      serviceName: body.serviceName || body.service,
-      servicePrice: body.servicePrice || '',
-      serviceDuration: body.serviceDuration || '1 hour',
-      duration: body.serviceDuration || '1 hour',
+      service: body.service, // This now contains all services as comma-separated string
+      serviceNames: body.serviceNames || [], // Array of service names
+      servicePrices: body.servicePrices || [], // Array of service prices
+      totalPrice: body.totalPrice || 0,
+      serviceCount: body.serviceCount || 1,
+      duration: '1 hour', // Default duration
       customerName: body.name,
       customerEmail: body.email,
       customerPhone: body.phone,
@@ -331,7 +332,6 @@ export async function POST(req: NextRequest) {
       type: 'appointment',
       technicianId: technicianId,
       technicianName: technician?.name || 'Sarah Chen',
-      // Add human-readable fields for easier Google Sheets viewing
       readableDate: formatTimeForDisplay(body.date),
       readableTime: formatTimeForDisplay(body.time),
       readableDateTime: `${formatTimeForDisplay(body.date)} at ${formatTimeForDisplay(body.time)}`
