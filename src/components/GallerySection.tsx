@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import ProgressiveImage from './ProgressiveImage';
+import SkeletonLoader from './SkeletonLoader';
 
 const galleryImages = [
   '/featuredDesigns/featured1.jpg',
@@ -26,6 +28,7 @@ export default function GallerySection() {
   const [animationPhase, setAnimationPhase] = useState('idle'); // 'idle', 'fadeOut', 'fadeIn'
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [imagesLoaded, setImagesLoaded] = useState<Set<number>>(new Set());
 
   // Create 9 different image sets by rotating through the gallery images
   const createImageSets = useCallback(() => {
@@ -128,6 +131,11 @@ export default function GallerySection() {
     return () => clearInterval(interval);
   }, [cycleImages]);
 
+  // Handle image load
+  const handleImageLoad = useCallback((index: number) => {
+    setImagesLoaded(prev => new Set([...prev, index]));
+  }, []);
+
   // Get animation classes based on phase
   const getAnimationClasses = () => {
     const baseClasses = 'relative aspect-square overflow-hidden rounded-lg shadow-lg transition-all duration-500 ease-in-out cursor-pointer';
@@ -158,11 +166,13 @@ export default function GallerySection() {
                 }}
                 onClick={() => openLightbox(index)}
               >
-                <img
+                <ProgressiveImage
                   src={image}
                   alt={`Nail design ${index + 1}`}
-                  className="w-full h-full object-cover transition-all duration-700 ease-out hover:scale-110 hover:rotate-1"
-                  loading="lazy"
+                  fill
+                  className="object-cover transition-all duration-700 ease-out hover:scale-110 hover:rotate-1"
+                  sizes="(max-width: 768px) 33vw, (max-width: 1200px) 25vw, 20vw"
+                  onClick={() => openLightbox(index)}
                 />
                 {/* Enhanced overlay on hover */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-all duration-500 ease-out flex items-end justify-center pb-4">
@@ -242,10 +252,11 @@ export default function GallerySection() {
             </button>
 
             {/* Main image */}
-            <img
+            <ProgressiveImage
               src={imageSets[currentImageSet][lightboxIndex]}
               alt={`Nail design ${lightboxIndex + 1}`}
               className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+              sizes="(max-width: 768px) 90vw, 80vw"
             />
 
             {/* Image counter */}

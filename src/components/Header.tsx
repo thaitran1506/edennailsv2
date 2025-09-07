@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { RippleButton } from './MicroInteractions';
 
 export default function Header() {
   const [activeSection, setActiveSection] = useState('home');
@@ -133,12 +134,14 @@ export default function Header() {
               Contact
             </button>
           </div>
-          <button
+          <RippleButton
             onClick={handleBookNow}
-            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#eb477e] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#d63d6e] transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
+            variant="primary"
+            size="sm"
+            className="min-w-[84px] max-w-[480px] h-10 text-sm font-bold leading-normal tracking-[0.015em] shadow-md hover:shadow-lg btn-enhanced"
           >
             <span className="truncate">Book</span>
-          </button>
+          </RippleButton>
         </div>
 
         <button
@@ -223,12 +226,14 @@ export default function Header() {
               </nav>
 
               <div className="p-6 border-t border-gray-200">
-                <button
+                <RippleButton
                   onClick={handleBookNow}
-                  className="w-full bg-[#eb477e] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#d63d6e] transition-colors duration-200 shadow-md"
+                  variant="primary"
+                  size="md"
+                  className="w-full py-3 px-6 font-semibold shadow-md btn-enhanced"
                 >
                   Book Appointment
-                </button>
+                </RippleButton>
               </div>
             </div>
           </div>

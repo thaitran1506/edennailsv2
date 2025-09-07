@@ -1,5 +1,7 @@
 'use client';
 
+import { RippleButton } from './MicroInteractions';
+
 interface ServicesSectionProps {
   onBookNow: () => void;
 }
@@ -91,12 +93,14 @@ export default function ServicesSection({ onBookNow }: ServicesSectionProps) {
 
         {/* Call to Action */}
         <div className="text-center">
-          <button
+          <RippleButton
             onClick={onBookNow}
-            className="bg-[#eb477e] text-white py-3 px-8 rounded-lg font-semibold hover:bg-[#d63d6e] transition-colors duration-200"
+            variant="primary"
+            size="md"
+            className="py-3 px-8 font-semibold btn-enhanced"
           >
             Book Your Appointment
-          </button>
+          </RippleButton>
         </div>
       </div>
     </div>

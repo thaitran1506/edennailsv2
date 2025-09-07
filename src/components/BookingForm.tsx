@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { formatTimeForDisplay, getMinBookingDate, getMaxBookingDate } from '../lib/bookingUtils';
 import BookingConfirmationModal from './BookingConfirmationModal';
+import SkeletonLoader from './SkeletonLoader';
+import { AnimatedServiceCard, AnimatedTimeSlot, RippleButton, LoadingSpinner } from './MicroInteractions';
 
 interface TimeSlot {
   time: string;
@@ -277,41 +279,14 @@ export default function BookingForm() {
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {SERVICES.map((service) => (
-                <div
+                <AnimatedServiceCard
                   key={service.id}
-                  className={`border-2 rounded-lg p-4 cursor-pointer transition-all duration-200 ${
-                    formData.services.includes(service.id)
-                      ? 'border-[#eb477e] bg-[#eb477e] bg-opacity-5'
-                      : 'border-gray-200 hover:border-[#eb477e] hover:bg-gray-50'
-                  }`}
+                  title={service.name}
+                  price={service.price}
+                  description={`Professional ${service.name.toLowerCase()} service`}
+                  isSelected={formData.services.includes(service.id)}
                   onClick={() => handleServiceToggle(service.id)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={formData.services.includes(service.id)}
-                        onChange={() => handleServiceToggle(service.id)}
-                        className="sr-only"
-                      />
-                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-3 ${
-                        formData.services.includes(service.id)
-                          ? 'border-[#eb477e] bg-[#eb477e]'
-                          : 'border-gray-300'
-                      }`}>
-                        {formData.services.includes(service.id) && (
-                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </div>
-                                             <div>
-                         <h3 className="font-medium text-[#181113]">{service.name}</h3>
-                       </div>
-                    </div>
-                    <span className="font-semibold text-[#eb477e]">{service.price}</span>
-                  </div>
-                </div>
+                />
               ))}
             </div>
           </div>
@@ -322,33 +297,34 @@ export default function BookingForm() {
               Select Time *
             </label>
             {isLoadingSlots ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#eb477e]"></div>
+              <div className="space-y-4">
+                <SkeletonLoader variant="timeSlot" />
+                <div className="flex justify-center">
+                  <LoadingSpinner size="md" />
+                </div>
               </div>
             ) : availableTimeSlots.length > 0 ? (
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
                 {availableTimeSlots.map((slot) => (
-                  <button
+                  <AnimatedTimeSlot
                     key={slot.time}
-                    type="button"
+                    time={slot.time}
+                    availableSlots={slot.availableSlots}
+                    isSelected={formData.time === slot.time}
                     onClick={() => handleTimeSlotSelect(slot.time)}
-                    className={`p-3 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${
-                      formData.time === slot.time
-                        ? 'border-[#eb477e] bg-[#eb477e] text-white'
-                        : 'border-gray-200 hover:border-[#eb477e] hover:bg-gray-50'
-                    }`}
-                  >
-                    <div>{formatTimeForDisplay(slot.time)}</div>
-                    <div className="text-xs opacity-75">
-                      {slot.availableSlots} slots
-                    </div>
-                  </button>
+                  />
                 ))}
               </div>
             ) : formData.date ? (
-              <p className="text-center py-8 text-[#88636f]">No available time slots for this date.</p>
+              <div className="text-center py-8">
+                <div className="text-[#88636f] mb-2">No available time slots for this date.</div>
+                <div className="text-sm text-gray-400">Please try selecting a different date.</div>
+              </div>
             ) : (
-              <p className="text-center py-8 text-[#88636f]">Please select a date to see available time slots.</p>
+              <div className="text-center py-8">
+                <div className="text-[#88636f] mb-2">Please select a date to see available time slots.</div>
+                <div className="text-sm text-gray-400">We'll show you all available appointments.</div>
+              </div>
             )}
           </div>
 
@@ -369,20 +345,22 @@ export default function BookingForm() {
           </div>
 
           {/* Submit Button */}
-          <button
+          <RippleButton
             type="submit"
+            variant="primary"
+            size="lg"
             disabled={isSubmitting || formData.services.length === 0}
-            className="w-full bg-[#eb477e] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#d63d6e] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
+            className="w-full py-4 px-6 font-medium disabled:opacity-50 disabled:cursor-not-allowed btn-enhanced"
           >
             {isSubmitting ? (
               <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                <LoadingSpinner size="sm" className="mr-2 text-white" />
                 Booking Appointment...
               </div>
             ) : (
               'Book Appointment'
             )}
-          </button>
+          </RippleButton>
         </form>
       </div>
 
