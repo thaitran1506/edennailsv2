@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -143,7 +142,6 @@ export default function PrivacyPolicy() {
               You have the following rights regarding your personal information:
             </p>
             <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-              {/* eslint-disable-next-line react/no-unescaped-entities */}
               <li><strong>Access:</strong> Request a copy of the personal information we &#39;hold&#39; about you</li>
               <li><strong>Correction:</strong> Request correction of inaccurate or incomplete information</li>
               <li><strong>Deletion:</strong> Request deletion of your personal information</li>
