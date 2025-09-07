@@ -28,9 +28,9 @@ src/
   id: 'unique-id',                    // Unique identifier
   title: 'Promotion Title',           // Display title
   description: 'Promotion description', // Detailed description
-  discount: '20% OFF',               // Discount text
+  discount: '10% OFF',               // Discount text
   originalPrice: '$50',              // Original price (optional)
-  newPrice: '$40',                   // New price (optional)
+  newPrice: '$45',                   // New price (optional)
   validUntil: '2025-12-31',          // Expiry date (YYYY-MM-DD)
   image: '/images/promotion.jpg',     // Image path
   category: 'seasonal',              // Category type
@@ -38,6 +38,11 @@ src/
   priority: 5                        // Display order (lower = first)
 }
 ```
+
+### Current Promotions:
+1. **Online Booking Discount** - 10% off when booking online
+2. **Bring a Friend** - 10% off for both when bringing a friend
+3. **Multi-Service Package** - 10% off total bill when booking 2+ services
 
 ### 2. Available Categories:
 - `seasonal` - Seasonal promotions
@@ -116,11 +121,11 @@ The promotion system includes several utility functions:
 The promotion section is fully responsive:
 - Mobile: 1 column
 - Tablet: 2 columns
-- Desktop: 4 columns
+- Desktop: 3 columns (optimized for current 3 promotions)
 
 To modify breakpoints, edit the grid classes in `PromotionGrid.tsx`:
 ```typescript
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 ```
 
 ## 🎨 Styling

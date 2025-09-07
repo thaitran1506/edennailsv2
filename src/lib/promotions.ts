@@ -67,52 +67,37 @@ export const PROMOTION_CONFIG: PromotionConfig = {
 // Promotion data - easy to add, remove, or modify
 export const PROMOTIONS: Promotion[] = [
   {
-    id: 'new-year-2025',
-    title: 'New Year Special',
-    description: 'Start 2025 with beautiful nails! Get 20% off your first visit.',
-    discount: '20% OFF',
-    originalPrice: '$50',
-    newPrice: '$40',
-    validUntil: '2025-01-31',
+    id: 'online-booking-discount',
+    title: 'Online Booking Discount',
+    description: 'Book your appointment online and save 10% on your service! Convenient and cost-effective.',
+    discount: '10% OFF',
+    validUntil: '2025-12-31',
     image: '/images/nail-art-1.jpg',
-    category: 'seasonal',
+    category: 'new-customer',
     isActive: true,
     priority: 1
   },
   {
-    id: 'valentines-package',
-    title: 'Valentine\'s Day Package',
-    description: 'Perfect for date night! Manicure + Pedicure combo with romantic nail art.',
-    discount: '30% OFF',
-    originalPrice: '$70',
-    newPrice: '$49',
-    validUntil: '2025-02-14',
+    id: 'bring-a-friend',
+    title: 'Bring a Friend',
+    description: 'Bring a friend and both get 10% off your next appointment! Share the beauty and save together.',
+    discount: '10% OFF',
+    validUntil: '2025-12-31',
     image: '/images/nail-art-2.jpg',
-    category: 'package',
+    category: 'referral',
     isActive: true,
     priority: 2
   },
   {
-    id: 'refer-friend',
-    title: 'Refer a Friend',
-    description: 'Bring a friend and both get 15% off your next appointment!',
-    discount: '15% OFF',
+    id: 'multi-service-package',
+    title: 'Multi-Service Package',
+    description: 'Book 2 or more services and get 10% off your total bill! Perfect for a complete nail care experience.',
+    discount: '10% OFF',
     validUntil: '2025-12-31',
     image: '/images/nail-art-3.jpg',
-    category: 'referral',
+    category: 'package',
     isActive: true,
     priority: 3
-  },
-  {
-    id: 'new-customer-welcome',
-    title: 'New Customer Welcome',
-    description: 'First time visiting? Enjoy 25% off any service of your choice.',
-    discount: '25% OFF',
-    validUntil: '2025-12-31',
-    image: '/images/nail-art-4.jpg',
-    category: 'new-customer',
-    isActive: true,
-    priority: 4
   }
 ];
 
