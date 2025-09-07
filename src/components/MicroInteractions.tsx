@@ -203,22 +203,35 @@ export const AnimatedTimeSlot = ({
   return (
     <button
       className={`
-        relative overflow-hidden p-3 rounded-lg border-2 text-sm font-medium
+        time-slot-button relative overflow-hidden p-3 rounded-lg border-2 text-sm font-medium
         transition-all duration-200 ease-out transform
         ${isSelected 
-          ? 'border-[#eb477e] bg-[#eb477e] text-white scale-105 shadow-md' 
-          : 'border-gray-200 hover:border-[#eb477e] hover:bg-gray-50'
+          ? 'border-[#eb477e] bg-[#eb477e] text-white scale-105 shadow-md selected' 
+          : 'border-gray-200 text-gray-800 bg-white hover:border-[#eb477e] hover:bg-gray-50 hover:text-gray-900'
         }
         ${isHovered ? 'scale-105' : ''}
         ${className}
       `}
+      style={{
+        color: isSelected ? '#ffffff' : '#1f2937',
+        backgroundColor: isSelected ? '#eb477e' : '#ffffff',
+        WebkitTextFillColor: isSelected ? '#ffffff' : '#1f2937'
+      }}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative z-10">
-        <div>{formatTime(time)}</div>
-        <div className="text-xs opacity-75">
+      <div className="relative z-10 time-slot-text">
+        <div 
+          className={isSelected ? 'text-white' : 'text-gray-800'}
+          style={{ color: isSelected ? '#ffffff' : '#1f2937' }}
+        >
+          {formatTime(time)}
+        </div>
+        <div 
+          className={`text-xs ${isSelected ? 'text-white opacity-75' : 'text-gray-600 opacity-75'}`}
+          style={{ color: isSelected ? '#ffffff' : '#4b5563' }}
+        >
           {availableSlots} slot{availableSlots !== 1 ? 's' : ''}
         </div>
       </div>

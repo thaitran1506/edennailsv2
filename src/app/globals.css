@@ -204,3 +204,25 @@ body {
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Cross-browser compatibility fixes */
+.time-slot-button {
+  color: #1f2937 !important; /* Force dark text color */
+  background-color: #ffffff !important; /* Force white background */
+}
+
+.time-slot-button:hover {
+  color: #111827 !important; /* Darker text on hover */
+  background-color: #f9fafb !important; /* Light gray background on hover */
+}
+
+.time-slot-button.selected {
+  color: #ffffff !important; /* White text when selected */
+  background-color: #eb477e !important; /* Pink background when selected */
+}
+
+/* Ensure text is always visible */
+.time-slot-text {
+  color: inherit !important;
+  -webkit-text-fill-color: initial !important;
+}
