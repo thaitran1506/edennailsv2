@@ -202,6 +202,7 @@ export const AnimatedTimeSlot = ({
 
   return (
     <button
+      type="button"
       className={`
         time-slot-button relative overflow-hidden p-3 rounded-lg border-2 text-sm font-medium
         transition-all duration-200 ease-out transform
