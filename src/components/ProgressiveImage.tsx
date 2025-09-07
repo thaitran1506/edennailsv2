@@ -29,29 +29,8 @@ export default function ProgressiveImage({
   sizes
 }: ProgressiveImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef<HTMLDivElement>(null);
-
-  // Intersection Observer for lazy loading
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1, rootMargin: '50px' }
-    );
-
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
 
   const handleLoad = () => {
     setIsLoaded(true);
@@ -97,10 +76,8 @@ export default function ProgressiveImage({
         </div>
       )}
 
-      {/* Main image */}
-      {isInView && !hasError && (
-        <Image {...imageProps} />
-      )}
+      {/* Main image - always render, let Next.js handle lazy loading */}
+      <Image {...imageProps} />
 
       {/* Error state */}
       {hasError && (
@@ -115,7 +92,7 @@ export default function ProgressiveImage({
       )}
 
       {/* Loading shimmer effect */}
-      {!isLoaded && !hasError && isInView && (
+      {!isLoaded && !hasError && (
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
       )}
     </div>

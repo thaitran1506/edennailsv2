@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import ProgressiveImage from './ProgressiveImage';
+import Image from 'next/image';
 
 const galleryImages = [
   '/featuredDesigns/featured1.jpg',
@@ -160,7 +160,7 @@ export default function GallerySection() {
                 }}
                 onClick={() => openLightbox(index)}
               >
-                <ProgressiveImage
+                <Image
                   src={image}
                   alt={`Nail design ${index + 1}`}
                   fill
@@ -246,9 +246,11 @@ export default function GallerySection() {
             </button>
 
             {/* Main image */}
-            <ProgressiveImage
+            <Image
               src={imageSets[currentImageSet][lightboxIndex]}
               alt={`Nail design ${lightboxIndex + 1}`}
+              width={800}
+              height={600}
               className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
               sizes="(max-width: 768px) 90vw, 80vw"
             />

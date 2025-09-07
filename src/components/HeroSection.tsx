@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import ProgressiveImage from "./ProgressiveImage";
+import Image from "next/image";
 
 interface HeroSectionProps {
   onBookNow: () => void;
@@ -25,7 +25,7 @@ export default function HeroSection({ onBookNow }: HeroSectionProps) {
       <div className={`relative h-[300px] sm:h-[350px] md:h-[400px] mb-8 transition-all duration-1000 transform max-w-4xl w-full rounded-2xl overflow-hidden ${
         isHeroVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
       }`}>
-        <ProgressiveImage
+        <Image
           src="/hero/hero.jpg"
           alt="Eden Nails Salon"
           fill
