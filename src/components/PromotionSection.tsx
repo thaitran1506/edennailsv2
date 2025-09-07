@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { RippleButton } from './MicroInteractions';
 
 interface Promotion {
@@ -114,16 +115,7 @@ const getCategoryIcon = (category: string) => {
 };
 
 export default function PromotionSection() {
-  const [activePromotion, setActivePromotion] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActivePromotion((prev) => (prev + 1) % PROMOTIONS.length);
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -214,9 +206,11 @@ export default function PromotionSection() {
 
               {/* Image */}
               <div className="relative h-48 overflow-hidden">
-                <img
+                <Image
                   src={promotion.image}
                   alt={promotion.title}
+                  width={400}
+                  height={192}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
