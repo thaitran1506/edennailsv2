@@ -109,14 +109,22 @@ export default function BookingForm() {
   };
 
   const handleTimeSlotSelect = (time: string) => {
+    console.log('Time slot selected:', time, '- This only selects the slot, does not book the appointment');
     setFormData(prev => ({ ...prev, time }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Form submitted - This is the only way to book an appointment');
+    
     if (formData.services.length === 0) {
       alert('Please select at least one service.');
+      return;
+    }
+
+    if (!formData.time) {
+      alert('Please select a time slot.');
       return;
     }
 
@@ -296,6 +304,9 @@ export default function BookingForm() {
             <label className="block text-sm font-medium text-[#181113] mb-3">
               Select Time *
             </label>
+            <p className="text-sm text-[#88636f] mb-3">
+              Click on a time slot to select it. You must click "Book Appointment" to confirm your booking.
+            </p>
             {isLoadingSlots ? (
               <div className="space-y-4">
                 <SkeletonLoader variant="timeSlot" />
@@ -304,16 +315,28 @@ export default function BookingForm() {
                 </div>
               </div>
             ) : availableTimeSlots.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                {availableTimeSlots.map((slot) => (
-                  <AnimatedTimeSlot
-                    key={slot.time}
-                    time={slot.time}
-                    availableSlots={slot.availableSlots}
-                    isSelected={formData.time === slot.time}
-                    onClick={() => handleTimeSlotSelect(slot.time)}
-                  />
-                ))}
+              <div>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                  {availableTimeSlots.map((slot) => (
+                    <AnimatedTimeSlot
+                      key={slot.time}
+                      time={slot.time}
+                      availableSlots={slot.availableSlots}
+                      isSelected={formData.time === slot.time}
+                      onClick={() => handleTimeSlotSelect(slot.time)}
+                    />
+                  ))}
+                </div>
+                {formData.time && (
+                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      <strong>Selected:</strong> {new Date(`2000-01-01T${formData.time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1">
+                      Click "Book Appointment" below to confirm your booking.
+                    </p>
+                  </div>
+                )}
               </div>
             ) : formData.date ? (
               <div className="text-center py-8">
@@ -345,22 +368,34 @@ export default function BookingForm() {
           </div>
 
           {/* Submit Button */}
-          <RippleButton
-            type="submit"
-            variant="primary"
-            size="lg"
-            disabled={isSubmitting || formData.services.length === 0}
-            className="w-full py-4 px-6 font-medium disabled:opacity-50 disabled:cursor-not-allowed btn-enhanced"
-          >
-            {isSubmitting ? (
-              <div className="flex items-center justify-center">
-                <LoadingSpinner size="sm" className="mr-2 text-white" />
-                Booking Appointment...
+          <div className="space-y-3">
+            {formData.time && formData.services.length > 0 && (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-800 text-center">
+                  <strong>Ready to book!</strong> All required information has been selected.
+                </p>
               </div>
-            ) : (
-              'Book Appointment'
             )}
-          </RippleButton>
+            <RippleButton
+              type="submit"
+              variant="primary"
+              size="lg"
+              disabled={isSubmitting || formData.services.length === 0 || !formData.time}
+              className="w-full py-4 px-6 font-medium disabled:opacity-50 disabled:cursor-not-allowed btn-enhanced"
+            >
+              {isSubmitting ? (
+                <div className="flex items-center justify-center">
+                  <LoadingSpinner size="sm" className="mr-2 text-white" />
+                  Booking Appointment...
+                </div>
+              ) : (
+                'Confirm & Book Appointment'
+              )}
+            </RippleButton>
+            <p className="text-xs text-gray-500 text-center">
+              Clicking this button will book your appointment. Make sure all information is correct.
+            </p>
+          </div>
         </form>
       </div>
 
