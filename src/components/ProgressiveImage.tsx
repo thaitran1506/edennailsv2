@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 
 interface ProgressiveImageProps {
@@ -77,7 +77,7 @@ export default function ProgressiveImage({
       )}
 
       {/* Main image - always render, let Next.js handle lazy loading */}
-      <Image {...imageProps} />
+      <Image {...imageProps} alt={alt} />
 
       {/* Error state */}
       {hasError && (
