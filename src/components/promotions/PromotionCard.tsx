@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Promotion, getCategoryConfig, formatValidUntil } from '../../lib/promotions';
+import { Promotion } from '../../lib/promotions';
 import { RippleButton } from '../MicroInteractions';
 
 interface PromotionCardProps {
@@ -11,22 +11,8 @@ interface PromotionCardProps {
 }
 
 export default function PromotionCard({ promotion, onBookNow, className = '' }: PromotionCardProps) {
-  const categoryConfig = getCategoryConfig(promotion.category);
-
-  const CategoryIcon = () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={categoryConfig.icon} />
-    </svg>
-  );
-
   return (
     <div className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden ${className}`}>
-      {/* Category Badge */}
-      <div className={`absolute top-4 left-4 z-10 ${categoryConfig.color} text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1`}>
-        <CategoryIcon />
-        {categoryConfig.label}
-      </div>
-
       {/* Discount Badge */}
       <div className="absolute top-4 right-4 z-10 bg-white text-[#eb477e] px-3 py-1 rounded-full text-sm font-bold shadow-lg">
         {promotion.discount}
@@ -61,15 +47,6 @@ export default function PromotionCard({ promotion, onBookNow, className = '' }: 
           </div>
         )}
 
-        {/* Valid Until */}
-        <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-          <span className="flex items-center gap-1">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {formatValidUntil(promotion.validUntil)}
-          </span>
-        </div>
 
         {/* CTA Button */}
         <RippleButton

@@ -71,8 +71,8 @@ export const PROMOTIONS: Promotion[] = [
     title: 'Online Booking Discount',
     description: 'Book your appointment online and save 10% on your service! Convenient and cost-effective.',
     discount: '10% OFF',
-    validUntil: '2025-12-31',
-    image: '/images/nail-art-1.jpg',
+    validUntil: '',
+    image: '/images/nail-salon-service.jpg',
     category: 'new-customer',
     isActive: true,
     priority: 1
@@ -82,8 +82,8 @@ export const PROMOTIONS: Promotion[] = [
     title: 'Bring a Friend',
     description: 'Bring a friend and both get 10% off your next appointment! Share the beauty and save together.',
     discount: '10% OFF',
-    validUntil: '2025-12-31',
-    image: '/images/nail-art-2.jpg',
+    validUntil: '',
+    image: '/images/featuredDesigns/featured1.jpg',
     category: 'referral',
     isActive: true,
     priority: 2
@@ -93,8 +93,8 @@ export const PROMOTIONS: Promotion[] = [
     title: 'Multi-Service Package',
     description: 'Book 2 or more services and get 10% off your total bill! Perfect for a complete nail care experience.',
     discount: '10% OFF',
-    validUntil: '2025-12-31',
-    image: '/images/nail-art-3.jpg',
+    validUntil: '',
+    image: '/images/pedicure-service.jpg',
     category: 'package',
     isActive: true,
     priority: 3
