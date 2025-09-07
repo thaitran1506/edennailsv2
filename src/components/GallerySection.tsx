@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import ProgressiveImage from './ProgressiveImage';
-import SkeletonLoader from './SkeletonLoader';
 
 const galleryImages = [
   '/featuredDesigns/featured1.jpg',
@@ -28,7 +27,6 @@ export default function GallerySection() {
   const [animationPhase, setAnimationPhase] = useState('idle'); // 'idle', 'fadeOut', 'fadeIn'
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [imagesLoaded, setImagesLoaded] = useState<Set<number>>(new Set());
 
   // Create 9 different image sets by rotating through the gallery images
   const createImageSets = useCallback(() => {
@@ -131,10 +129,6 @@ export default function GallerySection() {
     return () => clearInterval(interval);
   }, [cycleImages]);
 
-  // Handle image load
-  const handleImageLoad = useCallback((index: number) => {
-    setImagesLoaded(prev => new Set([...prev, index]));
-  }, []);
 
   // Get animation classes based on phase
   const getAnimationClasses = () => {

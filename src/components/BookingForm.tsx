@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { formatTimeForDisplay, getMinBookingDate, getMaxBookingDate } from '../lib/bookingUtils';
+import { getMinBookingDate, getMaxBookingDate } from '../lib/bookingUtils';
 import BookingConfirmationModal from './BookingConfirmationModal';
 import SkeletonLoader from './SkeletonLoader';
 import { AnimatedServiceCard, AnimatedTimeSlot, RippleButton, LoadingSpinner } from './MicroInteractions';

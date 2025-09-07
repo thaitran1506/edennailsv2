@@ -52,18 +52,6 @@ export default function ProgressiveImage({
     return () => observer.disconnect();
   }, []);
 
-  // Generate a simple blur placeholder if none provided
-  const generateBlurDataURL = (width: number, height: number) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = '#f3f4f6';
-      ctx.fillRect(0, 0, width, height);
-    }
-    return canvas.toDataURL();
-  };
 
   const handleLoad = () => {
     setIsLoaded(true);
@@ -98,7 +86,7 @@ export default function ProgressiveImage({
           {placeholder ? (
             <Image
               src={placeholder}
-              alt=""
+              alt="Loading placeholder"
               fill
               className="blur-sm scale-110"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
