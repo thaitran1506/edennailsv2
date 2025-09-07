@@ -102,14 +102,14 @@ export default function BookingConfirmationModal({
 
         {/* Header */}
         <div className="text-center px-6 pb-4">
-          <h2 className="text-2xl font-bold text-[#181113] mb-2">Appointment Confirmed!</h2>
-          <p className="text-[#88636f]">Your booking has been successfully scheduled</p>
+          <h2 className="text-2xl font-bold text-[#181113] mb-2" style={{ color: '#181113' }}>Appointment Confirmed!</h2>
+          <p className="text-[#88636f]" style={{ color: '#88636f' }}>Your booking has been successfully scheduled</p>
         </div>
 
         {/* Appointment Details */}
         <div className="px-6 pb-6">
           <div className="bg-gray-50 rounded-lg p-4 mb-4">
-            <h3 className="font-semibold text-[#181113] mb-3">Appointment Summary</h3>
+            <h3 className="font-semibold text-[#181113] mb-3" style={{ color: '#181113' }}>Appointment Summary</h3>
             
             {/* Date & Time */}
             <div className="flex items-center mb-3">
@@ -117,8 +117,8 @@ export default function BookingConfirmationModal({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <div>
-                <p className="font-medium text-[#181113]">{formatDate(appointment.date)}</p>
-                <p className="text-sm text-[#88636f]">{formatTime(appointment.time)}</p>
+                <p className="font-medium text-[#181113]" style={{ color: '#181113' }}>{formatDate(appointment.date)}</p>
+                <p className="text-sm text-[#88636f]" style={{ color: '#88636f' }}>{formatTime(appointment.time)}</p>
               </div>
             </div>
 
@@ -129,11 +129,11 @@ export default function BookingConfirmationModal({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div className="flex-1">
-                  <p className="font-medium text-[#181113] mb-1">Services:</p>
+                  <p className="font-medium text-[#181113] mb-1" style={{ color: '#181113' }}>Services:</p>
                   {appointment.services.map((service, index) => (
                     <div key={index} className="flex justify-between items-center mb-1">
-                      <span className="text-sm text-[#88636f]">{service.name}</span>
-                      <span className="text-sm font-medium text-[#181113]">{service.price}</span>
+                      <span className="text-sm text-[#88636f]" style={{ color: '#88636f' }}>{service.name}</span>
+                      <span className="text-sm font-medium text-[#181113]" style={{ color: '#181113' }}>{service.price}</span>
                     </div>
                   ))}
                 </div>
@@ -143,13 +143,25 @@ export default function BookingConfirmationModal({
 
           {/* Customer Info */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-[#181113] mb-3">Your Information</h3>
+            <h3 className="font-semibold text-[#181113] mb-3 modal-customer-info-label" style={{ color: '#181113' }}>Your Information</h3>
             <div className="space-y-2">
-              <p className="text-sm"><span className="font-medium text-[#181113]">Name:</span> {appointment.customerName}</p>
-              <p className="text-sm"><span className="font-medium text-[#181113]">Email:</span> {appointment.customerEmail}</p>
-              <p className="text-sm"><span className="font-medium text-[#181113]">Phone:</span> {appointment.customerPhone}</p>
+              <p className="text-sm modal-customer-info" style={{ color: '#1f2937' }}>
+                <span className="font-medium text-[#181113] modal-customer-info-label" style={{ color: '#181113' }}>Name:</span> 
+                <span className="modal-customer-info-value" style={{ color: '#1f2937' }}> {appointment.customerName}</span>
+              </p>
+              <p className="text-sm modal-customer-info" style={{ color: '#1f2937' }}>
+                <span className="font-medium text-[#181113] modal-customer-info-label" style={{ color: '#181113' }}>Email:</span> 
+                <span className="modal-customer-info-value" style={{ color: '#1f2937' }}> {appointment.customerEmail}</span>
+              </p>
+              <p className="text-sm modal-customer-info" style={{ color: '#1f2937' }}>
+                <span className="font-medium text-[#181113] modal-customer-info-label" style={{ color: '#181113' }}>Phone:</span> 
+                <span className="modal-customer-info-value" style={{ color: '#1f2937' }}> {appointment.customerPhone}</span>
+              </p>
               {appointment.specialRequests && (
-                <p className="text-sm"><span className="font-medium text-[#181113]">Special Requests:</span> {appointment.specialRequests}</p>
+                <p className="text-sm modal-customer-info" style={{ color: '#1f2937' }}>
+                  <span className="font-medium text-[#181113] modal-customer-info-label" style={{ color: '#181113' }}>Special Requests:</span> 
+                  <span className="modal-customer-info-value" style={{ color: '#1f2937' }}> {appointment.specialRequests}</span>
+                </p>
               )}
             </div>
           </div>

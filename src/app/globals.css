@@ -226,3 +226,19 @@ body {
   color: inherit !important;
   -webkit-text-fill-color: initial !important;
 }
+
+/* Modal text color fixes for Chrome PC */
+.modal-customer-info {
+  color: #1f2937 !important;
+  -webkit-text-fill-color: #1f2937 !important;
+}
+
+.modal-customer-info-label {
+  color: #181113 !important;
+  -webkit-text-fill-color: #181113 !important;
+}
+
+.modal-customer-info-value {
+  color: #1f2937 !important;
+  -webkit-text-fill-color: #1f2937 !important;
+}
