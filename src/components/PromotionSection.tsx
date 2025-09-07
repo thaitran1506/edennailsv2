@@ -299,7 +299,7 @@ export default function PromotionSection() {
                       contactSection.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  variant="outline"
+                  variant="secondary"
                   size="lg"
                   className="border-white text-white hover:bg-white hover:text-[#eb477e]"
                 >
