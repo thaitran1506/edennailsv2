@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Newsreader, Playfair_Display } from "next/font/google";
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/Header";
 import "./globals.css";
 
