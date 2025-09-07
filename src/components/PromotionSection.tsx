@@ -260,68 +260,6 @@ export default function PromotionSection() {
           ))}
         </div>
 
-        {/* Featured Promotion Banner */}
-        <div className={`relative bg-gradient-to-r from-[#eb477e] to-[#d63d6e] rounded-3xl p-8 md:p-12 text-white overflow-hidden transition-all duration-1000 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`} style={{ transitionDelay: '400ms' }}>
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full blur-2xl"></div>
-            <div className="absolute bottom-0 right-0 w-40 h-40 bg-white rounded-full blur-2xl"></div>
-          </div>
-
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="flex-1 text-center lg:text-left">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-white/20 rounded-full mb-4">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-3xl md:text-4xl font-bold mb-4">
-                Limited Time Offer!
-              </h3>
-              <p className="text-lg md:text-xl opacity-90 mb-6 max-w-2xl">
-                Get 25% off your first visit when you book online. Perfect for trying our premium nail services!
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <RippleButton
-                  onClick={handleBookNow}
-                  variant="secondary"
-                  size="lg"
-                  className="bg-white text-[#eb477e] hover:bg-gray-100"
-                >
-                  Book Your First Visit
-                </RippleButton>
-                <RippleButton
-                  onClick={() => {
-                    const contactSection = document.getElementById('contact');
-                    if (contactSection) {
-                      contactSection.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                  variant="secondary"
-                  size="lg"
-                  className="border-white text-white hover:bg-white hover:text-[#eb477e]"
-                >
-                  Learn More
-                </RippleButton>
-              </div>
-            </div>
-
-            {/* Decorative Element */}
-            <div className="flex-shrink-0">
-              <div className="w-32 h-32 bg-white/10 rounded-full flex items-center justify-center">
-                <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center">
-                  <div className="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
