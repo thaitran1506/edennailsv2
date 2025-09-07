@@ -10,7 +10,7 @@ export default function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'services', 'gallery', 'about', 'booking', 'contact'];
+      const sections = ['home', 'services', 'gallery', 'promotions', 'about', 'booking', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
       for (const section of sections) {
@@ -118,6 +118,14 @@ export default function Header() {
               Services
             </button>
             <button
+              onClick={() => handleNavClick('promotions')}
+              className={`text-sm font-medium leading-normal transition-all duration-200 hover:text-[#eb477e] hover:scale-105 ${
+                activeSection === 'promotions' ? 'text-[#eb477e] font-semibold' : 'text-[#181113]'
+              }`}
+            >
+              Promotions
+            </button>
+            <button
               onClick={() => handleNavClick('about')}
               className={`text-sm font-medium leading-normal transition-all duration-200 hover:text-[#eb477e] hover:scale-105 ${
                 activeSection === 'about' ? 'text-[#eb477e] font-semibold' : 'text-[#181113]'
@@ -202,6 +210,16 @@ export default function Header() {
                   }`}
                 >
                   Services
+                </button>
+                <button
+                  onClick={() => handleNavClick('promotions')}
+                  className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 ${
+                    activeSection === 'promotions'
+                      ? 'bg-[#eb477e] text-white font-semibold'
+                      : 'text-[#181113] hover:bg-gray-100'
+                  }`}
+                >
+                  Promotions
                 </button>
                 <button
                   onClick={() => handleNavClick('about')}

@@ -5,6 +5,7 @@ import BookingForm from '../components/BookingForm';
 import HeroSection from '../components/HeroSection';
 import GallerySection from '../components/GallerySection';
 import ServicesSection from '../components/ServicesSection';
+import PromotionSection from '../components/PromotionSection';
 import ContactSection from '../components/ContactSection';
 import Footer from '../components/Footer';
 
@@ -59,6 +60,13 @@ export default function Home() {
       
       <div id="services">
         <ServicesSection onBookNow={handleBookNow} />
+      </div>
+      
+      {/* Break line */}
+      <hr className="border-gray-200" />
+      
+      <div id="promotions">
+        <PromotionSection />
       </div>
       
       {/* Break line */}
