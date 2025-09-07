@@ -97,7 +97,7 @@ export default function Home() {
       {/* Break line */}
       <hr className="border-gray-200" />
       
-      <section id="booking" className="py-8 bg-white">
+      <section id="booking" className="py-6 bg-white">
         <div className="flex justify-center items-center w-full">
           <div className="w-full px-4">
             <BookingForm />

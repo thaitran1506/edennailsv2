@@ -202,17 +202,17 @@ export default function BookingForm() {
 
   return (
     <>
-      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-[#181113] mb-4 font-elegant">Book Your Appointment</h2>
-          <p className="text-[#88636f]">Choose your services and preferred time slot</p>
+      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-[#181113] mb-2 font-elegant">Book Your Appointment</h2>
+          <p className="text-[#88636f] text-sm">Choose your services and preferred time slot</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Personal Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-[#181113] mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-[#181113] mb-1">
                 Full Name *
               </label>
               <input
@@ -222,12 +222,12 @@ export default function BookingForm() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#eb477e] focus:border-transparent text-[#181113]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#eb477e] focus:border-transparent text-[#181113]"
                 placeholder="Enter your full name"
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-[#181113] mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-[#181113] mb-1">
                 Email *
               </label>
               <input
@@ -237,14 +237,14 @@ export default function BookingForm() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#eb477e] focus:border-transparent text-[#181113]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#eb477e] focus:border-transparent text-[#181113]"
                 placeholder="Enter your email"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-[#181113] mb-2">
+            <label htmlFor="phone" className="block text-sm font-medium text-[#181113] mb-1">
               Phone Number *
             </label>
             <input
@@ -254,14 +254,14 @@ export default function BookingForm() {
               value={formData.phone}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#eb477e] focus:border-transparent text-[#181113]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#eb477e] focus:border-transparent text-[#181113]"
               placeholder="Enter your phone number"
             />
           </div>
 
           {/* Date Selection */}
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-[#181113] mb-2">
+            <label htmlFor="date" className="block text-sm font-medium text-[#181113] mb-1">
               Date *
             </label>
             <input
@@ -273,19 +273,19 @@ export default function BookingForm() {
               required
               min={getMinBookingDate()}
               max={getMaxBookingDate()}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#eb477e] focus:border-transparent text-[#181113]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#eb477e] focus:border-transparent text-[#181113]"
             />
             {formData.date && (
-              <p className="text-sm text-[#88636f] mt-2">{getBusinessHoursInfo(formData.date)}</p>
+              <p className="text-xs text-[#88636f] mt-1">{getBusinessHoursInfo(formData.date)}</p>
             )}
           </div>
 
           {/* Service Selection */}
           <div>
-            <label className="block text-sm font-medium text-[#181113] mb-3">
+            <label className="block text-sm font-medium text-[#181113] mb-2">
               Select Services *
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {SERVICES.map((service) => (
                 <AnimatedServiceCard
                   key={service.id}
@@ -301,14 +301,14 @@ export default function BookingForm() {
 
           {/* Time Slot Selection */}
           <div>
-            <label className="block text-sm font-medium text-[#181113] mb-3">
+            <label className="block text-sm font-medium text-[#181113] mb-2">
               Select Time *
             </label>
-            <p className="text-sm text-[#88636f] mb-3">
+            <p className="text-xs text-[#88636f] mb-2">
               Click on a time slot to select it. You must click "Book Appointment" to confirm your booking.
             </p>
             {isLoadingSlots ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <SkeletonLoader variant="timeSlot" />
                 <div className="flex justify-center">
                   <LoadingSpinner size="md" />
@@ -316,7 +316,7 @@ export default function BookingForm() {
               </div>
             ) : availableTimeSlots.length > 0 ? (
               <div>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                   {availableTimeSlots.map((slot) => (
                     <AnimatedTimeSlot
                       key={slot.time}
@@ -328,8 +328,8 @@ export default function BookingForm() {
                   ))}
                 </div>
                 {formData.time && (
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="text-sm text-blue-800">
+                  <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-xs text-blue-800">
                       <strong>Selected:</strong> {new Date(`2000-01-01T${formData.time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
                     </p>
                     <p className="text-xs text-blue-600 mt-1">
@@ -339,21 +339,21 @@ export default function BookingForm() {
                 )}
               </div>
             ) : formData.date ? (
-              <div className="text-center py-8">
-                <div className="text-[#88636f] mb-2">No available time slots for this date.</div>
-                <div className="text-sm text-gray-400">Please try selecting a different date.</div>
+              <div className="text-center py-6">
+                <div className="text-[#88636f] mb-1 text-sm">No available time slots for this date.</div>
+                <div className="text-xs text-gray-400">Please try selecting a different date.</div>
               </div>
             ) : (
-              <div className="text-center py-8">
-                <div className="text-[#88636f] mb-2">Please select a date to see available time slots.</div>
-                <div className="text-sm text-gray-400">We'll show you all available appointments.</div>
+              <div className="text-center py-6">
+                <div className="text-[#88636f] mb-1 text-sm">Please select a date to see available time slots.</div>
+                <div className="text-xs text-gray-400">We'll show you all available appointments.</div>
               </div>
             )}
           </div>
 
           {/* Special Requests */}
           <div>
-            <label htmlFor="specialRequests" className="block text-sm font-medium text-[#181113] mb-2">
+            <label htmlFor="specialRequests" className="block text-sm font-medium text-[#181113] mb-1">
               Special Requests
             </label>
             <textarea
@@ -361,17 +361,17 @@ export default function BookingForm() {
               name="specialRequests"
               value={formData.specialRequests}
               onChange={handleChange}
-              rows={3}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#eb477e] focus:border-transparent text-[#181113]"
+              rows={2}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#eb477e] focus:border-transparent text-[#181113]"
               placeholder="Any special requests or notes..."
             />
           </div>
 
           {/* Submit Button */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             {formData.time && formData.services.length > 0 && (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-800 text-center">
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-xs text-green-800 text-center">
                   <strong>Ready to book!</strong> All required information has been selected.
                 </p>
               </div>
@@ -381,7 +381,7 @@ export default function BookingForm() {
               variant="primary"
               size="lg"
               disabled={isSubmitting || formData.services.length === 0 || !formData.time}
-              className="w-full py-4 px-6 font-medium disabled:opacity-50 disabled:cursor-not-allowed btn-enhanced"
+              className="w-full py-3 px-6 font-medium disabled:opacity-50 disabled:cursor-not-allowed btn-enhanced"
             >
               {isSubmitting ? (
                 <div className="flex items-center justify-center">
