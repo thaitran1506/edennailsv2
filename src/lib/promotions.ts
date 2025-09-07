@@ -83,7 +83,7 @@ export const PROMOTIONS: Promotion[] = [
     description: 'Bring a friend and both get 10% off your next appointment! Share the beauty and save together.',
     discount: '10% OFF',
     validUntil: '',
-    image: '/images/featuredDesigns/featured1.jpg',
+    image: '/featuredDesigns/featured2.jpg',
     category: 'referral',
     isActive: true,
     priority: 2
@@ -94,7 +94,7 @@ export const PROMOTIONS: Promotion[] = [
     description: 'Book 2 or more services and get 10% off your total bill! Perfect for a complete nail care experience.',
     discount: '10% OFF',
     validUntil: '',
-    image: '/images/pedicure-service.jpg',
+    image: '/images/manicure-process.jpg',
     category: 'package',
     isActive: true,
     priority: 3
