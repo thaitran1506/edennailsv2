@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Newsreader, Playfair_Display } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Header from "@/components/Header";
 import "./globals.css";
 
@@ -49,6 +50,7 @@ export default function RootLayout({
           {children}
         </div>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
