@@ -3,6 +3,7 @@ import { Newsreader, Playfair_Display } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Header from "@/components/Header";
+import TopPromoBanner from "@/components/TopPromoBanner";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -46,6 +47,7 @@ export default function RootLayout({
       </head>
       <body className={`${newsreader.className} ${playfair.variable} relative flex min-h-screen flex-col bg-white overflow-x-hidden`}>
         <div className="layout-container flex h-full grow flex-col">
+          <TopPromoBanner />
           <Header />
           {children}
         </div>

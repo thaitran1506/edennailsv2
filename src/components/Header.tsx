@@ -7,6 +7,26 @@ import { RippleButton } from './MicroInteractions';
 export default function Header() {
   const [activeSection, setActiveSection] = useState('home');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasPromoBanner, setHasPromoBanner] = useState(false);
+
+  useEffect(() => {
+    // Check if promo banner is visible
+    const checkPromoBanner = () => {
+      setHasPromoBanner(document.body.classList.contains('has-promo-banner'));
+    };
+
+    // Initial check
+    checkPromoBanner();
+
+    // Watch for changes using MutationObserver
+    const observer = new MutationObserver(checkPromoBanner);
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -76,7 +96,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap px-4 md:px-10 py-3">
+      <header className={`sticky ${hasPromoBanner ? 'top-[56px] sm:top-[64px]' : 'top-0'} z-50 flex items-center justify-between whitespace-nowrap px-4 md:px-10 py-3 transition-all duration-300 bg-white`}>
         <div className="flex items-center gap-2 md:gap-4 text-[#181113]">
           <div className="size-12 md:size-16 relative">
             <Image
