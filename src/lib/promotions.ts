@@ -67,37 +67,15 @@ export const PROMOTION_CONFIG: PromotionConfig = {
 // Promotion data - easy to add, remove, or modify
 export const PROMOTIONS: Promotion[] = [
   {
-    id: 'online-booking-discount',
-    title: 'Online Booking Discount',
-    description: 'Book your appointment online and save 10% on your service! Convenient and cost-effective.',
-    discount: '10% OFF',
-    validUntil: '',
+    id: 'holiday-online-booking-50-off',
+    title: 'Holiday Special: 50% Off Online Appointments',
+    description: 'Book your appointment online and save 50% on your service! Limited time offer from December 1st to December 20th, 2025. Don\'t miss out on this amazing holiday deal!',
+    discount: '50% OFF',
+    validUntil: '2025-12-20',
     image: '/images/nail-salon-service.jpg',
-    category: 'new-customer',
+    category: 'holiday',
     isActive: true,
     priority: 1
-  },
-  {
-    id: 'bring-a-friend',
-    title: 'Bring a Friend',
-    description: 'Bring a friend and both get 10% off your next appointment! Share the beauty and save together.',
-    discount: '10% OFF',
-    validUntil: '',
-    image: '/featuredDesigns/featured2.jpg',
-    category: 'referral',
-    isActive: true,
-    priority: 2
-  },
-  {
-    id: 'multi-service-package',
-    title: 'Multi-Service Package',
-    description: 'Book 2 or more services and get 10% off your total bill! Perfect for a complete nail care experience.',
-    discount: '10% OFF',
-    validUntil: '',
-    image: '/images/manicure-process.jpg',
-    category: 'package',
-    isActive: true,
-    priority: 3
   }
 ];
 
