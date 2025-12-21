@@ -148,12 +148,8 @@ The project can be deployed to any platform that supports Next.js:
 ## 📞 Contact & Support
 
 For questions or support:
-- Email: info@edennails.com
-- Phone: (555) 123-4567
+- Email: tranthai0615@gmail.com
 
-## 📄 License
-
-This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
