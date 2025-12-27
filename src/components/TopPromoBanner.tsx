@@ -10,18 +10,9 @@ export default function TopPromoBanner() {
   useEffect(() => {
     // Check if banner should be visible
     const checkVisibility = () => {
-      const expiryDate = new Date('2025-12-20T23:59:59');
-      const now = new Date();
-      
-      // Hide if expired
-      if (now > expiryDate) {
-        setIsVisible(false);
-        document.body.classList.remove('has-promo-banner');
-        return;
-      }
-
-      // Check if user has dismissed it
-      const dismissed = localStorage.getItem('promoBannerDismissed');
+      // Happy Hours promotion is ongoing (no expiry date)
+      // Check if user has dismissed it (using new key for Happy Hours promotion)
+      const dismissed = localStorage.getItem('promoBannerDismissedHappyHours');
       if (dismissed === 'true') {
         setIsDismissed(true);
         setIsVisible(false);
@@ -29,7 +20,7 @@ export default function TopPromoBanner() {
         return;
       }
 
-      // Show banner if within date range
+      // Show banner for ongoing Happy Hours promotion
       setIsVisible(true);
       document.body.classList.add('has-promo-banner');
     };
@@ -45,7 +36,7 @@ export default function TopPromoBanner() {
   const handleDismiss = () => {
     setIsDismissed(true);
     setIsVisible(false);
-    localStorage.setItem('promoBannerDismissed', 'true');
+    localStorage.setItem('promoBannerDismissedHappyHours', 'true');
     document.body.classList.remove('has-promo-banner');
   };
 
@@ -72,16 +63,16 @@ export default function TopPromoBanner() {
         <div className="flex items-center gap-3 flex-1">
           <div className="hidden sm:flex items-center justify-center w-10 h-10 bg-white/20 rounded-full">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div className="text-center sm:text-left">
             <p className="text-sm sm:text-base font-bold leading-tight">
-              🎉 <span className="inline-block animate-bounce">50% OFF</span> Online Bookings! 
-              <span className="hidden sm:inline"> Limited time: Dec 1-20, 2025</span>
+              🎉 <span className="inline-block animate-bounce">20% OFF</span> Happy Hours (2pm-5pm)! 
+              <span className="hidden sm:inline"> Book online during Happy Hours</span>
             </p>
             <p className="text-xs sm:text-sm opacity-90 mt-0.5 sm:hidden">
-              Limited time: Dec 1-20, 2025
+              Book online during Happy Hours
             </p>
           </div>
         </div>

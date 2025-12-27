@@ -67,13 +67,13 @@ export const PROMOTION_CONFIG: PromotionConfig = {
 // Promotion data - easy to add, remove, or modify
 export const PROMOTIONS: Promotion[] = [
   {
-    id: 'holiday-online-booking-50-off',
-    title: 'Holiday Special: 50% Off Online Appointments',
-    description: 'Book your appointment online and save 50% on your service! Limited time offer from December 1st to December 20th, 2025. Don\'t miss out on this amazing holiday deal!',
-    discount: '50% OFF',
-    validUntil: '2025-12-20',
+    id: 'happy-hours-20-off',
+    title: 'Happy Hours: 20% Off Online Bookings',
+    description: 'Save 20% on all services when you book online during Happy Hours! Available daily from 2pm to 5pm. Perfect time to treat yourself to beautiful nails at a great price!',
+    discount: '20% OFF',
+    validUntil: '',
     image: '/images/nail-salon-service.jpg',
-    category: 'holiday',
+    category: 'seasonal',
     isActive: true,
     priority: 1
   }
